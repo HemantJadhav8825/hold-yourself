@@ -9,12 +9,12 @@ export interface TokenPayload {
 }
 
 export const JwtSigner = {
-  sign: (payload: TokenPayload, expiresIn: string | number): string => {
+  sign: (payload: TokenPayload, expiresIn: any): string => {
     // In production, ENV.JWT_PRIVATE_KEY would be loaded from a secret manager
     // RS256 is used for asymmetric signing
     return jwt.sign(payload, ENV.JWT_PRIVATE_KEY, {
       algorithm: 'RS256',
-      expiresIn,
+      expiresIn: expiresIn as any,
       issuer: ENV.TOKEN_ISSUER,
     });
   },
