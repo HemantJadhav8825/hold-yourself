@@ -1,6 +1,7 @@
 import { UserService } from '../users/user.service';
 import { TokenService } from '../tokens/token.service';
 import { PasswordHasher } from '../../security/password';
+import { JwtSigner } from '../../security/jwt';
 import { CONSTANTS } from '../../config/constants';
 
 const userService = new UserService();
@@ -31,8 +32,20 @@ export class AuthService {
   }
 
   async refresh(token: string) {
-    // Logic to verify refresh token and issue new access token
-    // This would involve JwtSigner.verify and checking revocation list
-    throw new Error('Not implemented');
+    try {
+      const payload = JwtSigner.verify(token);
+      if (payload.type !== 'refresh') {
+        throw new Error('Invalid token type');
+      }
+      
+      const user = await userService.findById(payload.sub);
+      if (!user || user.isRevoked) {
+        throw new Error('User not found or revoked');
+      }
+
+      return tokenService.issueTokens(user);
+    } catch (err: any) {
+      throw new Error('Invalid refresh token: ' + err.message);
+    }
   }
 }
