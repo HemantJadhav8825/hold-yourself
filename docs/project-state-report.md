@@ -92,13 +92,13 @@
 
 ### 5️⃣ DATABASE USAGE
 
-| Service                | DB Type | Connection Mechanism                   | Status              |
-| :--------------------- | :------ | :------------------------------------- | :------------------ |
-| `auth-service`         | MongoDB | `mongoose` (implied by `DATABASE_URL`) | ACTIVE              |
-| `payment-service`      | None    | N/A                                    | NO DB YET           |
-| `notification-service` | None    | N/A                                    | NO DB YET           |
-| `backend`              | None    | N/A                                    | NO ACCESS (Gateway) |
-| `frontend`             | None    | N/A                                    | NO ACCESS           |
+| Service                | DB Type | Connection Mechanism                   | Status                            |
+| :--------------------- | :------ | :------------------------------------- | :-------------------------------- |
+| `auth-service`         | MongoDB | `mongoose` (implied by `DATABASE_URL`) | ACTIVE (DB: `hold_yourself_auth`) |
+| `payment-service`      | None    | N/A                                    | NO DB YET                         |
+| `notification-service` | None    | N/A                                    | NO DB YET                         |
+| `backend`              | None    | N/A                                    | NO ACCESS (Gateway)               |
+| `frontend`             | None    | N/A                                    | NO ACCESS                         |
 
 ---
 
