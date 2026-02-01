@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Mail, Lock, Loader2, LogIn, ShieldCheck } from 'lucide-react';
 import { GoogleButton } from '@/components/auth/GoogleButton';
 
-export default function LoginPage() {
+function LoginContent() {
   const { login, googleLogin, isLoading, error } = useAuth();
   const searchParams = useSearchParams();
   const googleLoginCalled = useRef(false);
@@ -143,5 +143,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-white/20">Loading...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }
