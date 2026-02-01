@@ -10,11 +10,14 @@
     "lint": "eslint src"
   },
   "dependencies": {
+    "@hold-yourself/utils": "workspace:*",
+    "@types/mongoose": "^5.11.97",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
+    "mongoose": "^9.1.5",
     "zod": "^3.21.0"
   },
   "devDependencies": {

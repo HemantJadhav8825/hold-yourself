@@ -1,26 +1,22 @@
 import { User, UserCreateDTO } from './user.model';
+import { UserModel } from './user.schema';
 
 export class UserService {
-  // Abstracted database operations
-  private static users: User[] = [];
-
-  async findByEmail(email: string): Promise<User | null> {
-    return UserService.users.find(u => u.email === email) || null;
+  async findByEmail(email: string): Promise<any | null> {
+    return UserModel.findOne({ email }).exec();
   }
 
-  async findById(id: string): Promise<User | null> {
-    return UserService.users.find(u => u.id === id) || null;
+  async findById(id: string): Promise<any | null> {
+    return UserModel.findById(id).exec();
   }
 
-  async createUser(data: UserCreateDTO): Promise<User> {
-    const user: User = {
-      ...data,
-      id: Math.random().toString(36).substring(7),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      isRevoked: false,
-    };
-    UserService.users.push(user);
-    return user;
+  async createUser(data: UserCreateDTO): Promise<any> {
+    const user = new UserModel({
+      email: data.email,
+      passwordHash: data.passwordHash,
+      role: data.role,
+      scopes: data.scopes,
+    });
+    return user.save();
   }
 }
