@@ -17,12 +17,16 @@
     "lint": "turbo run lint",
     "postman:sync": "tsx scripts/sync-postman.ts",
     "audit:ports": "tsx scripts/audit-ports.ts",
-    "check:consistency": "bash ./antigravity/consistency.sh"
+    "check:consistency": "bash ./antigravity/consistency.sh",
+    "db:reset": "tsx scripts/db/cleanup.ts"
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.3",
     "@types/node": "^25.1.0",
+    "@types/pg": "^8.16.0",
     "dotenv": "^17.2.3",
+    "mongodb": "^7.0.0",
+    "pg": "^8.18.0",
     "tsx": "^4.21.0",
     "turbo": "latest"
   }
