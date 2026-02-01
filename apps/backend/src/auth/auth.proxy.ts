@@ -15,5 +15,10 @@ export const AuthProxy = {
   refresh: async (data: any) => {
     const response = await axios.post(`${AUTH_CONFIG.SERVICE_URL}/v1/auth/refresh`, data);
     return response.data;
+  },
+
+  google: async (data: any) => {
+    const response = await axios.post(`${AUTH_CONFIG.SERVICE_URL}/v1/auth/google`, data);
+    return response.data;
   }
 };

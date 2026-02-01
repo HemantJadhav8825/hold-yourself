@@ -9,6 +9,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (credentials: any) => Promise<void>;
+  googleLogin: (code: string) => Promise<void>;
   signup: (data: any) => Promise<void>;
   logout: () => Promise<void>;
   error: string | null;
@@ -58,6 +59,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const googleLogin = async (code: string) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await authService.googleLogin(code);
+      setUser(data.user);
+      localStorage.setItem('user_hint', JSON.stringify(data.user));
+      router.push('/dashboard');
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Google login failed');
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const signup = async (data: any) => {
     setIsLoading(true);
     setError(null);
@@ -85,6 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAuthenticated: !!user,
         isLoading,
         login,
+        googleLogin,
         signup,
         logout,
         error,

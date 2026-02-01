@@ -2,7 +2,10 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IUser extends Document {
   email: string;
-  passwordHash: string;
+  passwordHash?: string;
+  authProvider: 'email' | 'google';
+  googleId?: string;
+  avatar?: string;
   role: string;
   scopes: string[];
   isRevoked: boolean;
@@ -13,7 +16,10 @@ export interface IUser extends Document {
 const UserSchema: Schema = new Schema(
   {
     email: { type: String, required: true, unique: true },
-    passwordHash: { type: String, required: true },
+    passwordHash: { type: String, required: false },
+    authProvider: { type: String, required: true, enum: ['email', 'google'], default: 'email' },
+    googleId: { type: String, index: { unique: true, sparse: true } },
+    avatar: { type: String },
     role: { type: String, required: true },
     scopes: { type: [String], default: [] },
     isRevoked: { type: Boolean, default: false },

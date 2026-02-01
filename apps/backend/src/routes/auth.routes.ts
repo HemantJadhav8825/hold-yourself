@@ -30,6 +30,15 @@ router.post('/refresh', async (req, res) => {
   }
 });
 
+router.post('/google', async (req, res) => {
+  try {
+    const result = await AuthProxy.google(req.body);
+    res.json(result);
+  } catch (err: any) {
+    res.status(err.response?.status || 500).json(err.response?.data || { error: 'Auth Service unavailable' });
+  }
+});
+
 router.post('/logout', (req, res) => {
   // In a stateless JWT system, logout is mostly handled by the client (deleting token)
   // Optionally, blacklisting could happen in auth-service

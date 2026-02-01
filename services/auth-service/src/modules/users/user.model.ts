@@ -1,7 +1,10 @@
 export interface User {
   id: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string;
+  authProvider: 'email' | 'google';
+  googleId?: string;
+  avatar?: string;
   role: string;
   scopes: string[];
   createdAt: Date;
@@ -11,7 +14,10 @@ export interface User {
 
 export interface UserCreateDTO {
   email: string;
-  passwordHash: string;
+  passwordHash?: string;
+  authProvider: 'email' | 'google';
+  googleId?: string;
+  avatar?: string;
   role: string;
   scopes: string[];
 }

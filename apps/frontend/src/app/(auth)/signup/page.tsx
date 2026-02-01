@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { Mail, Lock, Loader2, UserPlus, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { GoogleButton } from '@/components/auth/GoogleButton';
 
 export default function SignupPage() {
   const { signup, isLoading, error } = useAuth();
@@ -52,7 +53,19 @@ export default function SignupPage() {
             <p className="text-white/40 text-sm px-4">Start your journey of self-accountability today.</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-6">
+            <GoogleButton />
+            
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/10"></div>
+              </div>
+              <div className="relative flex justify-center text-[10px] uppercase tracking-widest">
+                <span className="bg-[#121212] px-4 text-white/30">Or continue with</span>
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
             {(error || localError) && (
               <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
                 {error || localError}
@@ -128,6 +141,7 @@ export default function SignupPage() {
               )}
             </button>
           </form>
+          </div>
 
           <p className="text-center text-white/40 text-sm">
             Already have an account?{' '}

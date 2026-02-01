@@ -1,16 +1,28 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Mail, Lock, Loader2, LogIn, ShieldCheck } from 'lucide-react';
+import { GoogleButton } from '@/components/auth/GoogleButton';
 
 export default function LoginPage() {
-  const { login, isLoading, error } = useAuth();
+  const { login, googleLogin, isLoading, error } = useAuth();
+  const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+
+  useEffect(() => {
+    const code = searchParams.get('code');
+    if (code) {
+      googleLogin(code).catch(() => {
+        // Error handled in context
+      });
+    }
+  }, [searchParams, googleLogin]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +55,19 @@ export default function LoginPage() {
             <p className="text-white/40 text-sm px-4">Elevate your growth. Hold yourself accountable.</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-6">
+            <GoogleButton />
+            
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/10"></div>
+              </div>
+              <div className="relative flex justify-center text-[10px] uppercase tracking-widest">
+                <span className="bg-[#121212] px-4 text-white/30">Or continue with</span>
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm animate-shake">
                 {error}
@@ -105,6 +129,7 @@ export default function LoginPage() {
               )}
             </button>
           </form>
+          </div>
 
           <p className="text-center text-white/40 text-sm">
             Don't have an account?{' '}

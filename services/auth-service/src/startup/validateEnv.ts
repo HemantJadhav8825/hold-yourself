@@ -4,6 +4,9 @@ export const validateEnv = () => {
     'DATABASE_URL',
     'JWT_PRIVATE_KEY',
     'JWT_PUBLIC_KEY',
+    'GOOGLE_CLIENT_ID',
+    'GOOGLE_CLIENT_SECRET',
+    'GOOGLE_REDIRECT_URI',
   ];
 
   const missing = requiredEnvVars.filter((v) => !process.env[v]);

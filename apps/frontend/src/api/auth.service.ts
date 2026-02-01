@@ -5,6 +5,7 @@ export interface User {
   id: string;
   email: string;
   role: string;
+  avatar?: string;
 }
 
 export interface AuthResponse {
@@ -22,9 +23,16 @@ export const authService = {
     setAccessToken(data.accessToken);
     localStorage.setItem('refresh_token', data.refreshToken);
     
-    if (!data.user) {
-      console.warn('User object missing in login response');
-    }
+    return data;
+  },
+
+  async googleLogin(code: string): Promise<AuthResponse> {
+    const response = await client.post('/auth/google', { code });
+    const data = response.data;
+    
+    // Store tokens
+    setAccessToken(data.accessToken);
+    localStorage.setItem('refresh_token', data.refreshToken);
     
     return data;
   },

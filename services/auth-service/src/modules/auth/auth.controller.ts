@@ -46,4 +46,18 @@ export class AuthController {
       return res.status(401).json({ error: err.message });
     }
   }
+
+  async google(req: Request, res: Response) {
+    try {
+      const { code } = req.body;
+      if (!code) {
+        return res.status(400).json({ error: 'Code is required' });
+      }
+      const result = await authService.googleLogin(code);
+      return res.json(result);
+    } catch (err: any) {
+      console.error('Google login error:', err.message);
+      return res.status(401).json({ error: err.message });
+    }
+  }
 }
