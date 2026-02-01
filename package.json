@@ -14,7 +14,7 @@
     "dev:apps": "turbo run dev --filter=\"./apps/*\"",
     "dev:gateway": "turbo run dev --filter=\"@hold-yourself/backend\"",
     "lint": "turbo run lint",
-    "check:consistency": "bash ./antigravity/consistency.ag"
+    "check:consistency": "bash ./antigravity/consistency.sh"
   },
   "devDependencies": {
     "turbo": "latest"
