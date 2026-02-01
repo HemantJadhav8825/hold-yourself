@@ -44,20 +44,20 @@ This document provides a low-level, factual mapping of environment configuration
 | Component Name         | Type    | Port Number | Port Source  | Base URL (Local)        |
 | :--------------------- | :------ | :---------- | :----------- | :---------------------- |
 | `backend`              | Gateway | 3000        | env (`PORT`) | `http://localhost:3000` |
-| `auth-service`         | Service | 3001        | env (`PORT`) | `http://localhost:3001` |
-| `frontend`             | UI      | **UNKNOWN** | N/A          | **AMBIGUOUS**           |
-| `admin-panel`          | UI      | **UNKNOWN** | N/A          | **AMBIGUOUS**           |
-| `notification-service` | Service | **UNKNOWN** | N/A          | **AMBIGUOUS**           |
-| `payment-service`      | Service | **UNKNOWN** | N/A          | **AMBIGUOUS**           |
+| `auth-service`         | Service | 3100        | env (`PORT`) | `http://localhost:3100` |
+| `frontend`             | UI      | 3002        | env (`PORT`) | `http://localhost:3002` |
+| `admin-panel`          | UI      | 3001        | env (`PORT`) | `http://localhost:3001` |
+| `notification-service` | Service | 3202        | env (`PORT`) | `http://localhost:3202` |
+| `payment-service`      | Service | 3201        | env (`PORT`) | `http://localhost:3201` |
 
 ---
 
 ## 5. Explicit UNKNOWN / AMBIGUOUS ITEMS
 
-- **.env.example Presence:** No `.env.example` files were detected in any workspace.
-- **Skeleton Ports:** `frontend`, `admin-panel`, `notification-service`, and `payment-service` do not have ports defined in their `package.json` or `.env` files as they are currently skeleton directories.
-- **Postgres Details:** Exact database name and connection variable for `payment-service` are **UNKNOWN** due to pending implementation.
-- **Frontend/Admin Entry Points:** Specific entry points (e.g., `index.html`, `main.tsx`) are **UNKNOWN** as the directories contain no application code yet.
+- **.env.example Presence:** `.env.example` files have been created for all active workspaces.
+- **Skeleton Ports:** All skeleton services now have assigned ports in their `.env.example` files and `package.json` (where applicable).
+- **Postgres Details:** `payment-service` is assigned port 3201; exact database name remains pending implementation.
+- **Frontend/Admin Entry Points:** `frontend` is set to port 3002 via `next dev -p 3002`.
 
 ---
 
