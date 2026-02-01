@@ -19,7 +19,13 @@ export class GoogleService {
    */
   async verifyCode(code: string) {
     try {
-      const { tokens } = await this.client.getToken(code);
+      console.log(`[GoogleService] Attempting to exchange code. Redirect URI: ${ENV.GOOGLE_REDIRECT_URI}`);
+      
+      const { tokens } = await this.client.getToken({
+        code,
+        redirect_uri: ENV.GOOGLE_REDIRECT_URI
+      });
+      
       const idToken = tokens.id_token;
 
       if (!idToken) {
@@ -44,8 +50,8 @@ export class GoogleService {
         emailVerified: payload.email_verified,
       };
     } catch (err: any) {
-       console.error('Google token verification failed:', err.message);
-       throw new Error('Failed to verify Google account');
+       console.error('[GoogleService] Error details:', err.response?.data || err.message);
+       throw new Error('Failed to verify Google account: ' + (err.response?.data?.error_description || err.message));
     }
   }
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -10,6 +10,7 @@ import { GoogleButton } from '@/components/auth/GoogleButton';
 export default function LoginPage() {
   const { login, googleLogin, isLoading, error } = useAuth();
   const searchParams = useSearchParams();
+  const googleLoginCalled = useRef(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -17,9 +18,11 @@ export default function LoginPage() {
 
   useEffect(() => {
     const code = searchParams.get('code');
-    if (code) {
+    if (code && !googleLoginCalled.current) {
+      googleLoginCalled.current = true;
       googleLogin(code).catch(() => {
         // Error handled in context
+        googleLoginCalled.current = false;
       });
     }
   }, [searchParams, googleLogin]);
