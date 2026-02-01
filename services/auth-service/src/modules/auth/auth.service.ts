@@ -28,7 +28,15 @@ export class AuthService {
     const valid = await PasswordHasher.compare(pass, user.passwordHash);
     if (!valid) throw new Error('Invalid credentials');
 
-    return tokenService.issueTokens(user);
+    const tokens = await tokenService.issueTokens(user);
+    return {
+      ...tokens,
+      user: {
+        id: user._id || user.id,
+        email: user.email,
+        role: user.role,
+      }
+    };
   }
 
   async refresh(token: string) {
