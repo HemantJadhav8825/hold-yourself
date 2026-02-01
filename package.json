@@ -15,10 +15,13 @@
     "dev:gateway": "turbo run dev --filter=\"@hold-yourself/backend\"",
     "lint": "turbo run lint",
     "postman:sync": "tsx scripts/sync-postman.ts",
+    "audit:ports": "tsx scripts/audit-ports.ts",
     "check:consistency": "bash ./antigravity/consistency.sh"
   },
   "devDependencies": {
+    "@types/dotenv": "^8.2.3",
     "@types/node": "^25.1.0",
+    "dotenv": "^17.2.3",
     "tsx": "^4.21.0",
     "turbo": "latest"
   }
