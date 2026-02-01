@@ -14,9 +14,12 @@
     "dev:apps": "turbo run dev --filter=\"./apps/*\"",
     "dev:gateway": "turbo run dev --filter=\"@hold-yourself/backend\"",
     "lint": "turbo run lint",
+    "postman:sync": "tsx scripts/sync-postman.ts",
     "check:consistency": "bash ./antigravity/consistency.sh"
   },
   "devDependencies": {
+    "@types/node": "^25.1.0",
+    "tsx": "^4.21.0",
     "turbo": "latest"
   }
 }
