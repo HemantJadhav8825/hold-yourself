@@ -1,7 +1,22 @@
 import app from './app';
+import { validateEnv } from './startup/validateEnv';
+import { validateDeps } from './startup/validateDeps';
 
-const PORT = process.env.PORT || 3000;
+const start = async () => {
+  // 1. Validate Environment
+  validateEnv();
 
-app.listen(PORT, () => {
-  console.log(`Backend Gateway running on port ${PORT}`);
+  // 2. Validate Dependencies
+  await validateDeps();
+
+  const PORT = process.env.PORT;
+
+  app.listen(PORT, () => {
+    console.log(`Backend Gateway running on port ${PORT}`);
+  });
+};
+
+start().catch((err) => {
+  console.error('❌ Failed to start Backend Gateway:', err);
+  process.exit(1);
 });
