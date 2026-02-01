@@ -31,9 +31,14 @@ A production-ready monorepo workspace managed with **PNPM Workspaces** and **Tur
 ## 🚀 Getting Started
 
 1. **Install Dependencies**: `pnpm install`
-2. **Development**: `pnpm dev` (runs all workspaces in parallel via Turbo)
-3. **Build**: `pnpm build`
-4. **Lint**: `pnpm lint`
+2. **Development**:
+   - `pnpm dev` # everything
+   - `pnpm dev:services` # only services
+   - `pnpm dev:apps` # frontend + admin + backend
+   - `pnpm dev:gateway` # just backend
+3. **Consistency**: `pnpm check:consistency`
+4. **Build**: `pnpm build`
+5. **Lint**: `pnpm lint`
 
 ## 🛠️ Stack Components
 
