@@ -2,6 +2,7 @@ import { Heading } from '@/components/ui/Heading';
 import { User, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export const Header: React.FC = () => {
   const { logout } = useAuth();
@@ -12,6 +13,7 @@ export const Header: React.FC = () => {
       </Heading>
       
       <div className="flex items-center gap-3">
+        <ThemeToggle />
         <button 
           onClick={logout}
           className="p-2 rounded-full bg-red-500/10 text-red-400 hover:bg-red-500/20 active:scale-95 transition-all"
