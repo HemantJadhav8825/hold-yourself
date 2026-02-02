@@ -20,10 +20,20 @@ function LoginContent() {
     const code = searchParams.get('code');
     if (code && !googleLoginCalled.current) {
       googleLoginCalled.current = true;
-      googleLogin(code).catch(() => {
-        // Error handled in context
-        googleLoginCalled.current = false;
-      });
+      googleLogin(code)
+        .then(() => {
+          // Optional: Remove code from URL on success if not redirecting immediately
+        })
+        .catch(() => {
+          // Do NOT reset googleLoginCalled.current = false;
+          // If the code is invalid, retrying won't help.
+          console.error('Google login failed with code');
+        });
+      
+      // Clear the query param to avoid re-triggering
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete('code');
+      window.history.replaceState({}, '', newUrl.toString());
     }
   }, [searchParams, googleLogin]);
 

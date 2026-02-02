@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { authService, User } from '../api/auth.service';
 import { useRouter } from 'next/navigation';
 
@@ -43,7 +43,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initAuth();
   }, []);
 
-  const login = async (credentials: any) => {
+  const login = useCallback(async (credentials: any) => {
     setIsLoading(true);
     setError(null);
     try {
@@ -57,9 +57,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [router]);
 
-  const googleLogin = async (code: string) => {
+  const googleLogin = useCallback(async (code: string) => {
     setIsLoading(true);
     setError(null);
     try {
@@ -73,9 +73,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [router]);
 
-  const signup = async (data: any) => {
+  const signup = useCallback(async (data: any) => {
     setIsLoading(true);
     setError(null);
     try {
@@ -87,13 +87,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [router]);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     await authService.logout();
     setUser(null);
     router.push('/login');
-  };
+  }, [router]);
 
   return (
     <AuthContext.Provider

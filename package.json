@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --concurrency=20",
     "dev:services": "turbo run dev --filter=\"./services/*\"",
     "dev:apps": "turbo run dev --filter=\"./apps/*\"",
     "dev:gateway": "turbo run dev --filter=\"@hold-yourself/backend\"",
