@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { Mail, Lock, Loader2, LogIn, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, Loader2, LogIn, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { GoogleButton } from '@/components/auth/GoogleButton';
 
 function LoginContent() {
@@ -64,12 +64,17 @@ function LoginContent() {
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/10 rounded-full blur-[80px] md:blur-[120px]" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/10 rounded-full blur-[80px] md:blur-[120px]" />
 
+      {/* Back to Home */}
+      <Link href="/" className="absolute top-8 left-8 z-50 p-2 rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all">
+        <ArrowLeft className="w-6 h-6" />
+      </Link>
+
       <div className="w-full max-w-md z-10">
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 md:p-8 rounded-[2.5rem] md:rounded-3xl shadow-2xl space-y-8">
           <div className="text-center space-y-2">
-            <div className="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 mb-2 md:mb-4">
+            <Link href="/" className="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 mb-2 md:mb-4 hover:bg-indigo-500/30 transition-colors">
               <ShieldCheck className="w-7 h-7 md:w-8 md:h-8 text-indigo-400" />
-            </div>
+            </Link>
             <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
               Welcome Back
             </h1>

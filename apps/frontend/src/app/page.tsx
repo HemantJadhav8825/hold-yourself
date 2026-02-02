@@ -1,11 +1,13 @@
 import Link from "next/link"
 import { ArrowRight, Brain, Shield, Sparkles } from "lucide-react"
 
-import { Button } from "@/components/ui/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Container } from "@/components/ui/Container"
 import { Section } from "@/components/ui/Section"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { Button } from "@/components/ui/Button" // Kept for Manifesto button
+import { HomeHeaderActions } from "@/components/home/HomeHeaderActions"
+import { HeroActions } from "@/components/home/HeroActions"
 
 export default function Home() {
   return (
@@ -18,14 +20,7 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <Link href="/login">
-              <Button variant="ghost" size="sm">
-                Log in
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <Button size="sm">Get Started</Button>
-            </Link>
+            <HomeHeaderActions />
           </div>
         </Container>
       </header>
@@ -47,18 +42,7 @@ export default function Home() {
               A calm, distraction-free space to track your growth, build habits,
               and connect with your better self. No noise, just progress.
             </p>
-            <div className="flex flex-col gap-4 sm:flex-row">
-              <Link href="/signup">
-                <Button size="lg" className="px-8 flex gap-2">
-                  Begin Journey <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Link href="#features">
-                <Button variant="outline" size="lg" className="px-8">
-                  Learn More
-                </Button>
-              </Link>
-            </div>
+            <HeroActions />
           </Container>
         </Section>
 

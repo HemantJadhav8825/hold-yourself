@@ -8,9 +8,11 @@ export const Header: React.FC = () => {
   const { logout } = useAuth();
   return (
     <header className="fixed top-0 left-0 w-full z-40 bg-background/80 backdrop-blur-md px-6 py-4 flex items-center justify-between">
-      <Heading level={5} className="text-primary font-bold tracking-tight">
-        Hold Yourself
-      </Heading>
+      <Link href="/">
+        <Heading level={5} className="text-primary font-bold tracking-tight">
+          Hold Yourself
+        </Heading>
+      </Link>
       
       <div className="flex items-center gap-3">
         <ThemeToggle />
