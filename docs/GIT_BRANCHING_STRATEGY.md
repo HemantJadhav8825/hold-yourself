@@ -7,8 +7,9 @@ This document defines the Git branching strategy for the **Hold Yourself** monor
 These branches are permanent and protected.
 
 - **`main`**
-  - Always production-ready.
-  - Protected: No direct commits.
+  - **IMMUTABLE HISTORY**: Direct commits are technically and procedurally impossible.
+  - Protected via Server-Side Rules (No direct push).
+  - Protected via CI Logic (pipeline failure on direct push).
   - Deployment source for production environments.
 - **`develop`**
   - Primary integration branch.
@@ -76,3 +77,16 @@ Used ONLY if production is broken and requires immediate remediation:
 ---
 
 **Verdict:** This strategy is optimized for a growing monorepo with strong architectural discipline and minimal operational overhead.
+
+## 8. Enforcement Mechanisms (The "Double Lock")
+
+We do not rely on "honor systems" or local git hooks. Usage is enforced via:
+
+1.  **Hard Gate (Server-Side)**:
+    - Repo settings REJECT any push to `main` that is not a merged PR.
+    - Force pushes are disabled.
+    - Branch deletion is disabled.
+
+2.  **Soft Gate (CI-Level)**:
+    - If a direct push somehow bypasses the server gate, the CI pipeline is hard-coded to FAIL.
+    - This ensures the build status is "red" for any illegal commit, preventing deployment triggers.
