@@ -28,14 +28,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const refreshToken = localStorage.getItem('refresh_token');
       const userHint = localStorage.getItem('user_hint');
 
-      if (refreshToken && userHint) {
+      if (refreshToken) {
         try {
-          setUser(JSON.parse(userHint));
-          // Token will be refreshed on the first API call if needed, 
-          // or we can proactively refresh here.
+          // 1. Optimistic UI update from hint
+          if (userHint) {
+            setUser(JSON.parse(userHint));
+          }
+
+          // 2. Real verification: Get fresh access token
+          await authService.refresh();
+          
+          // Optional: Fetch fresh user profile if needed
+          // const profile = await authService.me(); 
+          // setUser(profile);
+          
         } catch (e) {
+          console.error('Session restoration failed:', e);
+          // If refresh fails, clear everything
+          localStorage.removeItem('refresh_token');
           localStorage.removeItem('user_hint');
+          setUser(null);
         }
+      } else {
+        // No tokens found, clean up any stale state
+        localStorage.removeItem('user_hint');
+        setUser(null);
       }
       setIsLoading(false);
     };

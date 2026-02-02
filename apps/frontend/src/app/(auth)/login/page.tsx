@@ -2,19 +2,27 @@
 
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Mail, Lock, Loader2, LogIn, ShieldCheck } from 'lucide-react';
 import { GoogleButton } from '@/components/auth/GoogleButton';
 
 function LoginContent() {
-  const { login, googleLogin, isLoading, error } = useAuth();
+  const { login, googleLogin, isLoading, error, isAuthenticated } = useAuth();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const googleLoginCalled = useRef(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated, isLoading, router]);
 
   useEffect(() => {
     const code = searchParams.get('code');

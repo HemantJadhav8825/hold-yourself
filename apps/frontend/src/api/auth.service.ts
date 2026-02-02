@@ -62,8 +62,14 @@ export const authService = {
     if (!refreshToken) throw new Error('No refresh token');
     
     const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, { refreshToken });
-    const { accessToken } = response.data;
+    const { accessToken, refreshToken: newRefreshToken } = response.data;
+    
     setAccessToken(accessToken);
+    
+    if (newRefreshToken) {
+      localStorage.setItem('refresh_token', newRefreshToken);
+    }
+    
     return accessToken;
   }
 };
