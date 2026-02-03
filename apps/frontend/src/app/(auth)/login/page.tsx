@@ -158,7 +158,7 @@ function LoginContent() {
           </div>
 
           <p className="text-center text-white/40 text-sm">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link href="/signup" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
               Create account
             </Link>

@@ -36,7 +36,7 @@ export const ProfileView: React.FC = () => {
         </div>
 
         <Text className="max-w-md italic text-text/60">
-          "Finding balance in the quiet moments."
+          &quot;Finding balance in the quiet moments.&quot;
         </Text>
       </div>
 
