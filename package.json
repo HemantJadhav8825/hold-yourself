@@ -18,7 +18,8 @@
     "postman:sync": "tsx scripts/sync-postman.ts",
     "audit:ports": "tsx scripts/audit-ports.ts",
     "check:consistency": "bash ./antigravity/consistency.sh",
-    "db:reset": "tsx scripts/db/cleanup.ts"
+    "db:reset": "tsx scripts/db/cleanup.ts",
+    "git:cleanup": "bash scripts/git-cleanup.sh"
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.3",
