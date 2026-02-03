@@ -27,8 +27,8 @@ export const Step2: React.FC<{ onNext: (data: any) => void }> = ({ onNext }) => 
       className="flex flex-col gap-8 py-12"
     >
       <div className="space-y-4">
-        <Heading level={2}>What's on your mind?</Heading>
-        <Text muted>Select the areas where you're looking for support. (Optional)</Text>
+        <Heading level={2}>What&apos;s on your mind?</Heading>
+        <Text muted>Select the areas where you&apos;re looking for support. (Optional)</Text>
       </div>
 
       <div className="flex flex-wrap gap-3">

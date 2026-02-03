@@ -18,6 +18,8 @@ export default function DashboardPage() {
   const [hasCheckedInToday, setHasCheckedInToday] = useState(true);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     if (!isLoading && !user) {
       router.replace('/login');

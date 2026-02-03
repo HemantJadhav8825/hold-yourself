@@ -16,14 +16,14 @@ export const Step1: React.FC<{ onNext: () => void }> = ({ onNext }) => {
       <Aura color="#3B82F6" size={240} />
       
       <div className="space-y-4">
-        <Heading level={1}>You're home.</Heading>
+        <Heading level={1}>You&apos;re home.</Heading>
         <Text size="lg" className="max-w-md mx-auto">
           Hold Yourself is a space for genuine connection, built on a foundation of absolute privacy. You are anonymous here, and your story is safe with us.
         </Text>
       </div>
 
       <Button size="lg" onClick={onNext} className="mt-8">
-        Let's begin
+        Let&apos;s begin
       </Button>
     </motion.div>
   );

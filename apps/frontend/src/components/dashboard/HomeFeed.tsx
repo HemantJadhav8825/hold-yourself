@@ -19,7 +19,7 @@ export const HomeFeed: React.FC = () => {
   const [posts, setPosts] = useState<any[]>([
     {
       id: '1',
-      content: "Simply holding space for myself today. It's darker than usual, but I know the light returns. Just need to sit with it for a while.",
+      content: "Simply holding space for myself today. It&apos;s darker than usual, but I know the light returns. Just need to sit with it for a while.",
       author: 'Anonymous Soul',
       timestamp: '2h ago',
       visibility: 'community',
@@ -59,7 +59,7 @@ export const HomeFeed: React.FC = () => {
         <div className="space-y-4 max-w-sm">
           <Heading level={3}>The space is quiet.</Heading>
           <Text size="lg" muted>
-            This is your private canvas and a gateway to the community. When you're ready, share your first reflection.
+            This is your private canvas and a gateway to the community. When you&apos;re ready, share your first reflection.
           </Text>
         </div>
 
@@ -120,7 +120,7 @@ export const HomeFeed: React.FC = () => {
           </div>
 
           <Text size="lg" className="leading-relaxed font-serif">
-            "{post.content}"
+            &quot;{post.content}&quot;
           </Text>
 
 
