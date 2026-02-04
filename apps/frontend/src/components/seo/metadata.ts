@@ -1,9 +1,10 @@
+import { brand } from "@/config/brand";
 import { Metadata } from "next";
 import { env } from "@/config/env";
 
 export const siteConfig = {
-  name: "Hold Yourself",
-  description: "A production-grade Next.js 16 frontend for the Hold Yourself monorepo.",
+  name: brand.PRODUCT_NAME,
+  description: brand.META_DESCRIPTION,
   url: env.NEXT_PUBLIC_SITE_URL,
   ogImage: `${env.NEXT_PUBLIC_SITE_URL}/og-image.png`,
 };
@@ -39,7 +40,7 @@ export function constructMetadata({
       title,
       description,
       images: [image],
-      creator: "@holdyourself",
+      creator: "@webelong",
     },
     metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
     ...(noIndex && {

@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/Button';
 import { motion } from 'framer-motion';
 import { ShieldCheck } from 'lucide-react';
 
+import { brand } from '@/config/brand';
+
 const GUIDELINES = [
   "Support without judgment.",
   "Respect every perspective.",
@@ -52,7 +54,7 @@ export const Step3: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
           disabled={!agreed}
           onClick={onComplete}
         >
-          Enter Hold Yourself
+          Enter {brand.PRODUCT_NAME}
         </Button>
       </div>
     </motion.div>
