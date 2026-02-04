@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
-const allowedDevOrigins = process.env.ALLOWED_DEV_ORIGINS?.split(",") || [];
+if (!process.env.ALLOWED_DEV_ORIGINS) {
+  throw new Error("ALLOWED_DEV_ORIGINS environment variable is required");
+}
+const allowedDevOrigins = process.env.ALLOWED_DEV_ORIGINS.split(",");
 
 const nextConfig = {
   /* config options here */
