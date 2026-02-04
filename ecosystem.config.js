@@ -10,6 +10,10 @@ module.exports = {
       exec_mode: "fork",
       instances: 1,
       autorestart: true,
+      env: {
+        NODE_ENV: "production",
+        PORT: 3000,
+      },
     },
     {
       name: "hold-yourself-auth",
@@ -21,6 +25,10 @@ module.exports = {
       exec_mode: "fork",
       instances: 1,
       autorestart: true,
+      env: {
+        NODE_ENV: "production",
+        PORT: 3100,
+      },
     },
     // {
     //   name: "hold-yourself-chat",
