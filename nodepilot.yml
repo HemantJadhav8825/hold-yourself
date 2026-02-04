@@ -17,5 +17,5 @@ steps:
   build:
     - pnpm build
   deploy:
-    - npx pm2 startOrReload ecosystem.config.js --update-env
-    - npx pm2 save
+    - pm2 startOrReload ecosystem.config.js
+    - pm2 save
