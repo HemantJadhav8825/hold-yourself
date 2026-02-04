@@ -28,7 +28,8 @@ function LoginContent() {
     const code = searchParams.get('code');
     if (code && !googleLoginCalled.current) {
       googleLoginCalled.current = true;
-      googleLogin(code)
+      const redirectUri = `${window.location.origin}/login`;
+      googleLogin(code, redirectUri)
         .then(() => {
           // Optional: Remove code from URL on success if not redirecting immediately
         })

@@ -76,11 +76,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [router]);
 
-  const googleLogin = useCallback(async (code: string) => {
+  const googleLogin = useCallback(async (code: string, redirectUri?: string) => {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await authService.googleLogin(code);
+      const data = await authService.googleLogin(code, redirectUri);
       setUser(data.user);
       localStorage.setItem('user_hint', JSON.stringify(data.user));
       router.push('/dashboard');
