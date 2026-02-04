@@ -5,3 +5,6 @@ dist
 .vercel
 *.log
 .next
+*.tsbuildinfo
+coverage
+.nyc_output
