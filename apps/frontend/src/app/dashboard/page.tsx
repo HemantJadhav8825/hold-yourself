@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { DashboardHome } from '@/components/dashboard/DashboardHome';
+import { Feed } from '@/components/dashboard/Feed';
 import { Text } from '@/components/ui/Text';
 
 export default function DashboardPage() {
@@ -30,5 +30,5 @@ export default function DashboardPage() {
     );
   }
 
-  return <DashboardHome />;
+  return <Feed />;
 }

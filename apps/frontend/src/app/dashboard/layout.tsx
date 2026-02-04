@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { PageContainer } from '@/components/layout/PageContainer';
+import { DashShell } from '@/components/layout/DashShell';
 
 export default function DashboardLayout({
   children,
@@ -9,8 +9,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <PageContainer>
+    <DashShell>
       {children}
-    </PageContainer>
+    </DashShell>
   );
 }
