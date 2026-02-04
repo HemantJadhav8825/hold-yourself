@@ -24,9 +24,9 @@ export const Header: React.FC = () => {
         >
           <LogOut className="w-5 h-5" />
         </button>
-        <Link href="/reflect" className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary transition-transform active:scale-95 cursor-pointer hover:bg-primary/20">
+        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
           <User className="w-6 h-6" />
-        </Link>
+        </div>
       </div>
     </header>
   );
