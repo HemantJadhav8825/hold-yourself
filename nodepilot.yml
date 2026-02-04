@@ -1,6 +1,9 @@
 # NodePilot Pipeline Configuration
 version: 1
 
+branches:
+  - main
+
 project:
   name: hold-yourself
   runtime: node
