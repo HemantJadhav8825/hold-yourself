@@ -38,7 +38,7 @@ module.exports = {
       cwd: "./apps/frontend",
       script: "node_modules/next/dist/bin/next",
       args: "start -p 3002",
-      env_file: ".env",
+      env_file: ".env.local",
       watch: false,
       max_memory_restart: "1G",
       exec_mode: "fork",
