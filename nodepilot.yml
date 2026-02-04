@@ -1,0 +1,21 @@
+# NodePilot Pipeline Configuration
+version: 1
+
+project:
+  name: hold-yourself
+  runtime: node
+  node_version: 20
+
+server:
+  # The path on the VPS where the project should be deployed
+  # IMPORTANT: Update this to your actual VPS path if different
+  deploy_path: /Users/hemantjadhav/Desktop/projects/hold yourself
+
+steps:
+  install:
+    - pnpm install
+  build:
+    - pnpm build
+  deploy:
+    - npx pm2 startOrReload ecosystem.config.js --update-env
+    - npx pm2 save
