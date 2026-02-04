@@ -9,7 +9,7 @@ project:
 server:
   # The path on the VPS where the project should be deployed
   # IMPORTANT: Update this to your actual VPS path if different
-  deploy_path: /Users/hemantjadhav/Desktop/projects/hold yourself
+  deploy_path: /root/hold-yourself
 
 steps:
   install:
