@@ -6,6 +6,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Mail, Lock, Loader2, LogIn, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { GoogleButton } from '@/components/auth/GoogleButton';
+import { brand } from '@/config/brand';
 
 function LoginContent() {
   const { login, googleLogin, isLoading, error, isAuthenticated } = useAuth();
@@ -79,7 +80,7 @@ function LoginContent() {
             <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
               Welcome Home
             </h1>
-            <p className="text-white/40 text-sm px-4">Find your place. You belong here.</p>
+            <p className="text-white/40 text-sm px-4">Find your place. {brand.TAGLINE}</p>
           </div>
 
           <div className="space-y-6">

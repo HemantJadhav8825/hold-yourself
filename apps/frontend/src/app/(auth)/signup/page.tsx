@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { Mail, Lock, Loader2, UserPlus, ShieldCheck, CheckCircle2, ArrowLeft } from 'lucide-react';
 import { GoogleButton } from '@/components/auth/GoogleButton';
+import { brand } from '@/config/brand';
 
 export default function SignupPage() {
   const { signup, isLoading, error } = useAuth();
@@ -53,7 +54,7 @@ export default function SignupPage() {
               <UserPlus className="w-7 h-7 md:w-8 md:h-8 text-indigo-400" />
             </Link>
             <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
-              Join WeBelong
+              Join {brand.PRODUCT_NAME}
             </h1>
             <p className="text-white/40 text-sm px-4">Start your journey of connection today.</p>
           </div>
