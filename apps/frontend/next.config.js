@@ -2,7 +2,7 @@
 const nextConfig = {
   /* config options here */
   experimental: {
-    allowedDevOrigins: ["webelong.world"],
+    allowedDevOrigins: ["webelong.world", "api.webelong.world"],
   },
 };
 
