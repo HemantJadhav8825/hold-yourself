@@ -53,9 +53,9 @@ export default function SignupPage() {
               <UserPlus className="w-7 h-7 md:w-8 md:h-8 text-indigo-400" />
             </Link>
             <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
-              Join the Elite
+              Join WeBelong
             </h1>
-            <p className="text-white/40 text-sm px-4">Start your journey of self-accountability today.</p>
+            <p className="text-white/40 text-sm px-4">Start your journey of connection today.</p>
           </div>
 
           <div className="space-y-6">

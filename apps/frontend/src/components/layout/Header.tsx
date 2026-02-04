@@ -3,6 +3,7 @@ import { User, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { brand } from '@/config/brand';
 
 export const Header: React.FC = () => {
   const { logout } = useAuth();
@@ -10,7 +11,7 @@ export const Header: React.FC = () => {
     <header className="fixed top-0 left-0 w-full z-40 bg-background/80 backdrop-blur-md px-6 py-4 flex items-center justify-between">
       <Link href="/">
         <Heading level={5} className="text-primary font-bold tracking-tight">
-          Hold Yourself
+          {brand.PRODUCT_NAME}
         </Heading>
       </Link>
       

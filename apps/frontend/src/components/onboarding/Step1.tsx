@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/Button';
 import { Aura } from '@/components/ui/Aura';
 import { motion } from 'framer-motion';
 
+import { brand } from '@/config/brand';
+
 export const Step1: React.FC<{ onNext: () => void }> = ({ onNext }) => {
   return (
     <motion.div 
@@ -18,7 +20,7 @@ export const Step1: React.FC<{ onNext: () => void }> = ({ onNext }) => {
       <div className="space-y-4">
         <Heading level={1}>You&apos;re home.</Heading>
         <Text size="lg" className="max-w-md mx-auto">
-          Hold Yourself is a space for genuine connection, built on a foundation of absolute privacy. You are anonymous here, and your story is safe with us.
+          {brand.PRODUCT_NAME} is a space for genuine connection, built on a foundation of absolute privacy. You are anonymous here, and your story is safe with us.
         </Text>
       </div>
 

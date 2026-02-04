@@ -77,9 +77,9 @@ function LoginContent() {
               <ShieldCheck className="w-7 h-7 md:w-8 md:h-8 text-indigo-400" />
             </Link>
             <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
-              Welcome Back
+              Welcome Home
             </h1>
-            <p className="text-white/40 text-sm px-4">Elevate your growth. Hold yourself accountable.</p>
+            <p className="text-white/40 text-sm px-4">Find your place. You belong here.</p>
           </div>
 
           <div className="space-y-6">

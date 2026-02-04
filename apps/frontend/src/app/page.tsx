@@ -8,6 +8,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { Button } from "@/components/ui/Button" // Kept for Manifesto button
 import { HomeHeaderActions } from "@/components/home/HomeHeaderActions"
 import { HeroActions } from "@/components/home/HeroActions"
+import { brand } from "@/config/brand"
 
 export default function Home() {
   return (
@@ -16,7 +17,7 @@ export default function Home() {
       <header className="fixed top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
         <Container className="flex h-16 items-center justify-between">
           <div className="font-heading text-xl font-bold tracking-tight text-primary">
-            Hold Yourself
+            {brand.PRODUCT_NAME}
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
@@ -32,15 +33,15 @@ export default function Home() {
           <Container className="flex flex-col items-center text-center">
             <div className="mb-8 inline-flex animate-fade-in items-center rounded-full border bg-background px-3 py-1 text-sm text-muted-foreground shadow-sm">
               <Sparkles className="mr-2 h-4 w-4 text-primary" />
-              <span className="font-medium">Self-mastery begins here</span>
+              <span className="font-medium">Belonging begins here</span>
             </div>
             <h1 className="mb-6 max-w-4xl font-heading text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-              Clarity, Focus, and <br className="hidden sm:inline" />
-              <span className="text-primary">True Accountability</span>
+              Connect, Share, and <br className="hidden sm:inline" />
+              <span className="text-primary">Find Your Tribe</span>
             </h1>
             <p className="mb-10 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-              A calm, distraction-free space to track your growth, build habits,
-              and connect with your better self. No noise, just progress.
+              A warm, distraction-free space to find your place, build connections,
+              and belong to a community that values you. No noise, just connection.
             </p>
             <HeroActions />
           </Container>
@@ -131,7 +132,7 @@ export default function Home() {
           <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
             <div className="flex items-center gap-2">
               <span className="font-heading text-lg font-bold text-primary">
-                Hold Yourself
+                {brand.PRODUCT_NAME}
               </span>
             </div>
             <div className="flex gap-8 text-sm text-muted-foreground">
@@ -146,7 +147,11 @@ export default function Home() {
               </Link>
             </div>
             <div className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Hold Yourself.
+              © {new Date().getFullYear()} {brand.PRODUCT_NAME}.
+              <br className="md:hidden" />
+              <span className="md:ml-2 text-xs opacity-70 block md:inline mt-1 md:mt-0">
+                {brand.PARENT.LABEL}
+              </span>
             </div>
           </div>
         </Container>
