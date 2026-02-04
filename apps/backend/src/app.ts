@@ -6,7 +6,12 @@ import apiRoutes from './routes/api.routes';
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS?.split(',') || ['http://localhost:3002'];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
 app.use(express.json());
 
 // Global JWT Validation (local, no DB)
