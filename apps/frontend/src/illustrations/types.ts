@@ -1,6 +1,5 @@
 export type IllustrationType =
   | "auth-welcome"
-  | "onboarding-path"
   | "empty-quiet"
   | "waiting-soft"
   | "connection-cards";
