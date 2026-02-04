@@ -33,15 +33,31 @@ export const ChatList: React.FC<ChatListProps> = ({
   return (
     <div className="h-full flex flex-col bg-background lg:border-r border-border">
       {/* Header */}
-      <div className="p-4 lg:p-6 pb-2 lg:pb-4 flex items-center gap-4">
-        <Link href="/dashboard" className="p-2 -ml-2 hover:bg-muted rounded-full transition-colors">
-          <ChevronLeft className="w-6 h-6" />
-        </Link>
-        <div className="flex-1">
-          <Text weight="bold" className="text-xl lg:text-2xl">Messages</Text>
+      <div className="p-4 lg:p-6 pb-2 lg:pb-4 flex flex-col gap-4">
+        <div className="flex items-center gap-4">
+          <Link href="/dashboard" className="p-2 -ml-2 hover:bg-muted rounded-full transition-colors">
+            <ChevronLeft className="w-6 h-6" />
+          </Link>
+          <div className="flex-1">
+            <Text weight="bold" className="text-xl lg:text-2xl">Messages</Text>
+          </div>
+          <button className="p-2 hover:bg-muted rounded-full transition-colors">
+            <PlusSquare className="w-5 h-5" />
+          </button>
         </div>
-        <button className="p-2 hover:bg-muted rounded-full transition-colors">
-          <PlusSquare className="w-5 h-5" />
+
+        {/* Requests Entry Point */}
+        <button 
+          onClick={() => onChatSelect('requests')}
+          className="flex items-center justify-between px-3 py-2 bg-primary/5 hover:bg-primary/10 rounded-xl transition-colors group"
+        >
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+            <Text size="sm" weight="medium" className="text-primary/80 group-hover:text-primary transition-colors">
+              Message requests
+            </Text>
+          </div>
+          <div className="text-xs text-primary/40 font-bold group-hover:text-primary/60 transition-colors">2</div>
         </button>
       </div>
 

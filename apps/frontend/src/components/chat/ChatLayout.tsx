@@ -6,8 +6,12 @@ import { ChatThread } from './ChatThread';
 import { EmptyChatState } from './EmptyChatState';
 import { cn } from '@/lib/utils';
 
+import { MessageRequestsList } from './MessageRequestsList';
+import { MessageRequestDetail } from './MessageRequestDetail';
+
 export const ChatLayout: React.FC = () => {
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const [activeRequestId, setActiveRequestId] = useState<string | null>(null);
 
   // Mock thread data
   const threads: Record<string, any> = {
@@ -21,27 +25,53 @@ export const ChatLayout: React.FC = () => {
     }
   };
 
+  // Mock request data
+  const requests: Record<string, any> = {
+    'req1': { id: 'req1', name: 'soul_searcher', intro: 'Found your recent reflection very resonant.' },
+    'req2': { id: 'req2', name: 'gentle_breeze', intro: 'Hi! Would love to chat about the meditation group.' },
+  };
+
   const activeThread = activeChatId ? threads[activeChatId] : null;
+  const activeRequest = activeRequestId ? requests[activeRequestId] : null;
+  const isViewingRequests = activeChatId === 'requests';
 
   return (
     <div className="fixed inset-0 lg:inset-y-0 lg:left-64 bg-background z-50 lg:z-0 flex overflow-hidden">
       {/* List Pane */}
       <div className={cn(
         'w-full lg:w-96 flex-shrink-0',
-        activeChatId && 'hidden lg:flex'
+        (activeChatId || activeRequestId) && 'hidden lg:flex'
       )}>
-        <ChatList 
-          activeChatId={activeChatId || undefined} 
-          onChatSelect={setActiveChatId} 
-        />
+        {isViewingRequests ? (
+          <MessageRequestsList 
+            activeRequestId={activeRequestId || undefined}
+            onSelect={setActiveRequestId}
+            onBack={() => setActiveChatId(null)}
+          />
+        ) : (
+          <ChatList 
+            activeChatId={activeChatId || undefined} 
+            onChatSelect={setActiveChatId} 
+          />
+        )}
       </div>
 
-      {/* Thread Pane */}
+      {/* Thread/Detail Pane */}
       <div className={cn(
         'flex-1 flex flex-col',
-        !activeChatId && 'hidden lg:flex'
+        (!activeChatId && !activeRequestId) && 'hidden lg:flex'
       )}>
-        {activeChatId ? (
+        {activeRequestId ? (
+          <MessageRequestDetail 
+            {...activeRequest}
+            onAccept={() => {
+              setActiveChatId(activeRequestId);
+              setActiveRequestId(null);
+            }}
+            onDecline={() => setActiveRequestId(null)}
+            onBack={() => setActiveRequestId(null)}
+          />
+        ) : activeChatId && activeChatId !== 'requests' ? (
           <ChatThread 
             chatName={activeThread?.name || 'Conversation'} 
             messages={activeThread?.messages || []}

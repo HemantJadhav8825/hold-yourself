@@ -14,6 +14,8 @@ const TABS = [
   { id: 'vault', label: 'Vault', icon: Lock, isPrivate: true },
 ];
 
+import { ProfileMessageButton } from './ProfileMessageButton';
+
 export const ProfileView: React.FC = () => {
   const [activeTab, setActiveTab] = useState('journey');
 
@@ -38,6 +40,8 @@ export const ProfileView: React.FC = () => {
         <Text className="max-w-md italic text-text/60">
           &quot;Finding balance in the quiet moments.&quot;
         </Text>
+
+        <ProfileMessageButton targetName="Anonymous Soul" />
       </div>
 
       {/* Tabs */}
