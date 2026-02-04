@@ -1,9 +1,6 @@
 #!/bin/bash
 set -e
 
-echo "Checking out to main branch..."
-git checkout main
-
 # Define protected branches
 PROTECTED_BRANCHES="main|dev|prod|stage|uat"
 
