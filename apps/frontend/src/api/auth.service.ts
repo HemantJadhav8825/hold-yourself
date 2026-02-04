@@ -26,8 +26,8 @@ export const authService = {
     return data;
   },
 
-  async googleLogin(code: string): Promise<AuthResponse> {
-    const response = await client.post('/auth/google', { code });
+  async googleLogin(code: string, redirectUri?: string): Promise<AuthResponse> {
+    const response = await client.post('/auth/google', { code, redirectUri });
     const data = response.data;
     
     // Store tokens

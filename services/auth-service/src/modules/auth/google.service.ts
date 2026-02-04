@@ -17,13 +17,14 @@ export class GoogleService {
    * @param code The authorization code from the frontend
    * @returns Verified user information
    */
-  async verifyCode(code: string) {
+  async verifyCode(code: string, redirectUri?: string) {
     try {
-      console.log(`[GoogleService] Attempting to exchange code. Redirect URI: ${ENV.GOOGLE_REDIRECT_URI}`);
+      const finalRedirectUri = redirectUri || ENV.GOOGLE_REDIRECT_URI;
+      console.log(`[GoogleService] Attempting to exchange code. Redirect URI: ${finalRedirectUri}`);
       
       const { tokens } = await this.client.getToken({
         code,
-        redirect_uri: ENV.GOOGLE_REDIRECT_URI
+        redirect_uri: finalRedirectUri
       });
       
       const idToken = tokens.id_token;

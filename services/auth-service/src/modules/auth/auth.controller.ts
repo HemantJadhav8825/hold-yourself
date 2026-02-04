@@ -49,11 +49,11 @@ export class AuthController {
 
   async google(req: Request, res: Response) {
     try {
-      const { code } = req.body;
+      const { code, redirectUri } = req.body;
       if (!code) {
         return res.status(400).json({ error: 'Code is required' });
       }
-      const result = await authService.googleLogin(code);
+      const result = await authService.googleLogin(code, redirectUri);
       return res.json(result);
     } catch (err: any) {
       console.error('Google login error:', err.message);

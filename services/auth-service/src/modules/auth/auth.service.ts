@@ -47,8 +47,8 @@ export class AuthService {
     };
   }
 
-  async googleLogin(code: string) {
-    const googleUser = await googleService.verifyCode(code);
+  async googleLogin(code: string, redirectUri?: string) {
+    const googleUser = await googleService.verifyCode(code, redirectUri);
     
     let user = await userService.findByGoogleId(googleUser.googleId);
 
