@@ -8,6 +8,7 @@ const start = async () => {
   try {
     // 1. Validate Environment
     validateEnv();
+    console.log(ENV);
 
     // 2. Validate Dependencies
     await validateDeps();
