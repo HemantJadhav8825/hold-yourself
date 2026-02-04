@@ -9,10 +9,19 @@ const app = express();
 if (!process.env.CORS_ALLOWED_ORIGINS) {
   throw new Error('CORS_ALLOWED_ORIGINS environment variable is required');
 }
-const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS.split(',');
+const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS.split(',').map(origin => origin.trim());
 
 app.use(cors({
-  origin: allowedOrigins,
+  origin: (origin, callback) => {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.warn(`CORS blocked for origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());

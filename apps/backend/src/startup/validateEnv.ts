@@ -3,6 +3,7 @@ export const validateEnv = () => {
     'PORT',
     'AUTH_SERVICE_BASE_URL',
     'AUTH_PUBLIC_KEY',
+    'CORS_ALLOWED_ORIGINS',
   ];
 
   const missing = requiredEnvVars.filter((v) => !process.env[v]);
