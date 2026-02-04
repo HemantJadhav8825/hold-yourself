@@ -9,7 +9,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (credentials: any) => Promise<void>;
-  googleLogin: (code: string) => Promise<void>;
+  googleLogin: (code: string, redirectUri?: string) => Promise<void>;
   signup: (data: any) => Promise<void>;
   logout: () => Promise<void>;
   error: string | null;
