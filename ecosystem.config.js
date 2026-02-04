@@ -36,8 +36,8 @@ module.exports = {
     {
       name: "hold-yourself-frontend",
       cwd: "./apps/frontend",
-      script: "node_modules/.bin/next",
-      args: "start",
+      script: "npm",
+      args: "run start",
       env_file: ".env",
       watch: false,
       max_memory_restart: "1G",
