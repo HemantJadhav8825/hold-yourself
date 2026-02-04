@@ -61,26 +61,26 @@ function LoginContent() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a] text-white p-4 pb-20 md:p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a] text-white p-4 relative overflow-hidden">
       {/* Dynamic Background Elements */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/10 rounded-full blur-[80px] md:blur-[120px]" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/10 rounded-full blur-[80px] md:blur-[120px]" />
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[80px] md:blur-[120px]" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[80px] md:blur-[120px]" />
 
       {/* Back to Home */}
       <Link href="/" className="absolute top-8 left-8 z-50 p-2 rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all">
         <ArrowLeft className="w-6 h-6" />
       </Link>
 
-      <div className="w-full max-w-md z-10">
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 md:p-8 rounded-[2.5rem] md:rounded-3xl shadow-2xl space-y-8">
+      <div className="w-full max-w-sm z-10">
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-5 md:p-6 rounded-2xl shadow-2xl space-y-6">
           <div className="text-center space-y-2">
-            <Link href="/" className="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 mb-2 md:mb-4 hover:bg-indigo-500/30 transition-colors">
-              <ShieldCheck className="w-7 h-7 md:w-8 md:h-8 text-indigo-400" />
+            <Link href="/" className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/20 border border-primary/30 mb-2 hover:bg-primary/30 transition-colors">
+              <ShieldCheck className="w-6 h-6 text-primary" />
             </Link>
-            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
+            <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent font-heading">
               Welcome Home
             </h1>
-            <p className="text-white/40 text-sm px-4">Find your place. {brand.TAGLINE}</p>
+            <p className="text-white/40 text-xs px-4 font-body">Find your place. {brand.TAGLINE}</p>
           </div>
 
           <div className="space-y-6">
@@ -103,10 +103,10 @@ function LoginContent() {
             )}
 
             <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-[10px] md:text-xs font-medium text-white/50 uppercase tracking-wider ml-1">Email Address</label>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-medium text-white/50 uppercase tracking-wider ml-1">Email Address</label>
                 <div className="relative group">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20 group-focus-within:text-indigo-400 transition-colors" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-primary transition-colors" />
                   <input
                     type="email"
                     name="email"
@@ -115,19 +115,19 @@ function LoginContent() {
                     autoComplete="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 md:py-4 pl-12 pr-4 outline-none focus:border-indigo-500/50 focus:bg-white/[0.08] transition-all placeholder:text-white/10 text-base"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 outline-none focus:border-primary/50 focus:bg-white/[0.08] transition-all placeholder:text-white/10 text-sm"
                     placeholder="name@example.com"
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <div className="flex justify-between items-end px-1">
-                  <label className="text-[10px] md:text-xs font-medium text-white/50 uppercase tracking-wider">Password</label>
-                  <button type="button" className="text-[10px] text-indigo-400/50 hover:text-indigo-400 transition-colors uppercase tracking-wider">Forgot?</button>
+                  <label className="text-[10px] font-medium text-white/50 uppercase tracking-wider">Password</label>
+                  <button type="button" className="text-[10px] text-primary/50 hover:text-primary transition-colors uppercase tracking-wider">Forgot?</button>
                 </div>
                 <div className="relative group">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20 group-focus-within:text-indigo-400 transition-colors" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-primary transition-colors" />
                   <input
                     type="password"
                     name="password"
@@ -135,7 +135,7 @@ function LoginContent() {
                     autoComplete="current-password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 md:py-4 pl-12 pr-4 outline-none focus:border-indigo-500/50 focus:bg-white/[0.08] transition-all placeholder:text-white/10 text-base"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 outline-none focus:border-primary/50 focus:bg-white/[0.08] transition-all placeholder:text-white/10 text-sm"
                     placeholder="••••••••"
                   />
                 </div>
@@ -145,13 +145,13 @@ function LoginContent() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full h-14 md:h-14 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-2xl shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+              className="w-full h-12 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98] text-sm"
             >
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
                 <>
-                  <LogIn className="w-5 h-5" />
+                  <LogIn className="w-4 h-4" />
                   Sign In
                 </>
               )}
@@ -159,9 +159,9 @@ function LoginContent() {
           </form>
           </div>
 
-          <p className="text-center text-white/40 text-sm">
+          <p className="text-center text-white/40 text-xs">
             Don&apos;t have an account?{' '}
-            <Link href="/signup" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
+            <Link href="/signup" className="text-primary hover:text-primary/80 font-medium transition-colors">
               Create account
             </Link>
           </p>
