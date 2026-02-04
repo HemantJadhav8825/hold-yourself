@@ -5,6 +5,8 @@ import { brand } from '@/config/brand';
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
 
+import { Illustration } from '@/illustrations';
+
 interface AuthLayoutProps {
   children: React.ReactNode;
   title?: string;
@@ -35,17 +37,13 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
             </p>
           </div>
 
-          {/* Visual Stack (Theme Aware) */}
-          <div className="relative h-64 w-full flex items-center justify-center mt-12">
-            <div className="absolute w-48 h-64 bg-card/50 border border-border rounded-2xl -rotate-12 translate-x-[-40px] shadow-2xl backdrop-blur-sm" />
-            <div className="absolute w-48 h-64 bg-primary/20 border border-primary/30 rounded-2xl rotate-3 translate-x-[40px] shadow-2xl backdrop-blur-md flex items-center justify-center">
-              <span className="text-6xl">✨</span>
-            </div>
-            <div className="absolute w-48 h-64 bg-card border border-border rounded-2xl rotate-[-3deg] shadow-2xl backdrop-blur-lg flex flex-col p-4 space-y-4">
-              <div className="w-12 h-12 rounded-full bg-primary/20 animate-pulse" />
-              <div className="w-full h-4 bg-muted rounded-full" />
-              <div className="w-3/4 h-4 bg-muted rounded-full" />
-            </div>
+          {/* Visual Stack (Semantic Illustration) */}
+          <div className="relative w-full flex items-center justify-center mt-6">
+            <Illustration 
+              type="auth-welcome" 
+              size={400} 
+              className="drop-shadow-2xl" 
+            />
           </div>
         </div>
       </div>
