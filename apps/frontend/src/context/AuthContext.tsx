@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { authService, User } from '../api/auth.service';
+import { socketService } from '../api/socket.service';
 import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
@@ -38,6 +39,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // 2. Real verification: Get fresh access token
           await authService.refresh();
           
+          // 3. Connect WebSocket
+          socketService.connect();
+          
           // Optional: Fetch fresh user profile if needed
           // const profile = await authService.me(); 
           // setUser(profile);
@@ -69,6 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('✅ [AUTH] Login successful, user:', data.user.email);
       setUser(data.user);
       localStorage.setItem('user_hint', JSON.stringify(data.user));
+      socketService.connect();
       router.push('/dashboard');
     } catch (err: any) {
       console.error('❌ [AUTH] Login failed:', err);
@@ -86,6 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const data = await authService.googleLogin(code, redirectUri);
       setUser(data.user);
       localStorage.setItem('user_hint', JSON.stringify(data.user));
+      socketService.connect();
       router.push('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.error || 'Google login failed');
@@ -110,6 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [router]);
 
   const logout = useCallback(async () => {
+    socketService.disconnect();
     await authService.logout();
     setUser(null);
     router.push('/login');

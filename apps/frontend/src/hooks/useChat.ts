@@ -140,6 +140,9 @@ export function useChat(conversationId: string | null) {
 
     const pollInterval = 3000;
     const intervalId = setInterval(async () => {
+      // Skip polling if socket is connected
+      if (socketService.isConnected()) return;
+      
       if (document.visibilityState === 'hidden') return;
 
       try {
