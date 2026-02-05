@@ -68,31 +68,31 @@ export const ChatList: React.FC<ChatListProps> = ({
   return (
     <div className="h-full flex flex-col bg-background lg:border-r border-border">
       {/* Header */}
-      <div className="p-4 lg:p-6 pb-2 lg:pb-4 flex flex-col gap-4 text-primary">
+      <div className="p-4 lg:p-6 pb-2 lg:pb-4 flex flex-col gap-4">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard" className="p-2 -ml-2 hover:bg-muted rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary">
-            <ChevronLeft className="w-6 h-6" />
+          <Link href="/dashboard" className="p-2 -ml-2 hover:bg-muted rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/20">
+            <ChevronLeft className="w-5 h-5 text-muted-foreground/50" />
           </Link>
           <div className="flex-1">
-            <Text weight="bold" className="text-xl lg:text-2xl">Messages</Text>
+            <Text weight="medium" className="text-lg text-foreground/80">Messages</Text>
           </div>
-          <button className="p-2 hover:bg-muted rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary">
-            <PlusSquare className="w-5 h-5 text-muted-foreground" />
+          <button className="p-2 hover:bg-muted rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/20">
+            <PlusSquare className="w-5 h-5 text-muted-foreground/30" />
           </button>
         </div>
 
-        {/* Requests Entry Point */}
+        {/* Requests Entry Point - Subtler */}
         <button 
           onClick={() => onChatSelect('requests')}
-          className="flex items-center justify-between px-3 py-2 bg-primary/5 hover:bg-primary/10 rounded-xl transition-colors group outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          className="flex items-center justify-between px-3 py-2 hover:bg-muted/50 rounded-xl transition-colors group outline-none focus-visible:ring-2 focus-visible:ring-primary/10 border border-transparent hover:border-border/20"
         >
           <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-            <Text size="sm" weight="medium" className="text-primary/80 group-hover:text-primary transition-colors">
+            <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
+            <Text size="sm" className="text-muted-foreground/60 group-hover:text-muted-foreground transition-colors">
               Message requests
             </Text>
           </div>
-          <div className="text-xs text-primary/40 font-bold group-hover:text-primary/60 transition-colors">
+          <div className="text-xs text-muted-foreground/20 font-medium group-hover:text-muted-foreground/40 transition-colors">
             {conversations.length > 5 ? '5+' : '0'}
           </div>
         </button>
@@ -100,28 +100,28 @@ export const ChatList: React.FC<ChatListProps> = ({
 
       {/* Search & Active Feed */}
       <div className="px-4 space-y-4 mb-4">
-        <div className="flex items-center gap-2 bg-muted/30 border border-border rounded-lg px-3 py-1.5 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-          <Search className="w-4 h-4 text-muted-foreground" />
+        <div className="flex items-center gap-2 bg-muted/10 border border-border/30 rounded-lg px-3 py-1.5 focus-within:ring-1 focus-within:ring-border transition-all">
+          <Search className="w-4 h-4 text-muted-foreground/30" />
           <input 
             type="text" 
             placeholder="Search" 
-            className="bg-transparent border-none focus:ring-0 text-sm w-full py-0.5 outline-none" 
+            className="bg-transparent border-none focus:ring-0 text-sm w-full py-0.5 outline-none placeholder:text-muted-foreground/20" 
           />
         </div>
 
-        {/* People to start a chat with */}
+        {/* People to start a chat with - Subtler */}
         {!isUsersEmpty && displayUsers.length > 0 && (
           <div className="flex flex-col gap-2">
-            <Text size="xs" weight="bold" muted className="uppercase tracking-wider px-1">People</Text>
-            <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 -mx-2 px-2 border-b border-border/50">
+            <Text size="xs" weight="medium" className="uppercase tracking-[0.2em] px-1 text-muted-foreground/30 text-[9px]">People</Text>
+            <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 -mx-2 px-2 border-b border-border/20">
               {displayUsers.slice(0, 10).map((u) => (
                 <button 
                   key={`user-${u.id}`} 
                   onClick={() => onChatSelect(u.id, true)}
-                  className="flex flex-col items-center gap-1 transition-transform active:scale-95"
+                  className="flex flex-col items-center gap-1.5 transition-opacity hover:opacity-70 active:scale-95"
                 >
-                  <ProfileAvatar src={u.avatar} name={u.displayName} size="sm" />
-                  <Text size="xs" className="truncate w-12 text-center">{u.displayName?.split(' ')[0]}</Text>
+                  <ProfileAvatar src={u.avatar} name={u.displayName} size="sm" className="grayscale-[0.5] hover:grayscale-0 transition-all opacity-80" />
+                  <Text size="xs" className="truncate w-12 text-center text-muted-foreground/60 text-[10px]">{u.displayName?.split(' ')[0]}</Text>
                 </button>
               ))}
             </div>
@@ -131,7 +131,7 @@ export const ChatList: React.FC<ChatListProps> = ({
 
       {/* Conversation List */}
       <div className="flex-1 overflow-y-auto px-2 space-y-1 no-scrollbar pb-20 lg:pb-4">
-        <Text size="xs" weight="bold" muted className="uppercase tracking-wider px-3 py-2">Recent Chats</Text>
+        <Text size="xs" weight="medium" className="uppercase tracking-[0.2em] px-3 py-2 text-muted-foreground/30 text-[9px]">Recent Chats</Text>
         {conversations.length > 0 ? (
           conversations.map((conv) => {
             const info = resolveConversationInfo(conv);

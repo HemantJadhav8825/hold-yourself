@@ -6,20 +6,19 @@ import { ConnectionCards } from '@/illustrations/components/ConnectionCards';
 
 export const EmptyChatState: React.FC = () => {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-background/50">
-      <div className="relative mb-8">
-        <div className="absolute inset-0 bg-primary/5 rounded-full blur-3xl" />
-        {/* Fallback to MessageCircle if ConnectionIllustration doesn't exist yet */}
-        <div className="relative z-10 w-full h-48 flex items-center justify-center">
-          <ConnectionCards size="180" className="opacity-80" />
+    <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-background">
+      <div className="relative mb-12 opacity-30 grayscale transition-all duration-1000 animate-in fade-in zoom-in-95">
+        <div className="absolute inset-x-0 -bottom-10 h-32 bg-primary/5 rounded-full blur-[100px]" />
+        <div className="relative z-10 w-full flex items-center justify-center">
+          <ConnectionCards size="140" />
         </div>
       </div>
       
-      <div className="max-w-md space-y-4">
-        <Heading level={4} className="font-heading text-foreground/80">Your messages.</Heading>
-        <Text muted className="text-sm">
-          Send private photos and messages to a friend. 
-          Conversations start when you’re ready.
+      <div className="max-w-xs space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+        <Heading level={4} className="font-heading text-foreground/40 text-lg font-medium">Safe space.</Heading>
+        <Text muted className="text-xs leading-relaxed opacity-60 tracking-tight">
+          Sharing is an invitation to be seen. <br />
+          Speak only when you feel the call.
         </Text>
       </div>
     </div>
