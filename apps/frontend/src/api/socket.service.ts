@@ -1,7 +1,8 @@
-import { io, Socket } from 'socket.io-client';
-import { getAccessToken } from './client';
+import { io, Socket } from "socket.io-client";
+import { getAccessToken } from "./client";
 
-const CHAT_API_URL = process.env.NEXT_PUBLIC_CHAT_API_URL || 'http://localhost:3200';
+const CHAT_API_URL =
+  process.env.NEXT_PUBLIC_CHAT_API_URL || "http://localhost:3200";
 
 class SocketService {
   private socket: Socket | null = null;
@@ -15,27 +16,27 @@ class SocketService {
 
     this.socket = io(CHAT_API_URL, {
       auth: { token },
-      transports: ['websocket'],
+      transports: ["websocket"],
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
     });
 
-    this.socket.on('connect', () => {
-      console.log('Socket connected:', this.socket?.id);
+    this.socket.on("connect", () => {
+      console.log("Socket connected:", this.socket?.id);
     });
 
-    this.socket.on('disconnect', () => {
-      console.log('Socket disconnected');
+    this.socket.on("disconnect", () => {
+      console.log("Socket disconnected");
     });
 
-    this.socket.on('connect_error', (err) => {
-      console.error('Socket connection error:', err);
+    this.socket.on("connect_error", (err) => {
+      console.error("Socket connection error:", err);
     });
 
     // Reattach listeners if any were added before connection
     this.listeners.forEach((callbacks, event) => {
-      callbacks.forEach(cb => this.socket?.on(event, cb));
+      callbacks.forEach((cb) => this.socket?.on(event, cb));
     });
   }
 
@@ -75,6 +76,10 @@ class SocketService {
     if (this.socket) {
       this.socket.emit(event, payload);
     }
+  }
+
+  isConnected(): boolean {
+    return this.socket?.connected ?? false;
   }
 }
 
