@@ -14,9 +14,19 @@ export class UserService {
     return UserModel.findOne({ googleId }).exec();
   }
 
+  async findAll(limit: number = 50, offset: number = 0): Promise<any[]> {
+    return UserModel.find({ isRevoked: false })
+      .skip(offset)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .exec();
+  }
+
   async createUser(data: UserCreateDTO): Promise<any> {
     const user = new UserModel({
       email: data.email,
+      username: data.username,
+      displayName: data.displayName,
       passwordHash: data.passwordHash,
       authProvider: data.authProvider,
       googleId: data.googleId,
