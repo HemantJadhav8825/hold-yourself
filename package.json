@@ -13,6 +13,7 @@
     "dev:services": "turbo run dev --filter=\"./services/*\"",
     "dev:apps": "turbo run dev --filter=\"./apps/*\"",
     "dev:gateway": "turbo run dev --filter=\"@hold-yourself/backend\"",
+    "dev:chat": "turbo run dev --filter=\"@hold-yourself/chat-service\"",
     "dev:frontend": "turbo run dev --filter=\"@hold-yourself/frontend\"",
     "lint": "turbo run lint",
     "postman:sync": "tsx scripts/sync-postman.ts",

@@ -2,8 +2,8 @@ import { Server as SocketIOServer } from 'socket.io';
 import { Server as HttpServer } from 'http';
 import jwt from 'jsonwebtoken';
 
-const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGINS || 'http://localhost:3000';
-const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_key_123'; // Must match auth-service
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGINS || 'http://localhost:3002'; // Updated to frontend port
+const JWT_PUBLIC_KEY = process.env.JWT_PUBLIC_KEY || process.env.JWT_SECRET || 'dev_secret_key_123';
 
 interface SocketUser {
   sub: string;
@@ -41,7 +41,7 @@ export class SocketService {
         return next(new Error('Authentication error: No token provided'));
       }
 
-      jwt.verify(token, JWT_SECRET, (err: any, decoded: any) => {
+      jwt.verify(token, JWT_PUBLIC_KEY, { algorithms: ['RS256', 'HS256'] }, (err: any, decoded: any) => {
         if (err) {
           return next(new Error('Authentication error: Invalid token'));
         }
