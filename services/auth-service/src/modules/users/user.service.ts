@@ -10,6 +10,10 @@ export class UserService {
     return UserModel.findById(id).exec();
   }
 
+  async findByUsername(username: string): Promise<any | null> {
+    return UserModel.findOne({ username }).exec();
+  }
+
   async findByGoogleId(googleId: string): Promise<any | null> {
     return UserModel.findOne({ googleId }).exec();
   }

@@ -17,12 +17,10 @@ export class AuthService {
     const emailPrefix = data.email.split('@')[0];
     const baseUsername = emailPrefix.toLowerCase().replace(/[^a-z0-9]/g, '');
     
-    // Generate unique username (Basic implementation for register)
+    // Generate unique username
     let username = baseUsername;
     let suffix = 1;
-    while (await userService.findById(username)) { // Note: findById usually uses MongoID, but we want unique username check
-       // Using a temporary check for simplicity in this DTO phase
-       // Real implementation would use unique index in DB
+    while (await userService.findByUsername(username)) {
        username = `${baseUsername}${suffix}`;
        suffix++;
     }
@@ -87,9 +85,13 @@ export class AuthService {
         const emailPrefix = googleUser.email.split('@')[0];
         const baseUsername = emailPrefix.toLowerCase().replace(/[^a-z0-9]/g, '');
         
-        // Simple unique username generation for Google users
+        // Ensure unique username for Google users
         let username = baseUsername;
-        // In a real app, you'd check uniqueness in DB here too
+        let suffix = 1;
+        while (await userService.findByUsername(username)) {
+          username = `${baseUsername}${suffix}`;
+          suffix++;
+        }
         
         user = await userService.createUser({
           email: googleUser.email,
