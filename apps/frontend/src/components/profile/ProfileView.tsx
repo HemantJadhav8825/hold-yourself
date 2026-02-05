@@ -14,30 +14,56 @@ const TABS = [
   { id: 'vault', label: 'Vault', icon: Lock, isPrivate: true },
 ];
 
+import { ProfileMessageButton } from './ProfileMessageButton';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { ProfileAvatar } from '@/components/ui/ProfileAvatar';
+
 export const ProfileView: React.FC = () => {
   const [activeTab, setActiveTab] = useState('journey');
+  const { user, isLoading } = useCurrentUser();
+
+  const joinDate = user?.createdAt 
+    ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+    : 'Recently';
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 animate-pulse">
+        <div className="w-24 h-24 rounded-full bg-primary/10 mb-6" />
+        <div className="h-8 w-48 bg-primary/10 rounded mb-2" />
+        <div className="h-4 w-32 bg-primary/10 rounded" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-12">
       {/* Identity Header */}
       <div className="flex flex-col items-center text-center gap-6">
         <div className="relative">
-          <Aura size={180} color="#F59E0B" isPulsing={false} className="opacity-20" />
+          <Aura size={180} color="var(--primary)" isPulsing={false} className="opacity-20" />
           <div className="absolute inset-0 flex items-center justify-center">
-             <div className="w-24 h-24 rounded-full glass border-4 border-white/20 shadow-xl overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-amber-200 to-amber-500 opacity-60" />
-             </div>
+             <ProfileAvatar 
+               src={user?.avatar} 
+               name={user?.fullName || user?.displayName || user?.username || user?.email || 'User'} 
+               size="xl" 
+               className="border-4 border-white/20 shadow-xl"
+             />
           </div>
         </div>
 
         <div className="space-y-2">
-          <Heading level={2}>Anonymous Soul</Heading>
-          <Text muted size="lg">Reflecting since Feb 2026</Text>
+          <Heading level={2}>{user?.fullName || user?.displayName || user?.username || 'Anonymous Soul'}</Heading>
+          <Text muted size="lg">Reflecting since {joinDate}</Text>
         </div>
 
-        <Text className="max-w-md italic text-text/60">
-          &quot;Finding balance in the quiet moments.&quot;
-        </Text>
+        {user?.bio && (
+          <Text className="max-w-md italic text-text/60">
+            &quot;{user.bio}&quot;
+          </Text>
+        )}
+
+        <ProfileMessageButton targetName={user?.fullName || user?.displayName || user?.username || 'User'} />
       </div>
 
       {/* Tabs */}

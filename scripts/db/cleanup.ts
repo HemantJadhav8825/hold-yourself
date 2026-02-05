@@ -33,6 +33,35 @@ interface DBConfig {
   type: 'mongodb' | 'postgres';
 }
 
+/**
+ * Sanitizes MongoDB connection URLs by removing incomplete query parameters
+ * Fixes issues like: ?authSource (no value) -> removes it
+ */
+function sanitizeMongoURL(url: string): string {
+  try {
+    // Handle incomplete query parameters (e.g., ?authSource with no value)
+    // MongoDB driver fails with "URI option cannot be specified with no value"
+    const urlObj = new URL(url);
+    const params = new URLSearchParams(urlObj.search);
+    
+    // Remove any parameters that have empty values
+    const cleanParams = new URLSearchParams();
+    params.forEach((value, key) => {
+      if (value && value.trim() !== '') {
+        cleanParams.set(key, value);
+      }
+    });
+    
+    // Rebuild URL with clean parameters
+    urlObj.search = cleanParams.toString();
+    return urlObj.toString();
+  } catch (error) {
+    // If URL parsing fails, return original (might be a valid MongoDB URI format)
+    console.warn(`⚠️  Could not parse URL for sanitization: ${error}`);
+    return url;
+  }
+}
+
 function discoverDBConfigs(): DBConfig[] {
   const configs: DBConfig[] = [];
   const servicesDir = path.join(ROOT_DIR, 'services');
@@ -64,9 +93,12 @@ function discoverDBConfigs(): DBConfig[] {
               type = 'postgres';
             }
 
+            // Sanitize MongoDB URLs to remove incomplete query parameters
+            const cleanUrl = type === 'mongodb' ? sanitizeMongoURL(url) : url;
+
             configs.push({
               name: `${item} (${type})`,
-              url: url,
+              url: cleanUrl,
               type: type
             });
           }
@@ -82,8 +114,10 @@ function discoverDBConfigs(): DBConfig[] {
   if (process.env.DATABASE_URL) {
     const url = process.env.DATABASE_URL;
     const type = (url.startsWith('postgresql://') || url.startsWith('postgres://')) ? 'postgres' : 'mongodb';
-    if (!configs.find(c => c.url === url)) {
-      configs.push({ name: `root (${type})`, url, type: type as any });
+    const cleanUrl = type === 'mongodb' ? sanitizeMongoURL(url) : url;
+    
+    if (!configs.find(c => c.url === cleanUrl)) {
+      configs.push({ name: `root (${type})`, url: cleanUrl, type: type as any });
     }
   }
 
