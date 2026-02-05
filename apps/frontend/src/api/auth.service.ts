@@ -4,8 +4,13 @@ import client, { setAccessToken } from './client';
 export interface User {
   id: string;
   email: string;
+  username?: string;
+  displayName?: string;
+  fullName?: string;
+  bio?: string;
   role: string;
   avatar?: string;
+  createdAt?: string;
 }
 
 export interface AuthResponse {

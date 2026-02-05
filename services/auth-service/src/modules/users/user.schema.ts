@@ -2,6 +2,10 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IUser extends Document {
   email: string;
+  username?: string;
+  displayName?: string;
+  fullName?: string;
+  bio?: string;
   passwordHash?: string;
   authProvider: 'email' | 'google';
   googleId?: string;
@@ -16,6 +20,10 @@ export interface IUser extends Document {
 const UserSchema: Schema = new Schema(
   {
     email: { type: String, required: true, unique: true },
+    username: { type: String, unique: true, sparse: true },
+    displayName: { type: String },
+    fullName: { type: String },
+    bio: { type: String },
     passwordHash: { type: String, required: false },
     authProvider: { type: String, required: true, enum: ['email', 'google'], default: 'email' },
     googleId: { type: String, index: { unique: true, sparse: true } },
