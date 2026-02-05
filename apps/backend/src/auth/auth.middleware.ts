@@ -25,7 +25,7 @@ export const jwtValidationMiddleware = (req: Request, res: Response, next: NextF
     };
 
     next();
-  } catch (err) {
+  } catch (err: any) {
     // We don't block here, just don't set req.auth
     // The requireAuth middleware will handle blocking if needed
     next();

@@ -1,12 +1,20 @@
 import { useState, useEffect, useCallback } from 'react';
 import { chatService, Conversation } from '@/api/chat.service';
+import { useAuth } from '@/context/AuthContext';
 
 export function useConversations() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
 
   const fetchConversations = useCallback(async () => {
+    // Don't fetch if not authenticated
+    if (!isAuthenticated) {
+      setIsLoading(false);
+      return;
+    }
+
     try {
       setIsLoading(true);
       const data = await chatService.listConversations();
@@ -18,11 +26,14 @@ export function useConversations() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
+    // Wait for auth to complete
+    if (authLoading) return;
+    
     fetchConversations();
-  }, [fetchConversations]);
+  }, [fetchConversations, authLoading]);
 
   return {
     conversations,
