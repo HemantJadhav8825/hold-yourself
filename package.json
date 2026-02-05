@@ -20,6 +20,7 @@
     "audit:ports": "tsx scripts/audit-ports.ts",
     "check:consistency": "bash ./antigravity/consistency.sh",
     "db:reset": "tsx scripts/db/cleanup.ts",
+    "db:cleanup": "CONFIRM_DB_RESET=true tsx scripts/db/cleanup.ts",
     "git:cleanup": "bash scripts/git-cleanup.sh",
     "git:cleanup:remote": "bash scripts/git-cleanup-remote.sh"
   },
