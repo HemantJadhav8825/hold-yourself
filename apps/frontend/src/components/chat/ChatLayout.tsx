@@ -6,75 +6,80 @@ import { ChatThread } from './ChatThread';
 import { EmptyChatState } from './EmptyChatState';
 import { cn } from '@/lib/utils';
 
+import { useChat } from '@/hooks/useChat';
+import { useConversations } from '@/hooks/useConversations';
 import { MessageRequestsList } from './MessageRequestsList';
 import { MessageRequestDetail } from './MessageRequestDetail';
+import { Text } from '@/components/ui/Text';
+
+import { chatService } from '@/api/chat.service';
 
 export const ChatLayout: React.FC = () => {
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
-  const [activeRequestId, setActiveRequestId] = useState<string | null>(null);
+  const { conversations, refresh: refreshConversations } = useConversations();
 
-  // Mock thread data
-  const threads: Record<string, any> = {
-    '1': {
-      name: 'alex_mindful',
-      messages: [
-        { id: 'm1', content: 'Hey, did you see the new collection?', isSelf: false, timestamp: '10:15 AM' },
-        { id: 'm2', content: 'Not yet! Send me a link?', isSelf: true, timestamp: '10:16 AM' },
-        { id: 'm3', content: 'See you there! 👋', isSelf: false, timestamp: '2:30 PM' },
-      ]
+  const handleChatSelect = async (id: string, isUserSelection = false) => {
+    if (isUserSelection) {
+      // Find or create conversation with this user
+      try {
+        const existing = conversations.find(c => 
+          c.participants.some((p: any) => (typeof p === 'string' ? p : p.id) === id)
+        );
+        
+        if (existing) {
+          setActiveChatId(existing.id);
+        } else {
+          const newConv = await chatService.createConversation(id);
+          setActiveChatId(newConv.id);
+          refreshConversations();
+        }
+      } catch (err) {
+        console.error('Failed to start conversation:', err);
+      }
+    } else {
+      setActiveChatId(id);
     }
   };
 
-  // Mock request data
-  const requests: Record<string, any> = {
-    'req1': { id: 'req1', name: 'soul_searcher', intro: 'Found your recent reflection very resonant.' },
-    'req2': { id: 'req2', name: 'gentle_breeze', intro: 'Hi! Would love to chat about the meditation group.' },
-  };
-
-  const activeThread = activeChatId ? threads[activeChatId] : null;
-  const activeRequest = activeRequestId ? requests[activeRequestId] : null;
   const isViewingRequests = activeChatId === 'requests';
+  const activeConversation = conversations.find(c => c.id === activeChatId);
+
+  // Helper to get chat name (the other participant)
+  const getChatName = (conv?: typeof conversations[0]) => {
+    if (!conv) return 'Conversation';
+    // For now, since we don't have populated participants in the REST response usually,
+    // we'll let ChatThread/ChatList handle resolving the name from users list.
+    return 'Chat'; 
+  };
 
   return (
     <div className="fixed inset-0 lg:inset-y-0 lg:left-64 bg-background z-50 lg:z-0 flex overflow-hidden">
       {/* List Pane */}
       <div className={cn(
         'w-full lg:w-96 flex-shrink-0',
-        (activeChatId || activeRequestId) && 'hidden lg:flex'
+        activeChatId && 'hidden lg:flex'
       )}>
         {isViewingRequests ? (
-          <MessageRequestsList 
-            activeRequestId={activeRequestId || undefined}
-            onSelect={setActiveRequestId}
-            onBack={() => setActiveChatId(null)}
-          />
+          <div className="p-10 text-center opacity-40">
+            <Text>Requests coming soon...</Text>
+            <button onClick={() => setActiveChatId(null)} className="mt-4 text-primary underline">Back</button>
+          </div>
         ) : (
           <ChatList 
             activeChatId={activeChatId || undefined} 
-            onChatSelect={setActiveChatId} 
+            onChatSelect={handleChatSelect} 
           />
         )}
       </div>
 
-      {/* Thread/Detail Pane */}
+      {/* Thread Pane */}
       <div className={cn(
         'flex-1 flex flex-col',
-        (!activeChatId && !activeRequestId) && 'hidden lg:flex'
+        !activeChatId && 'hidden lg:flex'
       )}>
-        {activeRequestId ? (
-          <MessageRequestDetail 
-            {...activeRequest}
-            onAccept={() => {
-              setActiveChatId(activeRequestId);
-              setActiveRequestId(null);
-            }}
-            onDecline={() => setActiveRequestId(null)}
-            onBack={() => setActiveRequestId(null)}
-          />
-        ) : activeChatId && activeChatId !== 'requests' ? (
+        {activeChatId && activeChatId !== 'requests' ? (
           <ChatThread 
-            chatName={activeThread?.name || 'Conversation'} 
-            messages={activeThread?.messages || []}
+            conversation={activeConversation}
             onBack={() => setActiveChatId(null)}
           />
         ) : (

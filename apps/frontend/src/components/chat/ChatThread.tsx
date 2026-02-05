@@ -12,19 +12,36 @@ interface Message {
   timestamp: string;
 }
 
+import { useChat } from '@/hooks/useChat';
+import { useUsers } from '@/hooks/useUsers';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+
+import { Conversation } from '@/api/chat.service';
+
 interface ChatThreadProps {
-  chatName: string;
-  chatAvatar?: string;
-  messages?: Message[];
+  conversation?: Conversation;
   onBack?: () => void;
 }
 
 export const ChatThread: React.FC<ChatThreadProps> = ({
-  chatName,
-  chatAvatar,
-  messages = [],
+  conversation,
   onBack,
 }) => {
+  const { messages, sendMessage, isLoading, isSending } = useChat(conversation?.id || null);
+  const { users } = useUsers(50);
+  const { user: currentUser } = useCurrentUser();
+
+  // Resolve the other participant's info from the conversation participants list
+  const getOtherParticipant = () => {
+    if (!conversation) return null;
+    const otherId = conversation.participants.find((p: any) => (typeof p === 'string' ? p : p.id) !== currentUser?.id);
+    return users.find(u => u.id === (typeof otherId === 'string' ? otherId : otherId?.id));
+  };
+
+  const otherUser = getOtherParticipant();
+  const chatName = otherUser?.displayName || otherUser?.username || 'Chat';
+  const chatAvatar = otherUser?.avatar;
+
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
@@ -48,16 +65,20 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
       </header>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 lg:p-6 space-y-1 no-scrollbar">
+      <div className="flex-1 overflow-y-auto p-4 lg:p-6 space-y-1 no-scrollbar flex flex-col-reverse">
         {messages.length > 0 ? (
           messages.map((msg) => (
             <MessageBubble 
               key={msg.id}
               content={msg.content}
-              isSelf={msg.isSelf}
-              timestamp={msg.timestamp}
+              isSelf={msg.senderId === currentUser?.id}
+              timestamp={new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             />
           ))
+        ) : isLoading ? (
+          <div className="h-full flex items-center justify-center opacity-20">
+            <Text>Loading silence...</Text>
+          </div>
         ) : (
           <div className="h-full flex flex-col items-center justify-center text-center p-8 space-y-4">
             <ProfileAvatar src={chatAvatar} name={chatName} size="xl" hasStory storySeen />
@@ -70,7 +91,7 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
       </div>
 
       {/* Input */}
-      <MessageInput />
+      <MessageInput onSend={sendMessage} />
     </div>
   );
 };
