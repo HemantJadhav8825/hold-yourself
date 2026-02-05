@@ -1,6 +1,8 @@
+import http from 'http';
 import app from './app';
 import dotenv from 'dotenv';
 import { connectDatabase } from './startup/database';
+import { socketService } from './socket';
 
 dotenv.config();
 
@@ -9,6 +11,12 @@ connectDatabase();
 
 const port = process.env.PORT || 3200;
 
-app.listen(port, () => {
+// Create HTTP server
+const httpServer = http.createServer(app);
+
+// Initialize Socket Service
+socketService.init(httpServer);
+
+httpServer.listen(port, () => {
   console.log(`Chat Service running on port ${port}`);
 });
