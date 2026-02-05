@@ -15,13 +15,13 @@ export class AuthService {
     if (existing) throw new Error('User already exists');
 
     const emailPrefix = data.email.split('@')[0];
-    const baseUsername = emailPrefix.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const baseUsername = emailPrefix.toLowerCase().replace(/[^a-z0-9_]/g, '');
     
     // Generate unique username
-    let username = baseUsername;
+    let username = baseUsername || 'user';
     let suffix = 1;
     while (await userService.findByUsername(username)) {
-       username = `${baseUsername}${suffix}`;
+       username = `${baseUsername}_${suffix}`;
        suffix++;
     }
 
@@ -29,7 +29,7 @@ export class AuthService {
     return userService.createUser({
       email: data.email,
       username: data.username || username,
-      displayName: data.displayName || (emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1)),
+      displayName: data.displayName || (emailPrefix ? (emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1)) : 'Member'),
       passwordHash,
       authProvider: 'email',
       role: CONSTANTS.ROLES.USER,
@@ -77,26 +77,26 @@ export class AuthService {
           googleId: googleUser.googleId,
           avatar: googleUser.avatar,
           // Sync displayName if missing
-          displayName: user.displayName || googleUser.name,
+          displayName: user.displayName || googleUser.name || 'Member',
           authProvider: 'google',
         });
       } else {
         // Create new Google user
         const emailPrefix = googleUser.email.split('@')[0];
-        const baseUsername = emailPrefix.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const baseUsername = emailPrefix.toLowerCase().replace(/[^a-z0-9_]/g, '');
         
         // Ensure unique username for Google users
-        let username = baseUsername;
+        let username = baseUsername || 'user';
         let suffix = 1;
         while (await userService.findByUsername(username)) {
-          username = `${baseUsername}${suffix}`;
+          username = `${baseUsername}_${suffix}`;
           suffix++;
         }
         
         user = await userService.createUser({
           email: googleUser.email,
           username: username,
-          displayName: googleUser.name || (emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1)),
+          displayName: googleUser.name || (emailPrefix ? (emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1)) : 'Member'),
           googleId: googleUser.googleId,
           avatar: googleUser.avatar,
           authProvider: 'google',
@@ -112,6 +112,8 @@ export class AuthService {
       user: {
         id: user._id || user.id,
         email: user.email,
+        username: user.username,
+        displayName: user.displayName,
         role: user.role,
         avatar: user.avatar,
       }
