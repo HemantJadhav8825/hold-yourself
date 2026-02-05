@@ -3,39 +3,48 @@ import { StoriesRow } from './StoriesRow';
 import { FeedCard } from './FeedCard';
 import { EmptyQuiet } from '@/illustrations/components/EmptyQuiet';
 import { Text } from '@/components/ui/Text';
+import { useUsers } from '@/hooks/useUsers';
 
 export const Feed: React.FC = () => {
-  // Scaffolding with dummy data
-  const posts = [
-    {
-      id: '1',
-      username: 'webelong_official',
-      caption: 'Welcome to our new space. A calm harbor for your thoughts. 🌿',
-      likes: 1284,
-      timeAgo: '4h',
-    },
-    {
-      id: '2',
-      username: 'alex_mindful',
-      caption: 'Finding peace in the daily noise. #mindfulness',
-      likes: 452,
-      timeAgo: '6h',
-    },
-  ];
+  const { users, isLoading, isEmpty } = useUsers(20);
+
+  if (isLoading) {
+    return (
+      <div className="pb-10">
+        <StoriesRow />
+        <div className="flex flex-col space-y-6">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="animate-pulse bg-background border-b border-border lg:border lg:rounded-xl overflow-hidden">
+              <div className="p-4 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/10" />
+                <div className="h-4 w-32 bg-primary/10 rounded" />
+              </div>
+              <div className="aspect-square bg-primary/5" />
+              <div className="p-4 space-y-3">
+                <div className="h-4 w-24 bg-primary/10 rounded" />
+                <div className="h-4 w-full bg-primary/10 rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="pb-10">
       <StoriesRow />
       
       <div className="flex flex-col">
-        {posts.length > 0 ? (
-          posts.map((post) => (
+        {!isEmpty ? (
+          users.map((user) => (
             <FeedCard 
-              key={post.id}
-              username={post.username}
-              caption={post.caption}
-              likes={post.likes}
-              timeAgo={post.timeAgo}
+              key={user.id}
+              username={user.displayName || user.username || 'User'}
+              avatar={user.avatar}
+              caption="Sharing a moment of quiet reflection today. 🌿"
+              likes={Math.floor(Math.random() * 100) + 1}
+              timeAgo="2h"
             />
           ))
         ) : (
@@ -43,7 +52,7 @@ export const Feed: React.FC = () => {
             <EmptyQuiet size="200" />
             <div className="space-y-2">
               <Text className="text-foreground/80 font-medium">
-                This space will fill when it’s ready.
+                This space stays quiet until it’s needed.
               </Text>
               <Text size="sm" muted>
                 Take a breath, look around, and belong.

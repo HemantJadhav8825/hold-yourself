@@ -13,11 +13,8 @@ export const SidebarNav: React.FC = () => {
 
   const navItems = [
     { icon: Home, label: 'Home', href: '/dashboard' },
-    { icon: Search, label: 'Explore', href: '/explore' },
     { icon: MessageCircle, label: 'Messages', href: '/messages' },
-    { icon: PlusSquare, label: 'Create', href: '/create' },
-    { icon: User, label: 'Profile', href: '/profile' },
-    { icon: Settings, label: 'Settings', href: '/settings' },
+    { icon: User, label: 'Profile', href: '/dashboard/profile' },
   ];
 
   return (
