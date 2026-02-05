@@ -1,5 +1,6 @@
 import axios from 'axios';
 import client, { setAccessToken } from './client';
+import { env } from '../config/env';
 
 export interface User {
   id: string;
@@ -66,7 +67,7 @@ export const authService = {
     const refreshToken = localStorage.getItem('refresh_token');
     if (!refreshToken) throw new Error('No refresh token');
     
-    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, { refreshToken });
+    const response = await axios.post(`${env.NEXT_PUBLIC_API_URL}/auth/refresh`, { refreshToken });
     const { accessToken, refreshToken: newRefreshToken } = response.data;
     
     setAccessToken(accessToken);

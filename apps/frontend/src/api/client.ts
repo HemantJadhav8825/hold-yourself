@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import { env } from '../config/env';
 
 /**
  * In-memory token storage for maximum security.
@@ -23,7 +24,7 @@ const onRefreshed = (token: string) => {
   refreshSubscribers = [];
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_URL = env.NEXT_PUBLIC_API_URL;
 
 const client: AxiosInstance = axios.create({
   baseURL: API_URL,
