@@ -10,6 +10,7 @@ let isRefreshing = false;
 let refreshSubscribers: ((token: string) => void)[] = [];
 
 export const setAccessToken = (token: string | null) => {
+  console.log('🔑 [AUTH] Setting access token:', token ? `${token.substring(0, 20)}...` : 'null');
   accessToken = token;
 };
 
@@ -36,6 +37,7 @@ const client: AxiosInstance = axios.create({
 // Request Interceptor: Attach Access Token
 client.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    console.log('📤 [API] Request:', config.method?.toUpperCase(), config.url, '| Token:', accessToken ? '✅ Present' : '❌ Missing');
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
@@ -46,12 +48,17 @@ client.interceptors.request.use(
 
 // Response Interceptor: Handle 401 and Token Refresh
 client.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('📥 [API] Response:', response.status, response.config.url);
+    return response;
+  },
   async (error: AxiosError) => {
+    console.error('❌ [API] Error:', error.response?.status, error.config?.url, error.message);
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
     // If 401 Unauthorized and not already retrying
     if (error.response?.status === 401 && !originalRequest._retry) {
+      console.log('🔄 [AUTH] 401 Unauthorized - attempting token refresh...');
       if (isRefreshing) {
         // Queue the request until refresh is done
         return new Promise((resolve) => {
@@ -74,6 +81,7 @@ client.interceptors.response.use(
         // Call the refresh endpoint
         const response = await axios.post(`${API_URL}/auth/refresh`, { refreshToken });
         const { accessToken: newAccessToken } = response.data;
+        console.log('✅ [AUTH] Token refresh successful');
 
         setAccessToken(newAccessToken);
         onRefreshed(newAccessToken);
@@ -82,6 +90,7 @@ client.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return client(originalRequest);
       } catch (refreshError) {
+        console.error('❌ [AUTH] Token refresh failed:', refreshError);
         // Refresh failed: Logout user
         setAccessToken(null);
         localStorage.removeItem('refresh_token');
