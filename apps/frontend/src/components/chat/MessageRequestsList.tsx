@@ -4,6 +4,7 @@ import { Text } from '@/components/ui/Text';
 import { ChevronLeft } from 'lucide-react';
 import { useUsers } from '@/hooks/useUsers';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { UserAvatarWithLabel } from '@/components/ui/UserAvatarWithLabel';
 import { EmptyQuiet } from '@/illustrations/components/EmptyQuiet';
 
 interface MessageRequestsListProps {
@@ -57,10 +58,29 @@ export const MessageRequestsList: React.FC<MessageRequestsListProps> = ({
         </div>
       </div>
 
-      <div className="px-4 py-2 border-b border-border/50">
+      <div className="px-4 py-2 border-b border-border/50 space-y-4 pb-4">
         <Text size="xs" muted className="leading-relaxed">
           Invitations from people you don't follow. They won't know you've seen the message until you accept.
         </Text>
+
+        {/* Suggested/Active people for requests context */}
+        {!isEmpty && displayUsers.length > 0 && (
+          <div className="space-y-2">
+            <Text size="xs" weight="semibold" className="text-primary/60 uppercase tracking-wider">Suggested</Text>
+            <div className="flex gap-4 overflow-x-auto no-scrollbar -mx-2 px-2">
+              {users.slice(0, 8).map((user) => (
+                <UserAvatarWithLabel 
+                  key={`suggested-${user.id}`}
+                  avatarUrl={user.avatar}
+                  displayName={user.displayName}
+                  username={user.username}
+                  size="sm"
+                  className="w-14"
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto px-2 py-2 space-y-1 no-scrollbar">

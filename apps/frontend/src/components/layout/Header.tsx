@@ -31,7 +31,7 @@ export const Header: React.FC = () => {
         <Link href="/dashboard/profile" className="outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full">
           <ProfileAvatar 
             src={user?.avatar} 
-            name={user?.displayName || user?.username || user?.email || 'User'} 
+            name={user?.fullName || user?.displayName || user?.username || user?.email || 'User'} 
             size="md"
           />
         </Link>

@@ -5,6 +5,7 @@ import { ChevronLeft, Search, PlusSquare } from 'lucide-react';
 import Link from 'next/link';
 import { useUsers } from '@/hooks/useUsers';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { UserAvatarWithLabel } from '@/components/ui/UserAvatarWithLabel';
 import { EmptyQuiet } from '@/illustrations/components/EmptyQuiet';
 
 interface ChatListProps {
@@ -77,8 +78,8 @@ export const ChatList: React.FC<ChatListProps> = ({
         </button>
       </div>
 
-      {/* Search Scaffolding */}
-      <div className="px-4 mb-4">
+      {/* Search & Active Feed */}
+      <div className="px-4 space-y-4 mb-4">
         <div className="flex items-center gap-2 bg-muted/30 border border-border rounded-lg px-3 py-1.5 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
           <Search className="w-4 h-4 text-muted-foreground" />
           <input 
@@ -87,6 +88,22 @@ export const ChatList: React.FC<ChatListProps> = ({
             className="bg-transparent border-none focus:ring-0 text-sm w-full py-0.5 outline-none" 
           />
         </div>
+
+        {/* Active People (Horizontal) */}
+        {!isEmpty && displayUsers.length > 0 && (
+          <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 -mx-2 px-2 border-b border-border/50">
+            {displayUsers.slice(0, 10).map((user) => (
+              <UserAvatarWithLabel 
+                key={`active-${user.id}`}
+                avatarUrl={user.avatar}
+                displayName={user.displayName}
+                username={user.username}
+                size="sm"
+                className="w-14"
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* List */}

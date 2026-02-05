@@ -45,7 +45,7 @@ export const ProfileView: React.FC = () => {
           <div className="absolute inset-0 flex items-center justify-center">
              <ProfileAvatar 
                src={user?.avatar} 
-               name={user?.displayName || user?.username || user?.email || 'User'} 
+               name={user?.fullName || user?.displayName || user?.username || user?.email || 'User'} 
                size="xl" 
                className="border-4 border-white/20 shadow-xl"
              />
@@ -53,7 +53,7 @@ export const ProfileView: React.FC = () => {
         </div>
 
         <div className="space-y-2">
-          <Heading level={2}>{user?.displayName || user?.username || 'Anonymous Soul'}</Heading>
+          <Heading level={2}>{user?.fullName || user?.displayName || user?.username || 'Anonymous Soul'}</Heading>
           <Text muted size="lg">Reflecting since {joinDate}</Text>
         </div>
 
@@ -63,7 +63,7 @@ export const ProfileView: React.FC = () => {
           </Text>
         )}
 
-        <ProfileMessageButton targetName={user?.displayName || user?.username || 'User'} />
+        <ProfileMessageButton targetName={user?.fullName || user?.displayName || user?.username || 'User'} />
       </div>
 
       {/* Tabs */}
