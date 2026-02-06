@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { FeatureFlagsService } from './feature-flags.service';
 import { structuredLog } from '@hold-yourself/utils';
 import { FeatureFlags } from '../../config/feature-flags';
+import { AuthRequest } from '../../middleware/auth';
 
 export class FeatureFlagsController {
   /**
@@ -10,17 +11,18 @@ export class FeatureFlagsController {
    */
   public static async listFlags(req: Request, res: Response): Promise<void> {
     try {
+      const authReq = req as AuthRequest;
       const flags = FeatureFlagsService.getAllFlags();
       
       structuredLog('info', 'feature_flags:list', 'Feature flags retrieved', {
-        userId: (req as any).user?.sub,
+        userId: authReq.user?.sub,
       });
 
       res.json({ flags });
     } catch (error: any) {
       structuredLog('error', 'feature_flags:list_error', 'Error listing feature flags', {
         error: error.message,
-        userId: (req as any).user?.sub,
+        userId: (req as AuthRequest).user?.sub,
       });
       res.status(500).json({ error: 'Failed to retrieve feature flags' });
     }
@@ -32,6 +34,7 @@ export class FeatureFlagsController {
    */
   public static async updateFlag(req: Request, res: Response): Promise<void> {
     try {
+      const authReq = req as AuthRequest;
       const { flagName } = req.params;
       const { enabled } = req.body;
 
@@ -53,7 +56,7 @@ export class FeatureFlagsController {
       structuredLog('info', 'feature_flags:update', `Feature flag updated: ${flagName}`, {
         flagName,
         enabled,
-        userId: (req as any).user?.sub,
+        userId: authReq.user?.sub,
       });
 
       res.json({ 
@@ -64,7 +67,7 @@ export class FeatureFlagsController {
       structuredLog('error', 'feature_flags:update_error', 'Error updating feature flag', {
         error: error.message,
         flagName: req.params.flagName,
-        userId: (req as any).user?.sub,
+        userId: (req as AuthRequest).user?.sub,
       });
       res.status(500).json({ error: 'Failed to update feature flag' });
     }

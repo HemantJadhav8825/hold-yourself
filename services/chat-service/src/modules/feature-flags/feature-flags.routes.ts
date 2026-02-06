@@ -1,12 +1,11 @@
 import { Router } from 'express';
 import { FeatureFlagsController } from './feature-flags.controller';
-import { authenticate } from '../../middleware/auth';
+import { authenticate, authorize } from '../../middleware/auth';
 
 const router = Router();
 
-// All feature flag routes require authentication
-// In production, add admin role check middleware
-router.get('/', authenticate, FeatureFlagsController.listFlags);
-router.put('/:flagName', authenticate, FeatureFlagsController.updateFlag);
+// All feature flag routes require authentication and admin access
+router.get('/', authenticate, authorize('admin'), FeatureFlagsController.listFlags);
+router.put('/:flagName', authenticate, authorize('admin'), FeatureFlagsController.updateFlag);
 
 export default router;
