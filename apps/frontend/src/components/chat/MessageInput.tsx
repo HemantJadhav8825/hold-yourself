@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Send, Smile, Image as ImageIcon } from 'lucide-react';
+import { Send, Smile, Image as ImageIcon, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { EmojiPicker } from './EmojiPicker';
+import type { EmojiClickData } from 'emoji-picker-react';
 
 interface MessageInputProps {
   onSend?: (message: string) => void;
@@ -13,6 +15,8 @@ const MAX_LENGTH = 2000;
 export const MessageInput: React.FC<MessageInputProps> = ({ onSend, onTypingChange, className }) => {
   const [message, setMessage] = React.useState('');
   const [isTyping, setIsTyping] = React.useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = React.useState(false);
+  const inputRef = React.useRef<HTMLInputElement>(null);
   const typingTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   
   const isTooLong = message.length > MAX_LENGTH;
@@ -23,11 +27,33 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSend, onTypingChan
     if (canSend && onSend) {
       onSend(message);
       setMessage('');
+      setShowEmojiPicker(false);
       if (isTyping) {
         setIsTyping(false);
         onTypingChange?.(false);
       }
     }
+  };
+
+  const handleEmojiClick = (emojiData: EmojiClickData) => {
+    const input = inputRef.current;
+    if (!input) return;
+
+    const start = input.selectionStart || message.length;
+    const end = input.selectionEnd || message.length;
+    
+    const newValue = message.substring(0, start) + emojiData.emoji + message.substring(end);
+    
+    setMessage(newValue);
+    
+    // Defer cursor update to next tick after React render
+    setTimeout(() => {
+        if (inputRef.current) {
+            const newCursorPos = start + emojiData.emoji.length;
+            inputRef.current.setSelectionRange(newCursorPos, newCursorPos);
+            inputRef.current.focus();
+        }
+    }, 0);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,11 +85,23 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSend, onTypingChan
     <div className={cn('p-4 bg-background border-t border-border', className)}>
       <div className="relative flex flex-col gap-2">
         <div className="relative flex items-center gap-2 bg-muted/30 border border-border rounded-full px-4 py-1.5 transition-colors">
-          <button className="p-1 hover:text-primary transition-colors">
-            <Smile className="w-5 h-5 text-muted-foreground" />
-          </button>
+          <div className="relative">
+            <button 
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                className={cn(
+                    "p-1 hover:text-primary transition-colors", 
+                    showEmojiPicker && "text-primary"
+                )}
+            >
+                <Smile className="w-5 h-5 text-muted-foreground" />
+            </button>
+            {showEmojiPicker && (
+                <EmojiPicker onEmojiClick={handleEmojiClick} />
+            )}
+          </div>
           
           <input 
+            ref={inputRef}
             type="text"
             value={message}
             onChange={handleChange}

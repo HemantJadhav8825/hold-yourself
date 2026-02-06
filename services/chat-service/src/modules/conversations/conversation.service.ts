@@ -36,12 +36,21 @@ export class ConversationService {
       const lastReadAt = userSettings?.lastReadAt || new Date(0);
       
       const lastMessage = lastMessageMap.get(conv._id.toString());
+      
+      let unreadCount = 0;
 
-      const unreadCount = await MessageModel.countDocuments({
-        conversationId: conv._id,
-        createdAt: { $gt: lastReadAt },
-        senderId: { $ne: userId } // Don't count own messages as unread
-      });
+      // Optimization: If last message is older than or equal to last read, count is 0.
+      // This skips the DB query for the vast majority of conversations (read ones).
+      if (conv.lastMessageAt && new Date(conv.lastMessageAt) <= new Date(lastReadAt)) {
+        unreadCount = 0;
+      } else {
+        const count = await MessageModel.countDocuments({
+          conversationId: conv._id,
+          createdAt: { $gt: lastReadAt },
+          senderId: { $ne: userId } // Don't count own messages as unread
+        });
+        unreadCount = Math.max(0, count); // Safeguard against negative counts
+      }
 
       return {
         ...conv,
