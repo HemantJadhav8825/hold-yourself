@@ -5,7 +5,16 @@ import messageRoutes from './modules/messages/message.routes';
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://webelong.world',
+    'https://chat.webelong.world',
+    'https://api.webelong.world',
+    'http://localhost:3002',
+    'http://localhost:3000',
+  ],
+  credentials: true,
+}));
 app.use(express.json());
 
 // Health Check
