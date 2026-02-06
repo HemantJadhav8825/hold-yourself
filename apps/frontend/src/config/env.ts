@@ -24,8 +24,15 @@ type RequiredEnvVar = typeof REQUIRED_ENV_VARS[number];
 /**
  * Validates environment variables at import time.
  * Throws an error and aborts the build if any required variable is missing or empty.
+ * 
+ * IMPORTANT: Only runs in Node.js environment (server-side), not in the browser.
  */
 function validateEnvironment(): void {
+  // Skip validation in browser environment
+  if (typeof window !== 'undefined') {
+    return;
+  }
+
   const missingVars: string[] = [];
   const emptyVars: string[] = [];
 
@@ -72,22 +79,32 @@ function validateEnvironment(): void {
   }
 }
 
-// Execute validation immediately at import time
+// Execute validation immediately at import time (server-side only)
 validateEnvironment();
 
 /**
  * Typed environment object for safe usage across the application.
- * All values are guaranteed to be non-empty strings after validation.
+ * 
+ * Server-only variables (PORT, ALLOWED_DEV_ORIGINS):
+ *   - Available in Node.js environment (build, dev server, API routes, server components)
+ *   - Will be empty string in browser environment
+ * 
+ * Public variables (NEXT_PUBLIC_*):
+ *   - Available in both server and client environments
+ *   - All values are guaranteed to be non-empty strings after server-side validation
  */
 export const env = {
-  PORT: process.env.PORT!,
+  // Server-only variables (not available in browser)
+  PORT: typeof window === 'undefined' ? process.env.PORT! : '',
+  ALLOWED_DEV_ORIGINS: typeof window === 'undefined' ? process.env.ALLOWED_DEV_ORIGINS! : '',
+  
+  // Public variables (available in both server and client)
   NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL!,
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL!,
   NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
   NEXT_PUBLIC_GOOGLE_REDIRECT_URI: process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI!,
   NEXT_PUBLIC_CHAT_SERVICE_URL: process.env.NEXT_PUBLIC_CHAT_SERVICE_URL!,
   NEXT_PUBLIC_CHAT_API_URL: process.env.NEXT_PUBLIC_CHAT_API_URL!,
-  ALLOWED_DEV_ORIGINS: process.env.ALLOWED_DEV_ORIGINS!,
 } as const;
 
 export type Env = typeof env;
