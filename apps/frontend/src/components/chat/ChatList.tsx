@@ -52,6 +52,7 @@ export const ChatList: React.FC<ChatListProps> = ({
        name: otherUser?.displayName || otherUser?.username || 'Quiet User',
        avatar: otherUser?.avatar,
        isMuted: participantSettings?.isMuted || false,
+       unreadCount: conv.unreadCount || 0,
        lastMessage: 'View message history',
        timestamp: new Date(conv.lastMessageAt).toLocaleDateString([], { month: 'short', day: 'numeric' })
     };
@@ -175,6 +176,7 @@ export const ChatList: React.FC<ChatListProps> = ({
                 isActive={activeChatId === conv.id}
                 isOnline={info.otherUserId ? onlineUsers.has(info.otherUserId) : false}
                 isMuted={info.isMuted}
+                unreadCount={info.unreadCount}
                 onClick={() => onChatSelect(conv.id)}
               />
             );

@@ -58,6 +58,33 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
     }
   }, [conversation, currentUser]);
 
+  // Mark as read logic
+  React.useEffect(() => {
+    if (!conversation?.id) return;
+
+    const markRead = () => {
+      if (document.visibilityState === 'visible') {
+        chatService.markConversationRead(conversation.id).catch(err => {
+          // Silently fail or log
+          console.error('Failed to mark read', err);
+        });
+      }
+    };
+
+    // Mark on mount/id change
+    markRead();
+
+    // Mark on window focus
+    const onFocus = () => markRead();
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onFocus);
+
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onFocus);
+    };
+  }, [conversation?.id]);
+
   const handleToggleMute = async () => {
     if (!conversation) return;
     try {
