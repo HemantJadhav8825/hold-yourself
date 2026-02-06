@@ -2,8 +2,14 @@ import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import { getAccessToken, setAccessToken } from './client';
 import { env } from '../config/env';
 
-const CHAT_API_URL = process.env.NEXT_PUBLIC_CHAT_API_URL || 'http://localhost:3200';
+// Resolve chat API URL with proper fallback chain
+const CHAT_API_URL = process.env.NEXT_PUBLIC_CHAT_API_URL || env.NEXT_PUBLIC_API_URL || 'http://localhost:3200';
 const MAIN_API_URL = env.NEXT_PUBLIC_API_URL;
+
+// Log the resolved URL for debugging (only in development)
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  console.log('🔧 [CHAT] Resolved Chat API URL:', CHAT_API_URL);
+}
 
 const chatClient: AxiosInstance = axios.create({
   baseURL: CHAT_API_URL,
@@ -32,7 +38,14 @@ chatClient.interceptors.response.use(
     return response;
   },
   async (error) => {
-    console.error('❌ [CHAT] Error:', error.response?.status, error.config?.url, error.message);
+    console.error('❌ [CHAT] Error:', {
+      status: error.response?.status,
+      url: error.config?.url,
+      baseURL: error.config?.baseURL,
+      message: error.message,
+      code: error.code,
+      isNetworkError: !error.response && error.message === 'Network Error'
+    });
     const originalRequest = error.config;
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
