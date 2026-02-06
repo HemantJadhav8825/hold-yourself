@@ -1,6 +1,7 @@
 import { Server as SocketIOServer } from 'socket.io';
 import { Server as HttpServer } from 'http';
 import jwt from 'jsonwebtoken';
+import { structuredLog } from '@hold-yourself/utils';
 
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGINS || 'http://localhost:3002'; // Updated to frontend port
 const JWT_PUBLIC_KEY = process.env.JWT_PUBLIC_KEY || process.env.JWT_SECRET || 'dev_secret_key_123';
@@ -57,8 +58,16 @@ export class SocketService {
       
       // Join a room specific to this user (for direct targeting)
       socket.join(user.sub);
+      structuredLog('info', 'room:join', `User joined individual room: ${user.sub}`, {
+        userId: user.sub,
+        socketId: socket.id,
+        room: user.sub,
+      });
 
-      console.log(`User connected: ${user.sub} (${socket.id})`);
+      structuredLog('info', 'socket:connect', `User connected: ${user.sub}`, {
+        userId: user.sub,
+        socketId: socket.id,
+      });
 
       // Heartbeat to detect ghost connections
       const heartbeatInterval = setInterval(() => {
@@ -74,17 +83,21 @@ export class SocketService {
       });
 
       socket.on('disconnect', (reason) => {
-        console.log(`User disconnected: ${user.sub} (${socket.id}). Reason: ${reason}`);
+        structuredLog('info', 'socket:disconnect', `User disconnected: ${user.sub}`, {
+          userId: user.sub,
+          socketId: socket.id,
+          reason,
+        });
         clearInterval(heartbeatInterval);
       });
     });
 
-    console.log('Socket.IO initialized');
+    structuredLog('info', 'socket:init', 'Socket.IO initialized');
   }
 
   public emitToUser(userId: string, event: string, payload: any): void {
     if (!this.io) {
-      console.warn('SocketService not initialized, cannot emit');
+      structuredLog('warn', 'socket:emit_failure', 'SocketService not initialized, cannot emit', { userId, event });
       return;
     }
     
