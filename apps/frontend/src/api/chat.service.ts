@@ -16,7 +16,6 @@ const chatClient: AxiosInstance = axios.create({
 chatClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = getAccessToken();
-    console.log('💬 [CHAT] Request:', config.method?.toUpperCase(), config.url, '| Token:', token ? '✅ Present' : '❌ Missing');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -27,16 +26,11 @@ chatClient.interceptors.request.use(
 
 // Add Response Interceptor for 401 handling
 chatClient.interceptors.response.use(
-  (response) => {
-    console.log('💬 [CHAT] Response:', response.status, response.config.url);
-    return response;
-  },
+  (response) => response,
   async (error) => {
-    console.error('❌ [CHAT] Error:', error.response?.status, error.config?.url, error.message);
     const originalRequest = error.config;
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      console.log('🔄 [CHAT] 401 Unauthorized - attempting token refresh...');
       try {
         const refreshToken = localStorage.getItem('refresh_token');
         if (!refreshToken) throw new Error('No refresh token');
@@ -46,12 +40,10 @@ chatClient.interceptors.response.use(
         
         // CRITICAL: Update the shared access token state
         setAccessToken(data.accessToken);
-        console.log('✅ [CHAT] Token refresh successful, updated shared token');
         
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
         return chatClient(originalRequest);
       } catch (err) {
-        console.error('❌ [CHAT] Token refresh failed:', err);
         return Promise.reject(err);
       }
     }

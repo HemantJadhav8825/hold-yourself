@@ -20,7 +20,6 @@ export class GoogleService {
   async verifyCode(code: string, redirectUri?: string) {
     try {
       const finalRedirectUri = redirectUri || ENV.GOOGLE_REDIRECT_URI;
-      console.log(`[GoogleService] Attempting to exchange code. Redirect URI: ${finalRedirectUri}`);
       
       const { tokens } = await this.client.getToken({
         code,

@@ -21,7 +21,6 @@ export function useConversations() {
       setConversations(data);
       setError(null);
     } catch (err: any) {
-      console.error('Failed to fetch conversations:', err);
       setError(err.response?.data?.error || 'Failed to load conversations');
     } finally {
       setIsLoading(false);
