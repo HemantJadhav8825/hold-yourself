@@ -17,6 +17,12 @@ export class SettingsController {
     try {
       const userId = req.user!.sub;
       const { showReadReceipts } = req.body;
+      
+      // Validate input type
+      if (showReadReceipts !== undefined && typeof showReadReceipts !== 'boolean') {
+        return res.status(400).json({ error: 'showReadReceipts must be a boolean' });
+      }
+      
       const settings = await SettingsService.updateSettings(userId, { showReadReceipts });
       res.json(settings);
     } catch (err: any) {

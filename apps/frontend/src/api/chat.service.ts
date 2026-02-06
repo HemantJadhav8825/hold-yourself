@@ -131,6 +131,11 @@ export const chatService = {
     await chatClient.post(`/v1/messages/${messageId}/delivered`);
   },
 
+  async markMessagesDelivered(messageIds: string[]): Promise<void> {
+    if (messageIds.length === 0) return;
+    await chatClient.post('/v1/messages/delivered/batch', { messageIds });
+  },
+
   async markConversationRead(conversationId: string): Promise<void> {
     await chatClient.post(`/v1/messages/read/${conversationId}`);
   },

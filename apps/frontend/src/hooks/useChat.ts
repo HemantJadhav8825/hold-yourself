@@ -57,12 +57,14 @@ export function useChat(conversationId: string | null) {
         chatService.markConversationRead(conversationId);
       }
       
-      // Mark individually delivered for any newly fetched messages not sent by self
-      filteredData.forEach(msg => {
-        if (msg.senderId !== currentUser?.id && !msg.deliveredAt) {
-          chatService.markMessageDelivered(msg.id);
-        }
-      });
+      // Batch mark delivered for any newly fetched messages not sent by self
+      const undeliveredIds = filteredData
+        .filter(msg => msg.senderId !== currentUser?.id && !msg.deliveredAt)
+        .map(msg => msg.id);
+      
+      if (undeliveredIds.length > 0) {
+        chatService.markMessagesDelivered(undeliveredIds);
+      }
 
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to load messages');
@@ -75,6 +77,10 @@ export function useChat(conversationId: string | null) {
     setMessages([]);
     offsetRef.current = 0;
     setHasMore(true);
+    
+    // Clear typing timers when conversation changes
+    typingTimersRef.current.forEach(timer => clearTimeout(timer));
+    typingTimersRef.current.clear();
     setTypingUsers(new Set());
     
     const storedClearedAt = conversationId ? localStorage.getItem(`chat_cleared_${conversationId}`) : null;
@@ -289,7 +295,7 @@ export function useChat(conversationId: string | null) {
   useEffect(() => {
     if (!conversationId) return;
 
-    const pollInterval = 30000; // Increased interval since we have better socket reliability
+    const POLL_INTERVAL_MS = 30_000; // 30 seconds - backup when socket disconnected
     const intervalId = setInterval(async () => {
       // Skip polling if socket is connected
       if (socketService.isConnected()) return;
@@ -305,7 +311,7 @@ export function useChat(conversationId: string | null) {
       } catch (err) {
         console.warn('Polling skipped due to error', err);
       }
-    }, pollInterval);
+    }, POLL_INTERVAL_MS);
 
     return () => clearInterval(intervalId);
   }, [conversationId, currentUser?.id, clearedAt]);

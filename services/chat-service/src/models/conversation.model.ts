@@ -54,5 +54,8 @@ const ConversationSchema: Schema = new Schema(
 
 // Index for quick participant lookup
 ConversationSchema.index({ participants: 1 });
+// Index for archived conversation queries
+ConversationSchema.index({ 'participantSettings.userId': 1, 'participantSettings.isArchived': 1 });
+
 
 export const ConversationModel = mongoose.model<IConversation>('Conversation', ConversationSchema);

@@ -18,7 +18,12 @@ export class ConversationService {
   static async updateParticipantSettings(conversationId: string, userId: string, settings: { isMuted?: boolean; isArchived?: boolean }) {
     const conversation = await ConversationModel.findById(conversationId);
     if (!conversation) throw new Error('Conversation not found');
-    if (!conversation.participants.includes(userId)) throw new Error('Unauthorized');
+    
+    // Handle both string and ObjectId participants
+    const isParticipant = conversation.participants.some(
+      p => p.toString() === userId
+    );
+    if (!isParticipant) throw new Error('Unauthorized');
 
     let userSettings = conversation.participantSettings.find(s => s.userId === userId);
     if (!userSettings) {

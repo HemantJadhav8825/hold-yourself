@@ -6,12 +6,12 @@ import { GuardrailService } from '../../security/guardrails';
 import { structuredLog } from '@hold-yourself/utils';
 
 export class MessageService {
-  static async listMessages(conversationId: string, limit: number = 50, beforeEmail?: Date) {
+  static async listMessages(conversationId: string, limit: number = 50, beforeDate?: Date) {
     const query: any = { conversationId };
     
     // Pagination support
-    if (beforeEmail) {
-      query.createdAt = { $lt: beforeEmail };
+    if (beforeDate) {
+      query.createdAt = { $lt: beforeDate };
     }
 
     return MessageModel.find(query)
@@ -38,30 +38,67 @@ export class MessageService {
     }
   }
 
+  static async markAsDeliveredBatch(messageIds: string[], userId: string) {
+    const now = new Date();
+    
+    // Find messages that need to be marked as delivered
+    const messages = await MessageModel.find({
+      _id: { $in: messageIds },
+      senderId: { $ne: userId }, // Don't mark own messages
+      deliveredAt: { $exists: false }
+    });
+
+    if (messages.length === 0) return;
+
+    // Batch update
+    await MessageModel.updateMany(
+      { _id: { $in: messages.map(m => m._id) } },
+      { $set: { deliveredAt: now } }
+    );
+
+    // Notify senders
+    messages.forEach(message => {
+      socketService.emitToUser(message.senderId, 'message:delivered', {
+        messageId: message._id,
+        conversationId: message.conversationId,
+        deliveredAt: now,
+      });
+    });
+  }
+
   static async markAsRead(conversationId: string, userId: string) {
     const now = new Date();
     
-    // Find messages in this conversation not sent by this user and not read yet
-    const unreadMessages = await MessageModel.find({
-      conversationId,
-      senderId: { $ne: userId },
-      readAt: { $exists: false }
-    });
-
-    if (unreadMessages.length === 0) return;
-
-    // Check if the reader has read receipts enabled
+    // Check if the reader has read receipts enabled first
     const userSettings = await UserSettingsModel.findOne({ userId });
-    const showReceipts = userSettings ? userSettings.showReadReceipts : true;
+    const showReceipts = userSettings?.showReadReceipts ?? true;
 
-    await MessageModel.updateMany(
-      { _id: { $in: unreadMessages.map(m => m._id) } },
-      { $set: { readAt: now, deliveredAt: now } } // If read, it must have been delivered
+    // Atomic update: mark all unread messages as read in one operation
+    const result = await MessageModel.updateMany(
+      {
+        conversationId,
+        senderId: { $ne: userId },
+        readAt: { $exists: false }
+      },
+      { 
+        $set: { readAt: now },
+        $setOnInsert: { deliveredAt: now } // Only set deliveredAt if not already set
+      }
     );
 
-    // Notify senders of these messages
+    // If no messages were updated, nothing to notify
+    if (result.modifiedCount === 0) return;
+
+    // Only notify if receipts are enabled
     if (showReceipts) {
-      const senderIds = Array.from(new Set(unreadMessages.map(m => m.senderId)));
+      // Fetch the messages that were just updated to get sender IDs
+      const updatedMessages = await MessageModel.find({
+        conversationId,
+        senderId: { $ne: userId },
+        readAt: now
+      }).select('senderId');
+
+      const senderIds = Array.from(new Set(updatedMessages.map(m => m.senderId)));
       senderIds.forEach(senderId => {
         socketService.emitToUser(senderId, 'message:read', {
           conversationId,
