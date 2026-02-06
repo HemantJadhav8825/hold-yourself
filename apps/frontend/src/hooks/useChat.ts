@@ -8,11 +8,16 @@ export function useChat(conversationId: string | null) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set());
+  const [onlineStatus, setOnlineStatus] = useState<Map<string, { status: 'online' | 'offline', lastSeen?: string }>>(new Map());
   const { user: currentUser } = useCurrentUser();
   
   // Ref for pagination
   const offsetRef = useRef(0);
   const [hasMore, setHasMore] = useState(true);
+
+  // Typing expiry timer ref
+  const typingTimersRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
   const fetchMessages = useCallback(async (isLoadMore = false) => {
     if (!conversationId) return;
@@ -46,12 +51,117 @@ export function useChat(conversationId: string | null) {
     setMessages([]);
     offsetRef.current = 0;
     setHasMore(true);
+    setTypingUsers(new Set());
     if (conversationId) {
       fetchMessages();
     }
   }, [conversationId, fetchMessages]);
 
   // SOCKET LOGIC
+  const resyncMessages = useCallback(async () => {
+    if (!conversationId || !messages.length) return;
+    
+    try {
+      // Fetch latest messages to see if we missed any during disconnection
+      const latestMessages = await chatService.listMessages(conversationId, 20, 0);
+      setMessages(prev => deduplicateMessages(prev, latestMessages));
+    } catch (err) {
+      console.warn('Resync failed', err);
+    }
+  }, [conversationId, messages.length]);
+
+  useEffect(() => {
+    socketService.on('reconnected', resyncMessages);
+    return () => {
+      socketService.off('reconnected', resyncMessages);
+    };
+  }, [resyncMessages]);
+
+  useEffect(() => {
+    const handlePresenceUpdate = ({ userId, status, lastSeen }: { userId: string, status: 'online' | 'offline', lastSeen?: string }) => {
+      setOnlineStatus(prev => {
+        const next = new Map(prev);
+        next.set(userId, { status, lastSeen });
+        return next;
+      });
+    };
+
+    const handleTypingStart = ({ userId, conversationId: typingConvId }: { userId: string, conversationId: string }) => {
+      if (typingConvId !== conversationId) return;
+      
+      setTypingUsers(prev => {
+        const next = new Set(prev);
+        next.add(userId);
+        return next;
+      });
+
+      // Auto-expire typing indicator after 7 seconds if no stop event follows
+      if (typingTimersRef.current.has(userId)) {
+        clearTimeout(typingTimersRef.current.get(userId));
+      }
+      const timeout = setTimeout(() => {
+        setTypingUsers(prev => {
+          const next = new Set(prev);
+          next.delete(userId);
+          return next;
+        });
+        typingTimersRef.current.delete(userId);
+      }, 7000);
+      typingTimersRef.current.set(userId, timeout);
+    };
+
+    const handleTypingStop = ({ userId, conversationId: typingConvId }: { userId: string, conversationId: string }) => {
+      if (typingConvId !== conversationId) return;
+      
+      setTypingUsers(prev => {
+        const next = new Set(prev);
+        next.delete(userId);
+        return next;
+      });
+
+      if (typingTimersRef.current.has(userId)) {
+        clearTimeout(typingTimersRef.current.get(userId));
+        typingTimersRef.current.delete(userId);
+      }
+    };
+
+    const handlePresenceInitial = (userIds: string[]) => {
+      setOnlineStatus(prev => {
+        const next = new Map(prev);
+        userIds.forEach(uid => {
+          if (!next.has(uid) || next.get(uid)?.status !== 'online') {
+            next.set(uid, { status: 'online' });
+          }
+        });
+        return next;
+      });
+    };
+
+    const syncPresence = () => {
+      socketService.emit('presence:sync', {});
+    };
+
+    socketService.on('presence:initial', handlePresenceInitial);
+    socketService.on('presence:update', handlePresenceUpdate);
+    socketService.on('typing:start', handleTypingStart);
+    socketService.on('typing:stop', handleTypingStop);
+    socketService.on('reconnected', syncPresence);
+
+    // Initial sync attempt
+    syncPresence();
+
+    return () => {
+      socketService.off('presence:initial', handlePresenceInitial);
+      socketService.off('presence:update', handlePresenceUpdate);
+      socketService.off('typing:start', handleTypingStart);
+      socketService.off('typing:stop', handleTypingStop);
+      socketService.off('reconnected', syncPresence);
+      // Clear all typing timers on unmount
+      typingTimersRef.current.forEach(timer => clearTimeout(timer));
+      typingTimersRef.current.clear();
+    };
+  }, [conversationId]);
+  
 // Helper to deduplicate messages by ID and handle optimistic replacements
   const deduplicateMessages = (current: Message[], incoming: Message[]): Message[] => {
     const messageMap = new Map<string, Message>();
@@ -61,60 +171,24 @@ export function useChat(conversationId: string | null) {
     
     // Process incoming messages
     incoming.forEach(msg => {
-      // If matches existing ID, overwrite (likely an update or same message)
+      // If we have an optimistic message with this clientMessageId, replace it
+      if (msg.clientMessageId) {
+        const optimisticId = Array.from(messageMap.keys()).find(id => id === msg.clientMessageId);
+        if (optimisticId) {
+          messageMap.delete(optimisticId);
+        }
+      }
+
+      // If matches existing ID, overwrite
       if (messageMap.has(msg.id)) {
-         // Optionally check timestamps or content if needed, but ID match is definitive for identity
          messageMap.set(msg.id, msg); 
          return;
       }
 
-      // Optimistic Check: If incoming is from current user, check if we have a matching optimistic message
-      if (msg.senderId === currentUser?.id) {
-         // Find any optimistic message with same content
-         const optimisticMatchId = Array.from(messageMap.keys()).find(id => 
-           id.startsWith('opt-') && 
-           messageMap.get(id)?.content === msg.content
-         );
-
-         if (optimisticMatchId) {
-           // Remove optimistic, add real
-           messageMap.delete(optimisticMatchId);
-           messageMap.set(msg.id, msg);
-           return;
-         }
-      }
-
-      // No duplicate, no optimistic match -> add it
+      // Standard add
       messageMap.set(msg.id, msg);
     });
 
-    // Convert back to array and sort by createdAt (assuming API returns sorted, but good to be safe)
-    // Actually, chat usually relies on array order. 
-    // If we assume `incoming` are NEWER, we should merge carefully.
-    // But `fetchMessages` can break order if we just map.
-    // Safer strategy: Keep `current` order, append/prepend `incoming` appropriately?
-    // The current state structure is likely [newest, ..., oldest] or [oldest, ..., newest]?
-    // Looking at `fetchMessages`: `setMessages(prev => [...prev, ...data]);` (Load More appends).
-    // This implies `messages` are [Newest -> Oldest] (if `data` is older) OR [Oldest -> Newest] (if `data` is newer)?
-    // Standard chat: usually [Oldest, ..., Newest].
-    // If `loadMore` appends, it implies `data` is NEWER? No, usually load more fetches OLDER.
-    // If `loadMore` calls `listMessages(offset)`, it gets the NEXT page.
-    // If server returns [Message 50...1], then appending puts them at end.
-    // If UI renders `messages.map`, and we want Oldest -> Newest (top to bottom), 
-    // then `loadMore` should PREPEND older messages?
-    // BUT `fetchMessages` APPENDS: `[...prev, ...data]`.
-    // And `handleNewMessage` PREPENDS: `[newMessage, ...prev]`.
-    // CONTRADICTION!
-    // `handleNewMessage`: `[newMessage, ...prev]` -> Newest is at Index 0.
-    // `fetchMessages`: `[...prev, ...data]` -> Appends to end.
-    // So `prev` (Newest...Oldest) + `data` (Next Page causing even Older).
-    // So the list is [Newest, ..., Oldest].
-    // So index 0 is at BOTTOM of screen (if flex-col-reverse) or TOP (if standard)?
-    // Standard map renders Index 0 at TOP.
-    // If Index 0 is Newest, then Newest is at Top. Chat usually has Newest at Bottom.
-    // So likely standard UI uses `flex-col-reverse` or renders in reverse?
-    // Regardless, valid list order seems to be Descending (Newest -> Oldest).
-    
     // Sort logic: Decending by createdAt
     return Array.from(messageMap.values()).sort((a, b) => 
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -124,6 +198,14 @@ export function useChat(conversationId: string | null) {
   useEffect(() => {
     const handleNewMessage = (newMessage: Message) => {
       if (newMessage.conversationId !== conversationId) return;
+      
+      // Stop typing on new message
+      setTypingUsers(prev => {
+        const next = new Set(prev);
+        next.delete(newMessage.senderId);
+        return next;
+      });
+
       setMessages(prev => deduplicateMessages(prev, [newMessage]));
     };
 
@@ -137,7 +219,7 @@ export function useChat(conversationId: string | null) {
   useEffect(() => {
     if (!conversationId) return;
 
-    const pollInterval = 3000;
+    const pollInterval = 30000; // Increased interval since we have better socket reliability
     const intervalId = setInterval(async () => {
       // Skip polling if socket is connected
       if (socketService.isConnected()) return;
@@ -145,7 +227,6 @@ export function useChat(conversationId: string | null) {
       if (document.visibilityState === 'hidden') return;
 
       try {
-        // Fetch only latest 20 to check for new ones
         const latestMessages = await chatService.listMessages(conversationId, 20, 0);
         setMessages(prev => deduplicateMessages(prev, latestMessages));
       } catch (err) {
@@ -156,36 +237,62 @@ export function useChat(conversationId: string | null) {
     return () => clearInterval(intervalId);
   }, [conversationId, currentUser?.id]);
 
-  const sendMessage = async (content: string) => {
+  const sendMessage = async (content: string, retryClientMessageId?: string) => {
     if (!conversationId || !content.trim() || !currentUser) return;
 
-    const optimisticId = `opt-${Date.now()}`;
-    const optimisticMessage: Message = {
-      id: optimisticId,
-      conversationId,
-      senderId: currentUser.id,
-      content,
-      createdAt: new Date().toISOString(),
-    };
-
-    // Optimistic update
-    setMessages(prev => [optimisticMessage, ...prev]);
+    const clientMessageId = retryClientMessageId || crypto.randomUUID();
+    
+    if (retryClientMessageId) {
+      // If retrying, update existing message to 'sending' and clear previous error
+      setMessages(prev => prev.map(msg => 
+        msg.clientMessageId === retryClientMessageId 
+          ? { ...msg, status: 'sending', error: undefined } 
+          : msg
+      ));
+    } else {
+      const optimisticMessage: Message = {
+        id: clientMessageId,
+        clientMessageId,
+        conversationId,
+        senderId: currentUser.id,
+        content,
+        status: 'sending',
+        createdAt: new Date().toISOString(),
+      };
+      // Optimistic update
+      setMessages(prev => [optimisticMessage, ...prev]);
+    }
 
     try {
       setIsSending(true);
-      const realMessage = await chatService.sendMessage(conversationId, content);
+      const realMessage = await chatService.sendMessage(conversationId, content, clientMessageId);
       
-      // Replace optimistic message with real one
-      setMessages(prev => prev.map(msg => msg.id === optimisticId ? realMessage : msg));
+      // Update with real message and 'sent' status
+      setMessages(prev => prev.map(msg => 
+        (msg.id === clientMessageId || msg.clientMessageId === clientMessageId)
+          ? { ...realMessage, status: 'sent' } 
+          : msg
+      ));
       return realMessage;
     } catch (err: any) {
-      // Remove optimistic message on failure
-      setMessages(prev => prev.filter(msg => msg.id !== optimisticId));
+      const errorMessage = err.response?.data?.error || err.message || 'Failed to send';
+      
+      // Mark as failed instead of removing
+      setMessages(prev => prev.map(msg => 
+        (msg.id === clientMessageId || msg.clientMessageId === clientMessageId)
+          ? { ...msg, status: 'failed', error: errorMessage } 
+          : msg
+      ));
       throw err;
     } finally {
       setIsSending(false);
     }
   };
+
+  const setTyping = useCallback((isTyping: boolean) => {
+    if (!conversationId) return;
+    socketService.emit(isTyping ? 'typing:start' : 'typing:stop', { conversationId });
+  }, [conversationId]);
 
   return {
     messages,
@@ -193,7 +300,10 @@ export function useChat(conversationId: string | null) {
     isSending,
     error,
     hasMore,
+    typingUsers,
+    onlineStatus,
     loadMore: () => fetchMessages(true),
-    sendMessage
+    sendMessage,
+    setTyping
   };
 }

@@ -8,3 +8,5 @@ dist
 *.tsbuildinfo
 coverage
 .nyc_output
+next-env.d.ts
+testsprite_tests

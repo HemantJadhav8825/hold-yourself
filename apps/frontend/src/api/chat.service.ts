@@ -68,9 +68,12 @@ export interface Conversation {
 
 export interface Message {
   id: string;
+  clientMessageId?: string;
   conversationId: string;
   senderId: string;
   content: string;
+  status?: 'sending' | 'sent' | 'failed';
+  error?: string;
   createdAt: string;
 }
 
@@ -94,10 +97,11 @@ export const chatService = {
     return response.data;
   },
 
-  async sendMessage(conversationId: string, content: string): Promise<Message> {
+  async sendMessage(conversationId: string, content: string, clientMessageId?: string): Promise<Message> {
     const response = await chatClient.post('/v1/messages', {
       conversationId,
-      content
+      content,
+      clientMessageId
     });
     return response.data;
   }

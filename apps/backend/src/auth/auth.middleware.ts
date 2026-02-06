@@ -6,15 +6,14 @@ import { IdentityContext } from './auth.types';
 export const jwtValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
 
-  console.log('🔐 [JWT] Validating request:', req.method, req.path);
+
   
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    console.log('⚠️  [JWT] No Bearer token found, skipping validation');
     return next();
   }
 
   const token = authHeader.split(' ')[1];
-  console.log('🔑 [JWT] Token received:', token.substring(0, 20) + '...');
+
 
   try {
     const payload = jwt.verify(token, AUTH_CONFIG.PUBLIC_KEY, {
@@ -22,7 +21,7 @@ export const jwtValidationMiddleware = (req: Request, res: Response, next: NextF
       issuer: AUTH_CONFIG.ISSUER,
     }) as any;
 
-    console.log('✅ [JWT] Token valid! User:', payload.sub, 'Role:', payload.role);
+
 
     req.auth = {
       userId: payload.sub,

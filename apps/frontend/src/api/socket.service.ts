@@ -18,15 +18,45 @@ class SocketService {
       auth: { token },
       transports: ["websocket"],
       reconnection: true,
-      reconnectionAttempts: 5,
+      reconnectionAttempts: Infinity, // Keep Trying
       reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      randomizationFactor: 0.5,
+      timeout: 20000,
     });
 
-    this.socket.on("disconnect", () => {
+    this.socket.on("connect", () => {
+      console.log("Socket connected");
+      // Trigger a state resync when reconnected
+      this.listeners.get("reconnected")?.forEach(cb => cb());
+    });
+
+    this.socket.on("disconnect", (reason) => {
+      console.log("Socket disconnected:", reason);
+      if (reason === "io server disconnect") {
+        // the disconnection was initiated by the server, you need to reconnect manually
+        this.socket?.connect();
+      }
+    });
+
+    this.socket.on("reconnect_attempt", (attempt) => {
+      console.log(`Socket reconnection attempt: ${attempt}`);
+    });
+
+    this.socket.on("reconnect_error", (error) => {
+      console.error("Socket reconnection error:", error);
+    });
+
+    this.socket.on("reconnect_failed", () => {
+      console.error("Socket reconnection failed after maximum attempts");
     });
 
     this.socket.on("connect_error", (err) => {
       console.error("Socket connection error:", err);
+    });
+
+    this.socket.on("ping", () => {
+      this.socket?.emit("pong");
     });
 
     // Reattach listeners if any were added before connection
