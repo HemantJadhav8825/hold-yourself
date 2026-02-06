@@ -12,26 +12,21 @@ export const useUsers = (limit: number = 20, offset: number = 0) => {
   useEffect(() => {
     // Don't fetch if auth is still loading or user is not authenticated
     if (authLoading) {
-      console.log('👥 [USERS] Waiting for auth to complete...');
       return;
     }
 
     if (!isAuthenticated) {
-      console.log('👥 [USERS] User not authenticated, skipping fetch');
       setIsLoading(false);
       return;
     }
 
     const fetchUsers = async () => {
-      console.log('👥 [USERS] Fetching users list...');
       setIsLoading(true);
       setError(null);
       try {
         const data = await userService.listUsers(limit, offset);
-        console.log('✅ [USERS] Fetched', data.length, 'users');
         setUsers(data);
       } catch (err: any) {
-        console.error('❌ [USERS] Failed to fetch users:', err.response?.status, err.message);
         setError('Something didn\'t load. Try again later.');
       } finally {
         setIsLoading(false);

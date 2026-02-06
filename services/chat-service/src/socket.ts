@@ -55,13 +55,10 @@ export class SocketService {
     this.io.on('connection', (socket) => {
       const user = (socket as any).user as SocketUser;
       
-      console.log(`User connected: ${user.sub} (${socket.id})`);
-
       // Join a room specific to this user (for direct targeting)
       socket.join(user.sub);
 
       socket.on('disconnect', () => {
-        console.log(`User disconnected: ${user.sub}`);
       });
     });
 

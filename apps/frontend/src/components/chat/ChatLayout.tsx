@@ -34,7 +34,7 @@ export const ChatLayout: React.FC = () => {
           refreshConversations();
         }
       } catch (err) {
-        console.error('Failed to start conversation:', err);
+        // Error creating conversation
       }
     } else {
       setActiveChatId(id);

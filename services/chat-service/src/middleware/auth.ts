@@ -22,12 +22,6 @@ export const authenticate = (req: AuthRequest, res: Response, next: NextFunction
     req.user = payload;
     next();
   } catch (err: any) {
-    console.error('--- AUTH ERROR ---');
-    console.error('Message:', err.message);
-    if (err.name === 'JsonWebTokenError') {
-      console.error('JWT Error Name:', err.name);
-      console.error('JWT Error Reason:', err.reason);
-    }
     return res.status(401).json({ 
       error: 'Unauthorized: Invalid or expired token',
       details: err.message 

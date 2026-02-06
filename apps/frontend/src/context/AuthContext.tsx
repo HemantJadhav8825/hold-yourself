@@ -68,15 +68,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     setError(null);
     try {
-      console.log('🔐 [AUTH] Login attempt...');
       const data = await authService.login(credentials);
-      console.log('✅ [AUTH] Login successful, user:', data.user.email);
       setUser(data.user);
       localStorage.setItem('user_hint', JSON.stringify(data.user));
       socketService.connect();
       router.push('/dashboard');
     } catch (err: any) {
-      console.error('❌ [AUTH] Login failed:', err);
       setError(err.response?.data?.error || 'Login failed');
       throw err;
     } finally {
