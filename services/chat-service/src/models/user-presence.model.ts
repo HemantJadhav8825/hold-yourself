@@ -25,6 +25,6 @@ const UserPresenceSchema: Schema = new Schema(
 );
 
 // Index for fast lookup by userId
-UserPresenceSchema.index({ userId: 1 });
+
 
 export const UserPresenceModel = mongoose.model<IUserPresence>('UserPresence', UserPresenceSchema);

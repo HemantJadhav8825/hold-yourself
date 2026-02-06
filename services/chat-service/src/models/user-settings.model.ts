@@ -25,6 +25,6 @@ const UserSettingsSchema: Schema = new Schema(
   }
 );
 
-UserSettingsSchema.index({ userId: 1 });
+
 
 export const UserSettingsModel = mongoose.model<IUserSettings>('UserSettings', UserSettingsSchema);

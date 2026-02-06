@@ -45,6 +45,6 @@ MessageSchema.index({ conversationId: 1, senderId: 1, createdAt: -1 });
 // Sparse indexes for status queries
 MessageSchema.index({ deliveredAt: 1 }, { sparse: true });
 MessageSchema.index({ readAt: 1 }, { sparse: true });
-MessageSchema.index({ clientMessageId: 1 }, { unique: true, sparse: true });
+
 
 export const MessageModel = mongoose.model<IMessage>("Message", MessageSchema);
