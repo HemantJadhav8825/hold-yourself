@@ -29,8 +29,8 @@ echo "🏗️  Rebuilding Next.js application..."
 pnpm build
 
 echo ""
-echo "🔄 Restarting PM2 services..."
-pm2 restart frontend
+echo "🔄 Starting/Restarting PM2 services..."
+pm2 restart hold-yourself-frontend || pm2 start hold-yourself-frontend
 
 echo ""
 echo "✅ Fix complete!"
