@@ -68,4 +68,28 @@ export class GuardrailService {
     rate.count++;
     return true;
   }
+
+  /**
+   * Get remaining cooldown time in milliseconds for a user in a conversation.
+   * Returns 0 if no cooldown is active.
+   */
+  public static getCooldownRemaining(userId: string, conversationId: string): number {
+    const now = Date.now();
+    
+    // Check user rate limit
+    const userRate = this.userRates.get(userId);
+    if (userRate && userRate.count >= this.MAX_MESSAGES_PER_WINDOW_USER) {
+      const userCooldown = this.RATE_LIMIT_WINDOW_MS - (now - userRate.lastReset);
+      if (userCooldown > 0) return userCooldown;
+    }
+
+    // Check conversation rate limit
+    const convRate = this.conversationRates.get(conversationId);
+    if (convRate && convRate.count >= this.MAX_MESSAGES_PER_WINDOW_CONV) {
+      const convCooldown = this.RATE_LIMIT_WINDOW_MS - (now - convRate.lastReset);
+      if (convCooldown > 0) return convCooldown;
+    }
+
+    return 0;
+  }
 }

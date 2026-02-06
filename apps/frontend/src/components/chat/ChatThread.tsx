@@ -3,7 +3,10 @@ import { ProfileAvatar } from '@/components/ui/ProfileAvatar';
 import { Text } from '@/components/ui/Text';
 import { MessageBubble } from './MessageBubble';
 import { MessageInput } from './MessageInput';
-import { ChevronLeft, Info, Archive, Bell, BellOff, Trash2 } from 'lucide-react';
+import { BlockUserButton } from './BlockUserButton';
+import { ReportConversationModal } from './ReportConversationModal';
+import { moderationService } from '@/api/moderation.service';
+import { ChevronLeft, Info, Archive, Bell, BellOff, Trash2, Shield, Flag } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -15,6 +18,7 @@ interface Message {
 import { useChat } from '@/hooks/useChat';
 import { useUsers } from '@/hooks/useUsers';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { socketService } from '@/api/socket.service';
 
 import { chatService, Conversation } from '@/api/chat.service';
 
@@ -43,6 +47,8 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
   const [showSettings, setShowSettings] = React.useState(false);
   const [isMuted, setIsMuted] = React.useState(false);
   const [isArchived, setIsArchived] = React.useState(false);
+  const [isBlocked, setIsBlocked] = React.useState(false);
+  const [showReportModal, setShowReportModal] = React.useState(false);
 
   React.useEffect(() => {
     if (conversation && currentUser) {
@@ -91,6 +97,49 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
   const otherUser = getOtherParticipant();
   const chatName = otherUser?.displayName || otherUser?.username || 'Chat';
   const chatAvatar = otherUser?.avatar;
+
+  // Check if user is blocked
+  React.useEffect(() => {
+    const checkBlockStatus = async () => {
+      if (!otherUser?.id) return;
+      try {
+        const blockedUsers = await moderationService.getBlockedUsers();
+        setIsBlocked(blockedUsers.includes(otherUser.id));
+      } catch (err) {
+        console.error('Failed to check block status', err);
+      }
+    };
+    checkBlockStatus();
+  }, [otherUser?.id]);
+
+  // Listen for real-time block/unblock events
+  React.useEffect(() => {
+    if (!otherUser?.id) return;
+
+    const handleUserBlocked = ({ userId }: { userId: string }) => {
+      if (userId === otherUser.id) {
+        setIsBlocked(true);
+        // Optionally close the conversation after a brief delay
+        if (onBack) {
+          setTimeout(() => onBack(), 1500);
+        }
+      }
+    };
+
+    const handleUserUnblocked = ({ userId }: { userId: string }) => {
+      if (userId === otherUser.id) {
+        setIsBlocked(false);
+      }
+    };
+
+    socketService.on('user:blocked', handleUserBlocked);
+    socketService.on('user:unblocked', handleUserUnblocked);
+
+    return () => {
+      socketService.off('user:blocked', handleUserBlocked);
+      socketService.off('user:unblocked', handleUserUnblocked);
+    };
+  }, [otherUser?.id, onBack]);
 
   const otherUserPresence = otherUser ? onlineStatus.get(otherUser.id) : null;
   const isOnline = otherUserPresence?.status === 'online';
@@ -202,6 +251,33 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
                 <Trash2 className="w-4 h-4" />
                 <Text size="sm" className="text-red-500">Clear local history</Text>
               </button>
+              <div className="h-px bg-border my-1" />
+              {otherUser && (
+                <>
+                  <div className="px-3 py-2">
+                    <BlockUserButton
+                      userId={otherUser.id}
+                      userName={chatName}
+                      isBlocked={isBlocked}
+                      onBlockChange={(blocked) => {
+                        setIsBlocked(blocked);
+                        setShowSettings(false);
+                        if (blocked && onBack) onBack();
+                      }}
+                    />
+                  </div>
+                  <button 
+                    onClick={() => {
+                      setShowReportModal(true);
+                      setShowSettings(false);
+                    }}
+                    className="w-full text-left px-3 py-2 hover:bg-orange-500/10 text-orange-600 dark:text-orange-400 rounded-lg flex items-center gap-3 transition-colors"
+                  >
+                    <Flag className="w-4 h-4" />
+                    <Text size="sm" className="text-orange-600 dark:text-orange-400">Report Conversation</Text>
+                  </button>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -272,11 +348,36 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
         )}
       </div>
 
-      {/* Input */}
-      <MessageInput 
-        onSend={sendMessage} 
-        onTypingChange={setTyping}
-      />
+      {/* Input or Blocked Message */}
+      {isBlocked ? (
+        <div className="p-4 lg:p-6 border-t border-border bg-muted/20">
+          <div className="text-center py-4">
+            <Text size="sm" muted className="italic">
+              You cannot send messages to this user
+            </Text>
+          </div>
+        </div>
+      ) : (
+        <MessageInput 
+          onSend={sendMessage} 
+          onTypingChange={setTyping}
+        />
+      )}
+
+      {/* Report Modal */}
+      {otherUser && (
+        <ReportConversationModal
+          conversationId={conversation?.id || ''}
+          reportedUserId={otherUser.id}
+          reportedUserName={chatName}
+          isOpen={showReportModal}
+          onClose={() => setShowReportModal(false)}
+          onSuccess={() => {
+            // Optional: Show success toast or notification
+            console.log('Report submitted successfully');
+          }}
+        />
+      )}
     </div>
   );
 };

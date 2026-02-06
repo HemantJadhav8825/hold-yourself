@@ -1,4 +1,5 @@
 import { ConversationModel } from '../../models/conversation.model';
+import { ModerationService } from '../moderation/moderation.service';
 
 export class ConversationService {
   static async listConversations(userId: string, includeArchived: boolean = false) {
@@ -41,6 +42,12 @@ export class ConversationService {
   static async findOrCreateConversation(user1: string, user2: string) {
     if (user1 === user2) {
       throw new Error('Cannot create a conversation with yourself.');
+    }
+
+    // Check if either user has blocked the other
+    const isBlocked = await ModerationService.isBlocked(user1, user2);
+    if (isBlocked) {
+      throw new Error('Cannot create conversation with blocked user');
     }
 
     const participants = [user1, user2].sort();
