@@ -4,6 +4,7 @@ export interface IParticipantSettings {
   userId: string;
   isMuted: boolean;
   isArchived: boolean;
+  lastReadAt: Date;
 }
 
 export interface IConversation extends Document {
@@ -35,6 +36,7 @@ const ConversationSchema: Schema = new Schema(
         userId: { type: String, required: true },
         isMuted: { type: Boolean, default: false },
         isArchived: { type: Boolean, default: false },
+        lastReadAt: { type: Date, default: new Date(0) }, // Default to epoch for old convos
       },
     ],
     lastMessageAt: { type: Date, default: Date.now },
