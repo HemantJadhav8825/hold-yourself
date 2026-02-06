@@ -54,8 +54,13 @@ const ConversationSchema: Schema = new Schema(
 
 // Index for quick participant lookup
 ConversationSchema.index({ participants: 1 });
+// Compound index for sorting conversations by last message
+ConversationSchema.index({ participants: 1, lastMessageAt: -1 });
+
 // Index for archived conversation queries
 ConversationSchema.index({ 'participantSettings.userId': 1, 'participantSettings.isArchived': 1 });
+// Index for muted conversation queries
+ConversationSchema.index({ 'participantSettings.userId': 1, 'participantSettings.isMuted': 1 });
 
 
 export const ConversationModel = mongoose.model<IConversation>('Conversation', ConversationSchema);
