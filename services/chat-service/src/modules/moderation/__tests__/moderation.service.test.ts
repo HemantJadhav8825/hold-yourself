@@ -12,20 +12,16 @@ describe('ModerationService', () => {
   });
 
   describe('blockUser', () => {
-    it('should create bidirectional block relationships', async () => {
+    it('should create single block record', async () => {
       const mockCreate = jest.fn().mockResolvedValue({});
       (BlockedUserModel.create as jest.Mock) = mockCreate;
 
       await ModerationService.blockUser('user1', 'user2');
 
-      expect(mockCreate).toHaveBeenCalledTimes(2);
+      expect(mockCreate).toHaveBeenCalledTimes(1);
       expect(mockCreate).toHaveBeenCalledWith({
         blockerId: 'user1',
         blockedUserId: 'user2',
-      });
-      expect(mockCreate).toHaveBeenCalledWith({
-        blockerId: 'user2',
-        blockedUserId: 'user1',
       });
     });
 
@@ -47,20 +43,16 @@ describe('ModerationService', () => {
   });
 
   describe('unblockUser', () => {
-    it('should remove bidirectional block relationships', async () => {
+    it('should remove block relationship', async () => {
       const mockDeleteOne = jest.fn().mockResolvedValue({});
       (BlockedUserModel.deleteOne as jest.Mock) = mockDeleteOne;
 
       await ModerationService.unblockUser('user1', 'user2');
 
-      expect(mockDeleteOne).toHaveBeenCalledTimes(2);
+      expect(mockDeleteOne).toHaveBeenCalledTimes(1);
       expect(mockDeleteOne).toHaveBeenCalledWith({
         blockerId: 'user1',
         blockedUserId: 'user2',
-      });
-      expect(mockDeleteOne).toHaveBeenCalledWith({
-        blockerId: 'user2',
-        blockedUserId: 'user1',
       });
     });
   });

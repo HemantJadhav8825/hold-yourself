@@ -5,6 +5,7 @@ import { socketService } from '../../socket';
 import { GuardrailService } from '../../security/guardrails';
 import { structuredLog } from '@hold-yourself/utils';
 import { ModerationService } from '../moderation/moderation.service';
+import { featureFlagService } from '../../config/feature-flags';
 
 export class MessageService {
   static async listMessages(conversationId: string, limit: number = 50, beforeDate?: Date) {
@@ -21,6 +22,9 @@ export class MessageService {
   }
 
   static async markAsDelivered(messageId: string, userId: string) {
+    // Check feature flag
+    if (!featureFlagService.isEnabled('ENABLE_READ_RECEIPTS')) return;
+
     const message = await MessageModel.findById(messageId);
     if (!message) return;
 
@@ -40,6 +44,9 @@ export class MessageService {
   }
 
   static async markAsDeliveredBatch(messageIds: string[], userId: string) {
+    // Check feature flag
+    if (!featureFlagService.isEnabled('ENABLE_READ_RECEIPTS')) return;
+
     const now = new Date();
     
     // Find messages that need to be marked as delivered
@@ -68,6 +75,9 @@ export class MessageService {
   }
 
   static async markAsRead(conversationId: string, userId: string) {
+    // Check feature flag
+    if (!featureFlagService.isEnabled('ENABLE_READ_RECEIPTS')) return;
+
     const now = new Date();
     
     // Check if the reader has read receipts enabled first

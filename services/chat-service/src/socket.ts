@@ -6,6 +6,7 @@ import { UserPresenceModel } from './models/user-presence.model';
 import { ConversationService } from './modules/conversations/conversation.service';
 import { MessageService } from './modules/messages/message.service';
 import { ModerationService } from './modules/moderation/moderation.service';
+import { featureFlagService } from './config/feature-flags';
 
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGINS || 'http://localhost:3002'; // Updated to frontend port
 const JWT_PUBLIC_KEY = process.env.JWT_PUBLIC_KEY || process.env.JWT_SECRET || 'dev_secret_key_123';
@@ -90,6 +91,12 @@ export class SocketService {
 
       socket.on('typing:start', async ({ conversationId }) => {
         try {
+          // Check feature flag
+          if (!featureFlagService.isEnabled('ENABLE_TYPING_INDICATORS')) {
+            structuredLog('info', 'socket:typing_disabled', 'Typing indicators disabled via feature flag', { userId, conversationId });
+            return;
+          }
+
           const conversation = await ConversationService.findConversationById(conversationId);
           if (!conversation) return;
 
@@ -108,6 +115,11 @@ export class SocketService {
 
       socket.on('typing:stop', async ({ conversationId }) => {
         try {
+          // Check feature flag
+          if (!featureFlagService.isEnabled('ENABLE_TYPING_INDICATORS')) {
+            return; // Silently ignore when disabled
+          }
+
           const conversation = await ConversationService.findConversationById(conversationId);
           if (!conversation) return;
 
