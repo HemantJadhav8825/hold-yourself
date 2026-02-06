@@ -36,7 +36,6 @@ export function useChat(conversationId: string | null) {
       setHasMore(data.length === limit);
       setError(null);
     } catch (err: any) {
-      console.error('Failed to fetch messages:', err);
       setError(err.response?.data?.error || 'Failed to load messages');
     } finally {
       if (!isLoadMore) setIsLoading(false);
@@ -180,7 +179,6 @@ export function useChat(conversationId: string | null) {
       setMessages(prev => prev.map(msg => msg.id === optimisticId ? realMessage : msg));
       return realMessage;
     } catch (err: any) {
-      console.error('Failed to send message:', err);
       // Remove optimistic message on failure
       setMessages(prev => prev.filter(msg => msg.id !== optimisticId));
       throw err;

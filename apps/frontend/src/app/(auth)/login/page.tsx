@@ -33,7 +33,7 @@ function LoginContent() {
           // Success handled by router push
         })
         .catch(() => {
-          console.error('Google login failed with code');
+          // Error handled by context
         });
       
       const newUrl = new URL(window.location.href);

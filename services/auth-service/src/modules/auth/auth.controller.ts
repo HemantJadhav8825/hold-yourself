@@ -56,7 +56,6 @@ export class AuthController {
       const result = await authService.googleLogin(code, redirectUri);
       return res.json(result);
     } catch (err: any) {
-      console.error('Google login error:', err.message);
       return res.status(401).json({ error: err.message });
     }
   }
