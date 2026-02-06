@@ -12,11 +12,9 @@ export class ModerationService {
     }
 
     try {
-      // Create bidirectional blocks
-      await Promise.all([
-        BlockedUserModel.create({ blockerId, blockedUserId }),
-        BlockedUserModel.create({ blockerId: blockedUserId, blockedUserId: blockerId }),
-      ]);
+      // Create single block record (Blocker -> Blocked)
+      // We no longer create the reverse record to prevent the blocked user from unblocking themselves
+      await BlockedUserModel.create({ blockerId, blockedUserId });
 
       structuredLog('info', 'moderation:block', 'User blocked successfully', {
         blockerId,
@@ -39,10 +37,8 @@ export class ModerationService {
    * Unblock a user. Removes bidirectional block.
    */
   static async unblockUser(blockerId: string, blockedUserId: string): Promise<void> {
-    await Promise.all([
-      BlockedUserModel.deleteOne({ blockerId, blockedUserId }),
-      BlockedUserModel.deleteOne({ blockerId: blockedUserId, blockedUserId: blockerId }),
-    ]);
+    // Only remove the block initialized by this user
+    await BlockedUserModel.deleteOne({ blockerId, blockedUserId });
 
     structuredLog('info', 'moderation:unblock', 'User unblocked successfully', {
       blockerId,
@@ -55,8 +51,10 @@ export class ModerationService {
    */
   static async isBlocked(userId1: string, userId2: string): Promise<boolean> {
     const block = await BlockedUserModel.findOne({
-      blockerId: userId1,
-      blockedUserId: userId2,
+      $or: [
+        { blockerId: userId1, blockedUserId: userId2 },
+        { blockerId: userId2, blockedUserId: userId1 },
+      ],
     });
 
     return !!block;
