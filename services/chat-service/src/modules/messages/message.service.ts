@@ -1,21 +1,112 @@
 import { MessageModel } from '../../models/message.model';
 import { ConversationModel } from '../../models/conversation.model';
+import { UserSettingsModel } from '../../models/user-settings.model';
 import { socketService } from '../../socket';
 import { GuardrailService } from '../../security/guardrails';
 import { structuredLog } from '@hold-yourself/utils';
 
 export class MessageService {
-  static async listMessages(conversationId: string, limit: number = 50, beforeEmail?: Date) {
+  static async listMessages(conversationId: string, limit: number = 50, beforeDate?: Date) {
     const query: any = { conversationId };
     
     // Pagination support
-    if (beforeEmail) {
-      query.createdAt = { $lt: beforeEmail };
+    if (beforeDate) {
+      query.createdAt = { $lt: beforeDate };
     }
 
     return MessageModel.find(query)
       .sort({ createdAt: -1 })
       .limit(limit);
+  }
+
+  static async markAsDelivered(messageId: string, userId: string) {
+    const message = await MessageModel.findById(messageId);
+    if (!message) return;
+
+    if (message.senderId === userId) return; // Sender doesn't mark own as delivered
+
+    if (!message.deliveredAt) {
+      message.deliveredAt = new Date();
+      await message.save();
+
+      // Notify sender
+      socketService.emitToUser(message.senderId, 'message:delivered', {
+        messageId: message._id,
+        conversationId: message.conversationId,
+        deliveredAt: message.deliveredAt,
+      });
+    }
+  }
+
+  static async markAsDeliveredBatch(messageIds: string[], userId: string) {
+    const now = new Date();
+    
+    // Find messages that need to be marked as delivered
+    const messages = await MessageModel.find({
+      _id: { $in: messageIds },
+      senderId: { $ne: userId }, // Don't mark own messages
+      deliveredAt: { $exists: false }
+    });
+
+    if (messages.length === 0) return;
+
+    // Batch update
+    await MessageModel.updateMany(
+      { _id: { $in: messages.map(m => m._id) } },
+      { $set: { deliveredAt: now } }
+    );
+
+    // Notify senders
+    messages.forEach(message => {
+      socketService.emitToUser(message.senderId, 'message:delivered', {
+        messageId: message._id,
+        conversationId: message.conversationId,
+        deliveredAt: now,
+      });
+    });
+  }
+
+  static async markAsRead(conversationId: string, userId: string) {
+    const now = new Date();
+    
+    // Check if the reader has read receipts enabled first
+    const userSettings = await UserSettingsModel.findOne({ userId });
+    const showReceipts = userSettings?.showReadReceipts ?? true;
+
+    // Atomic update: mark all unread messages as read in one operation
+    const result = await MessageModel.updateMany(
+      {
+        conversationId,
+        senderId: { $ne: userId },
+        readAt: { $exists: false }
+      },
+      { 
+        $set: { readAt: now },
+        $setOnInsert: { deliveredAt: now } // Only set deliveredAt if not already set
+      }
+    );
+
+    // If no messages were updated, nothing to notify
+    if (result.modifiedCount === 0) return;
+
+    // Only notify if receipts are enabled
+    if (showReceipts) {
+      // Fetch the messages that were just updated to get sender IDs
+      const updatedMessages = await MessageModel.find({
+        conversationId,
+        senderId: { $ne: userId },
+        readAt: now
+      }).select('senderId');
+
+      const senderIds = Array.from(new Set(updatedMessages.map(m => m.senderId)));
+      senderIds.forEach(senderId => {
+        socketService.emitToUser(senderId, 'message:read', {
+          conversationId,
+          readAt: now,
+          readerId: userId
+        });
+      });
+    }
   }
 
   static async sendMessage(conversationId: string, senderId: string, content: string, clientMessageId?: string) {

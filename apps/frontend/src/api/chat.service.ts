@@ -58,9 +58,16 @@ export interface Participant {
   avatar?: string;
 }
 
+export interface ParticipantSettings {
+  userId: string;
+  isMuted: boolean;
+  isArchived: boolean;
+}
+
 export interface Conversation {
   id: string;
   participants: (string | Participant)[];
+  participantSettings?: ParticipantSettings[];
   lastMessageAt: string;
   createdAt: string;
   updatedAt: string;
@@ -73,13 +80,22 @@ export interface Message {
   senderId: string;
   content: string;
   status?: 'sending' | 'sent' | 'failed';
+  deliveredAt?: string;
+  readAt?: string;
   error?: string;
   createdAt: string;
 }
 
+export interface UserSettings {
+  userId: string;
+  showReadReceipts: boolean;
+}
+
 export const chatService = {
-  async listConversations(): Promise<Conversation[]> {
-    const response = await chatClient.get('/v1/conversations');
+  async listConversations(includeArchived: boolean = false): Promise<Conversation[]> {
+    const response = await chatClient.get('/v1/conversations', {
+      params: { includeArchived }
+    });
     return response.data;
   },
 
@@ -87,6 +103,11 @@ export const chatService = {
     const response = await chatClient.post('/v1/conversations', { 
       recipientId 
     });
+    return response.data;
+  },
+
+  async updateConversationSettings(conversationId: string, settings: { isMuted?: boolean; isArchived?: boolean }): Promise<Conversation> {
+    const response = await chatClient.patch(`/v1/conversations/${conversationId}/settings`, settings);
     return response.data;
   },
 
@@ -103,6 +124,29 @@ export const chatService = {
       content,
       clientMessageId
     });
+    return response.data;
+  },
+
+  async markMessageDelivered(messageId: string): Promise<void> {
+    await chatClient.post(`/v1/messages/${messageId}/delivered`);
+  },
+
+  async markMessagesDelivered(messageIds: string[]): Promise<void> {
+    if (messageIds.length === 0) return;
+    await chatClient.post('/v1/messages/delivered/batch', { messageIds });
+  },
+
+  async markConversationRead(conversationId: string): Promise<void> {
+    await chatClient.post(`/v1/messages/read/${conversationId}`);
+  },
+
+  async getGlobalSettings(): Promise<UserSettings> {
+    const response = await chatClient.get('/v1/settings');
+    return response.data;
+  },
+
+  async updateGlobalSettings(settings: { showReadReceipts: boolean }): Promise<UserSettings> {
+    const response = await chatClient.patch('/v1/settings', settings);
     return response.data;
   }
 };

@@ -6,10 +6,25 @@ export class ConversationController {
   static async list(req: AuthRequest, res: Response) {
     try {
       const userId = req.user!.sub;
-      const conversations = await ConversationService.listConversations(userId);
+      const includeArchived = req.query.includeArchived === 'true';
+      const conversations = await ConversationService.listConversations(userId, includeArchived);
       res.json(conversations);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
+    }
+  }
+
+  static async updateSettings(req: AuthRequest, res: Response) {
+    try {
+      const userId = req.user!.sub;
+      const { id } = req.params;
+      const { isMuted, isArchived } = req.body;
+
+      const conversation = await ConversationService.updateParticipantSettings(id, userId, { isMuted, isArchived });
+      res.json(conversation);
+    } catch (err: any) {
+      const status = err.message === 'Unauthorized' ? 403 : (err.message === 'Conversation not found' ? 404 : 400);
+      res.status(status).json({ error: err.message });
     }
   }
 

@@ -26,6 +26,46 @@ export class MessageController {
     }
   }
 
+  static async markDelivered(req: AuthRequest, res: Response) {
+    try {
+      const { messageId } = req.params;
+      const userId = req.user!.sub;
+
+      await MessageService.markAsDelivered(messageId, userId);
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+
+  static async markDeliveredBatch(req: AuthRequest, res: Response) {
+    try {
+      const { messageIds } = req.body;
+      const userId = req.user!.sub;
+
+      if (!Array.isArray(messageIds) || messageIds.length === 0) {
+        return res.status(400).json({ error: 'messageIds must be a non-empty array' });
+      }
+
+      await MessageService.markAsDeliveredBatch(messageIds, userId);
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+
+  static async markRead(req: AuthRequest, res: Response) {
+    try {
+      const { conversationId } = req.params;
+      const userId = req.user!.sub;
+
+      await MessageService.markAsRead(conversationId, userId);
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+
   static async create(req: AuthRequest, res: Response) {
     try {
       const { conversationId, content, clientMessageId } = req.body;

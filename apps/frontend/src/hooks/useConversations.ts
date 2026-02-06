@@ -5,6 +5,7 @@ import { socketService } from '@/api/socket.service';
 
 export function useConversations() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [includeArchived, setIncludeArchived] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
@@ -19,7 +20,7 @@ export function useConversations() {
 
     try {
       setIsLoading(true);
-      const data = await chatService.listConversations();
+      const data = await chatService.listConversations(includeArchived);
       setConversations(data);
       setError(null);
     } catch (err: any) {
@@ -27,7 +28,7 @@ export function useConversations() {
     } finally {
       setIsLoading(false);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, includeArchived]);
 
   useEffect(() => {
     // Wait for auth to complete
@@ -71,6 +72,8 @@ export function useConversations() {
 
   return {
     conversations,
+    includeArchived,
+    setIncludeArchived,
     isLoading,
     isEmpty: conversations.length === 0,
     error,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChatListItem } from './ChatListItem';
 import { Text } from '@/components/ui/Text';
-import { ChevronLeft, Search, PlusSquare } from 'lucide-react';
+import { ChevronLeft, Search, PlusSquare, Settings2, Archive } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useUsers } from '@/hooks/useUsers';
@@ -9,6 +9,7 @@ import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { UserAvatarWithLabel } from '@/components/ui/UserAvatarWithLabel';
 import { ProfileAvatar } from '@/components/ui/ProfileAvatar';
 import { EmptyQuiet } from '@/illustrations/components/EmptyQuiet';
+import { GlobalChatSettings } from './GlobalChatSettings';
 
 import { useConversations } from '@/hooks/useConversations';
 
@@ -22,8 +23,15 @@ export const ChatList: React.FC<ChatListProps> = ({
   onChatSelect 
 }) => {
   const { users, isLoading: isLoadingUsers, isEmpty: isUsersEmpty } = useUsers(50);
-  const { conversations, isLoading: isLoadingChats, onlineUsers } = useConversations();
+  const { 
+    conversations, 
+    isLoading: isLoadingChats, 
+    onlineUsers,
+    includeArchived,
+    setIncludeArchived
+  } = useConversations();
   const { user: currentUser } = useCurrentUser();
+  const [showGlobalSettings, setShowGlobalSettings] = React.useState(false);
 
   const isLoading = isLoadingUsers || isLoadingChats;
 
@@ -36,20 +44,24 @@ export const ChatList: React.FC<ChatListProps> = ({
   const resolveConversationInfo = (conv: any) => {
     const otherId = conv.participants.find((p: any) => (typeof p === 'string' ? p : p.id) !== currentUser?.id);
     const otherUser = users.find(u => u.id === (typeof otherId === 'string' ? otherId : otherId?.id));
+    const participantSettings = conv.participantSettings?.find((s: any) => s.userId === currentUser?.id);
     
     return {
        id: conv.id,
        otherUserId: otherUser?.id,
        name: otherUser?.displayName || otherUser?.username || 'Quiet User',
        avatar: otherUser?.avatar,
+       isMuted: participantSettings?.isMuted || false,
        lastMessage: 'View message history',
        timestamp: new Date(conv.lastMessageAt).toLocaleDateString([], { month: 'short', day: 'numeric' })
     };
   };
 
   return (
-    <div className="h-full flex flex-col bg-background lg:border-r border-border">
-      {/* Header section remains the same */}
+    <div className="h-full flex flex-col bg-background lg:border-r border-border relative">
+      {showGlobalSettings && <GlobalChatSettings onClose={() => setShowGlobalSettings(false)} />}
+      
+      {/* Header section */}
       <div className="p-4 lg:p-6 pb-2 lg:pb-4 flex flex-col gap-4">
         <div className="flex items-center gap-4">
           <Link href="/dashboard" className="p-2 -ml-2 hover:bg-muted rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/20">
@@ -58,25 +70,47 @@ export const ChatList: React.FC<ChatListProps> = ({
           <div className="flex-1">
             <Text weight="medium" className="text-lg text-foreground/80">Messages</Text>
           </div>
-          <button className="p-2 hover:bg-muted rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/20">
-            <PlusSquare className="w-5 h-5 text-muted-foreground/30" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button 
+              onClick={() => setShowGlobalSettings(true)}
+              className="p-2 hover:bg-muted rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+            >
+              <Settings2 className="w-5 h-5 text-muted-foreground/30" />
+            </button>
+            <button className="p-2 hover:bg-muted rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/20">
+              <PlusSquare className="w-5 h-5 text-muted-foreground/30" />
+            </button>
+          </div>
         </div>
 
-        <button 
-          onClick={() => onChatSelect('requests')}
-          className="flex items-center justify-between px-3 py-2 hover:bg-muted/50 rounded-xl transition-colors group outline-none focus-visible:ring-2 focus-visible:ring-primary/10 border border-transparent hover:border-border/20"
-        >
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
-            <Text size="sm" className="text-muted-foreground/60 group-hover:text-muted-foreground transition-colors">
-              Message requests
-            </Text>
-          </div>
-          <div className="text-xs text-muted-foreground/20 font-medium group-hover:text-muted-foreground/40 transition-colors">
-            {conversations.length > 5 ? '5+' : '0'}
-          </div>
-        </button>
+        <div className="flex items-center gap-2">
+            <button 
+                onClick={() => onChatSelect('requests')}
+                className="flex-1 flex items-center justify-between px-3 py-2 hover:bg-muted/50 rounded-xl transition-colors group outline-none focus-visible:ring-2 focus-visible:ring-primary/10 border border-transparent hover:border-border/20"
+            >
+                <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
+                    <Text size="sm" className="text-muted-foreground/60 group-hover:text-muted-foreground transition-colors">
+                        Requests
+                    </Text>
+                </div>
+            </button>
+
+            <button 
+                onClick={() => setIncludeArchived(!includeArchived)}
+                className={cn(
+                    "px-3 py-2 rounded-xl transition-colors flex items-center gap-2 border border-transparent",
+                    includeArchived 
+                        ? "bg-primary/10 text-primary border-primary/20" 
+                        : "hover:bg-muted/50 text-muted-foreground/60 hover:border-border/20"
+                )}
+            >
+                <Archive className="w-4 h-4" />
+                <Text size="xs" weight="medium" className={includeArchived ? "text-primary" : ""}>
+                    {includeArchived ? 'Archive' : 'Archive'}
+                </Text>
+            </button>
+        </div>
       </div>
 
       {/* Search & Active Feed */}
@@ -91,7 +125,7 @@ export const ChatList: React.FC<ChatListProps> = ({
         </div>
 
         {/* People to start a chat with */}
-        {!isUsersEmpty && displayUsers.length > 0 && (
+        {!isUsersEmpty && displayUsers.length > 0 && !includeArchived && (
           <div className="flex flex-col gap-2">
             <Text size="xs" weight="medium" className="uppercase tracking-[0.2em] px-1 text-muted-foreground/30 text-[9px]">People</Text>
             <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 -mx-2 px-2 border-b border-border/20">
@@ -122,7 +156,11 @@ export const ChatList: React.FC<ChatListProps> = ({
 
       {/* Conversation List */}
       <div className="flex-1 overflow-y-auto px-2 space-y-1 no-scrollbar pb-20 lg:pb-4">
-        <Text size="xs" weight="medium" className="uppercase tracking-[0.2em] px-3 py-2 text-muted-foreground/30 text-[9px]">Recent Chats</Text>
+        <div className="flex items-center justify-between px-3 py-2">
+            <Text size="xs" weight="medium" className="uppercase tracking-[0.2em] text-muted-foreground/30 text-[9px]">
+                {includeArchived ? 'Archived Chats' : 'Recent Chats'}
+            </Text>
+        </div>
         {conversations.length > 0 ? (
           conversations.map((conv) => {
             const info = resolveConversationInfo(conv);
@@ -136,6 +174,7 @@ export const ChatList: React.FC<ChatListProps> = ({
                 timestamp={info.timestamp}
                 isActive={activeChatId === conv.id}
                 isOnline={info.otherUserId ? onlineUsers.has(info.otherUserId) : false}
+                isMuted={info.isMuted}
                 onClick={() => onChatSelect(conv.id)}
               />
             );
@@ -143,7 +182,9 @@ export const ChatList: React.FC<ChatListProps> = ({
         ) : (
           <div className="flex flex-col items-center justify-center pt-10 px-6 text-center opacity-40 grayscale space-y-4">
             <EmptyQuiet size="100" />
-            <Text size="sm" muted>No conversations here yet.</Text>
+            <Text size="sm" muted>
+                {includeArchived ? 'No archived chats here.' : 'No conversations here yet.'}
+            </Text>
           </div>
         )}
       </div>
