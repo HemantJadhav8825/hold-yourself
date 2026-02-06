@@ -14,12 +14,12 @@ export const TopBar: React.FC = () => {
       </Link>
       
       <div className="flex items-center gap-4">
-        <button className="p-1 hover:text-primary transition-colors">
+        <Link href="/dashboard" className="p-1 hover:text-primary transition-colors">
           <Heart className="w-6 h-6" />
-        </button>
-        <button className="p-1 hover:text-primary transition-colors">
+        </Link>
+        <Link href="/messages" className="p-1 hover:text-primary transition-colors">
           <MessageCircle className="w-6 h-6" />
-        </button>
+        </Link>
       </div>
     </header>
   );
