@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { chatService, Conversation } from '@/api/chat.service';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { chatService, Conversation, Message } from '@/api/chat.service';
 import { useAuth } from '@/context/AuthContext';
 import { socketService } from '@/api/socket.service';
 
@@ -31,11 +31,19 @@ export function useConversations() {
   }, [isAuthenticated, includeArchived]);
 
   const [globalSettings, setGlobalSettings] = useState<{ muteUnreadBadges: boolean } | null>(null);
+  // Use a ref to access the latest settings inside the socket event handler without re-binding
+  const globalSettingsRef = useRef(globalSettings);
+
+  useEffect(() => {
+    globalSettingsRef.current = globalSettings;
+  }, [globalSettings]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
     chatService.getGlobalSettings().then(settings => {
-      setGlobalSettings({ muteUnreadBadges: settings.muteUnreadBadges });
+      const newSettings = { muteUnreadBadges: settings.muteUnreadBadges };
+      setGlobalSettings(newSettings);
+      globalSettingsRef.current = newSettings;
     }).catch(err => console.error('Failed to fetch global settings', err));
   }, [isAuthenticated]);
 
@@ -83,7 +91,8 @@ export function useConversations() {
       }));
     };
 
-    const handleNewMessage = (message: any) => {
+    const handleNewMessage = (message: Message) => {
+      
       const { conversationId, senderId, content } = message;
       const currentUserId = user?.id || '';
       
@@ -118,8 +127,11 @@ export function useConversations() {
         
         const currentParticipantSettings = conv.participantSettings?.find(p => p.userId === currentUserId);
         const isMuted = currentParticipantSettings?.isMuted || false;
+        
+        // Check global settings
+        const isGlobalMute = globalSettingsRef.current?.muteUnreadBadges || false;
 
-        if (senderId && senderId !== currentUserId && !isMuted) { 
+        if (senderId && senderId !== currentUserId && !isMuted && !isGlobalMute) { 
            conv.unreadCount = (conv.unreadCount || 0) + 1;
         }
         

@@ -16,14 +16,26 @@ export class ConversationService {
 
     const conversations = await ConversationModel.find(query).sort({ lastMessageAt: -1 }).lean();
 
+    const conversationIds = conversations.map(c => c._id);
+
+    // optimize: fetch last messages for all conversations in one go
+    const lastMessages = await MessageModel.aggregate([
+      { $match: { conversationId: { $in: conversationIds } } },
+      { $sort: { createdAt: -1 } },
+      { $group: { 
+          _id: '$conversationId', 
+          lastMessage: { $first: '$$ROOT' } 
+      }}
+    ]);
+
+    const lastMessageMap = new Map(lastMessages.map(item => [item._id.toString(), item.lastMessage]));
+
     // Populate unread counts
     const enrichedConversations = await Promise.all(conversations.map(async (conv) => {
       const userSettings = conv.participantSettings?.find((p: any) => p.userId === userId);
       const lastReadAt = userSettings?.lastReadAt || new Date(0);
       
-      const lastMessage = await MessageModel.findOne({ conversationId: conv._id })
-        .sort({ createdAt: -1 })
-        .select('content senderId type');
+      const lastMessage = lastMessageMap.get(conv._id.toString());
 
       const unreadCount = await MessageModel.countDocuments({
         conversationId: conv._id,
