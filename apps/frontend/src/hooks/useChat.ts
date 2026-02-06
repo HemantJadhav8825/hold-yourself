@@ -354,12 +354,22 @@ export function useChat(conversationId: string | null) {
       ));
       return realMessage;
     } catch (err: any) {
-      const errorMessage = err.response?.data?.error || err.message || 'Failed to send';
+      const rawError = err.response?.data?.error || err.message || 'Failed to send';
+      
+      // Make error messages user-friendly
+      let userFriendlyError = rawError;
+      if (rawError.includes('blocked') || rawError.includes('Cannot send message')) {
+        userFriendlyError = 'Cannot send message - user may be blocked';
+      } else if (rawError.includes('Too many') || rawError.includes('slow down')) {
+        userFriendlyError = 'Sending too fast - please wait';
+      } else if (rawError.includes('too long')) {
+        userFriendlyError = 'Message is too long';
+      }
       
       // Mark as failed instead of removing
       setMessages(prev => prev.map(msg => 
         (msg.id === clientMessageId || msg.clientMessageId === clientMessageId)
-          ? { ...msg, status: 'failed', error: errorMessage } 
+          ? { ...msg, status: 'failed', error: userFriendlyError } 
           : msg
       ));
       throw err;
