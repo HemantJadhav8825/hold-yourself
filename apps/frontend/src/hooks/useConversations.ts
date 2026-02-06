@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { chatService, Conversation } from '@/api/chat.service';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { chatService, Conversation, Message } from '@/api/chat.service';
 import { useAuth } from '@/context/AuthContext';
 import { socketService } from '@/api/socket.service';
 
@@ -29,6 +29,23 @@ export function useConversations() {
       setIsLoading(false);
     }
   }, [isAuthenticated, includeArchived]);
+
+  const [globalSettings, setGlobalSettings] = useState<{ muteUnreadBadges: boolean } | null>(null);
+  // Use a ref to access the latest settings inside the socket event handler without re-binding
+  const globalSettingsRef = useRef(globalSettings);
+
+  useEffect(() => {
+    globalSettingsRef.current = globalSettings;
+  }, [globalSettings]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    chatService.getGlobalSettings().then(settings => {
+      const newSettings = { muteUnreadBadges: settings.muteUnreadBadges };
+      setGlobalSettings(newSettings);
+      globalSettingsRef.current = newSettings;
+    }).catch(err => console.error('Failed to fetch global settings', err));
+  }, [isAuthenticated]);
 
   useEffect(() => {
     // Wait for auth to complete
@@ -74,7 +91,9 @@ export function useConversations() {
       }));
     };
 
-    const handleNewMessage = ({ conversationId, senderId }: { conversationId: string, senderId: string }) => {
+    const handleNewMessage = (message: Message) => {
+      
+      const { conversationId, senderId, content } = message;
       const currentUserId = user?.id || '';
       
       setConversations(prev => {
@@ -91,6 +110,12 @@ export function useConversations() {
         
         // Update lastMessageAt regardless of who sent it
         conv.lastMessageAt = new Date().toISOString(); 
+        
+        // Update preview
+        if (content) {
+          conv.lastMessageContent = content;
+          conv.lastMessageSenderId = senderId;
+        }
 
         // Increment unread count ONLY if:
         // 1. Message is NOT from current user
@@ -100,7 +125,13 @@ export function useConversations() {
         //    we might flicker. But `handleConversationRead` should arrive and clear it.)
         //    For now, standard logic: if sender != me, increment.
         
-        if (senderId && senderId !== currentUserId) { 
+        const currentParticipantSettings = conv.participantSettings?.find(p => p.userId === currentUserId);
+        const isMuted = currentParticipantSettings?.isMuted || false;
+        
+        // Check global settings
+        const isGlobalMute = globalSettingsRef.current?.muteUnreadBadges || false;
+
+        if (senderId && senderId !== currentUserId && !isMuted && !isGlobalMute) { 
            conv.unreadCount = (conv.unreadCount || 0) + 1;
         }
         
@@ -133,6 +164,7 @@ export function useConversations() {
     isEmpty: conversations.length === 0,
     error,
     onlineUsers,
+    globalSettings,
     refresh: fetchConversations
   };
 }

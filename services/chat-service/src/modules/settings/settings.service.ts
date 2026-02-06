@@ -9,7 +9,7 @@ export class SettingsService {
     return settings;
   }
 
-  static async updateSettings(userId: string, updates: { showReadReceipts?: boolean }) {
+  static async updateSettings(userId: string, updates: { showReadReceipts?: boolean; muteUnreadBadges?: boolean }) {
     return UserSettingsModel.findOneAndUpdate(
       { userId },
       { $set: updates },

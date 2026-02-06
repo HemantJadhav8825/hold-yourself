@@ -16,21 +16,48 @@ export class ConversationService {
 
     const conversations = await ConversationModel.find(query).sort({ lastMessageAt: -1 }).lean();
 
+    const conversationIds = conversations.map(c => c._id);
+
+    // optimize: fetch last messages for all conversations in one go
+    const lastMessages = await MessageModel.aggregate([
+      { $match: { conversationId: { $in: conversationIds } } },
+      { $sort: { createdAt: -1 } },
+      { $group: { 
+          _id: '$conversationId', 
+          lastMessage: { $first: '$$ROOT' } 
+      }}
+    ]);
+
+    const lastMessageMap = new Map(lastMessages.map(item => [item._id.toString(), item.lastMessage]));
+
     // Populate unread counts
     const enrichedConversations = await Promise.all(conversations.map(async (conv) => {
       const userSettings = conv.participantSettings?.find((p: any) => p.userId === userId);
       const lastReadAt = userSettings?.lastReadAt || new Date(0);
       
-      const unreadCount = await MessageModel.countDocuments({
-        conversationId: conv._id,
-        createdAt: { $gt: lastReadAt },
-        senderId: { $ne: userId } // Don't count own messages as unread
-      });
+      const lastMessage = lastMessageMap.get(conv._id.toString());
+      
+      let unreadCount = 0;
+
+      // Optimization: If last message is older than or equal to last read, count is 0.
+      // This skips the DB query for the vast majority of conversations (read ones).
+      if (conv.lastMessageAt && new Date(conv.lastMessageAt) <= new Date(lastReadAt)) {
+        unreadCount = 0;
+      } else {
+        const count = await MessageModel.countDocuments({
+          conversationId: conv._id,
+          createdAt: { $gt: lastReadAt },
+          senderId: { $ne: userId } // Don't count own messages as unread
+        });
+        unreadCount = Math.max(0, count); // Safeguard against negative counts
+      }
 
       return {
         ...conv,
         id: conv._id, // Ensure id is present for frontend
-        unreadCount
+        unreadCount,
+        lastMessageContent: lastMessage?.content || '',
+        lastMessageSenderId: lastMessage?.senderId
       };
     }));
 
