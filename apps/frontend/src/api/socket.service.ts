@@ -2,9 +2,8 @@ import { io, Socket } from "socket.io-client";
 import { getAccessToken } from "./client";
 import { env } from "../config/env";
 
-// Resolve chat API URL with proper fallback chain (same as chat.service.ts)
-const CHAT_API_URL =
-  process.env.NEXT_PUBLIC_CHAT_API_URL || env.NEXT_PUBLIC_API_URL || "http://localhost:3200";
+// Use validated environment variable (env.ts ensures this exists)
+const CHAT_API_URL = env.NEXT_PUBLIC_CHAT_API_URL;
 
 class SocketService {
   private socket: Socket | null = null;

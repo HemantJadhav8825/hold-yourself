@@ -2,13 +2,13 @@ import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import { getAccessToken, setAccessToken } from './client';
 import { env } from '../config/env';
 
-// Resolve chat API URL with proper fallback chain
-const CHAT_API_URL = process.env.NEXT_PUBLIC_CHAT_API_URL || env.NEXT_PUBLIC_API_URL || 'http://localhost:3200';
+// Use validated environment variable (env.ts ensures this exists)
+const CHAT_API_URL = env.NEXT_PUBLIC_CHAT_API_URL;
 const MAIN_API_URL = env.NEXT_PUBLIC_API_URL;
 
 // Log the resolved URL for debugging (only in development)
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-  console.log('🔧 [CHAT] Resolved Chat API URL:', CHAT_API_URL);
+  console.log('🔧 [CHAT] Using Chat API URL:', CHAT_API_URL);
 }
 
 const chatClient: AxiosInstance = axios.create({
