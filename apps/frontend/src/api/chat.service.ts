@@ -62,6 +62,7 @@ export interface ParticipantSettings {
   userId: string;
   isMuted: boolean;
   isArchived: boolean;
+  lastReadAt?: string;
 }
 
 export interface Conversation {
@@ -72,6 +73,8 @@ export interface Conversation {
   lastMessageAt: string;
   createdAt: string;
   updatedAt: string;
+  lastMessageContent?: string;
+  lastMessageSenderId?: string;
 }
 
 export interface Message {
@@ -90,6 +93,7 @@ export interface Message {
 export interface UserSettings {
   userId: string;
   showReadReceipts: boolean;
+  muteUnreadBadges: boolean;
 }
 
 export const chatService = {
@@ -146,7 +150,7 @@ export const chatService = {
     return response.data;
   },
 
-  async updateGlobalSettings(settings: { showReadReceipts: boolean }): Promise<UserSettings> {
+  async updateGlobalSettings(settings: { showReadReceipts?: boolean; muteUnreadBadges?: boolean }): Promise<UserSettings> {
     const response = await chatClient.patch('/v1/settings', settings);
     return response.data;
   }

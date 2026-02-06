@@ -171,6 +171,20 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
   const otherUserPresence = otherUser ? onlineStatus.get(otherUser.id) : null;
   const isOnline = otherUserPresence?.status === 'online';
 
+  // Track initial read time to freeze the "New Messages" line location
+  const [initialLastReadAt, setInitialLastReadAt] = React.useState<Date | null>(null);
+
+  React.useEffect(() => {
+    if (conversation?.id && currentUser) {
+      const settings = conversation.participantSettings?.find(s => s.userId === currentUser.id);
+      // Only set once per conversation load to avoid jumping line
+      setInitialLastReadAt(prev => {
+        // If we switch conversations, reset
+        return settings?.lastReadAt ? new Date(settings.lastReadAt) : new Date(0);
+      });
+    }
+  }, [conversation?.id, currentUser]); // Intentionally not depending on conversation changes other than ID
+
   // Calm Utility: Group messages by sender and time (5-min threshold)
   const groupedMessages = messages.reduce((acc: any[], msg, i) => {
     const prevMsg = messages[i + 1]; // We are in flex-col-reverse
@@ -198,12 +212,50 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
       acc.push({ type: 'gap', time: currDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
     }
 
+    // New Messages Divider Logic:
+    // Insert IF:
+    // 1. We have an initialLastReadAt
+    // 2. This message is NEWER than initialLastReadAt
+    // 3. The PREVIOUS message (which is older in the array index, but chronologically before this one?)
+    //    Actually, we are iterating reducing from 0 (newest?)
+    //    Wait, messages usually come from useChat sorted? 
+    //    "const prevMsg = messages[i + 1]" implies messages[0] is newest (reverse chrono).
+    //    So we are building the list from NEWEST to OLDEST? 
+    //    If so, acc.push appends to the list.
+    //    If the render is flex-col-reverse, then the first item in array is at the BOTTOM.
+    //    So array[0] is indeed the newest message and should be at the START of the visual list (bottom).
+    
+    //    Let's check useChat. Typically it fits standard chat: array is chronological, but UI reverses?
+    //    Or array is reverse chronological?
+    
+    //    If "prevMsg = messages[i+1]" is chronologically BEFORE "msg", then messages[i] is NEWER than messages[i+1].
+    //    So messages[0] is the NEWEST.
+    //    
+    //    So we are traversing from Newest -> Oldest.
+    //    
+    //    Divider should appear AFTER the last "New" message we encounter?
+    //    Or rather, between the Oldest New Message and the Newest Old Message.
+    
+    //    Let's stick to: "Is this message unread?" -> msg.createdAt > initialLastReadAt.
+    //    "Is the NEXT processed message (i.e. prevMsg, older) READ?" -> prevMsg.createdAt <= initialLastReadAt.
+    //    If so, insert Divider AFTER pushing this message (which means visually ABOVE it in column-reverse).
+    
+    const isUnread = initialLastReadAt && currDate > initialLastReadAt && msg.senderId !== currentUser?.id;
+    const isPrevRead = !prevMsg || (initialLastReadAt && new Date(prevMsg.createdAt) <= initialLastReadAt) || prevMsg.senderId === currentUser?.id; // count own messages as "read" for divider purposes
+    
+    // Actually, if I sent the last message, I shouldn't see "New Messages" under my own message.
+    // "New Messages" line marks where *other people's* messages started accumulating.
+
     acc.push({
       ...msg,
       type: 'message',
       isFirstInGroup,
       isLastInGroup
     });
+
+    if (isUnread && isPrevRead && initialLastReadAt && initialLastReadAt.getTime() > 0) {
+       acc.push({ type: 'new-messages-divider' });
+    }
 
     return acc;
   }, []);
@@ -343,6 +395,14 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
                 <Text size="xs" muted className="text-[10px] uppercase tracking-widest opacity-20 font-medium">
                   {item.time}
                 </Text>
+              </div>
+            ) : item.type === 'new-messages-divider' ? (
+              <div key={`divider-${idx}`} className="flex items-center gap-4 my-6 opacity-80 animate-in fade-in zoom-in-50 duration-500">
+                <div className="h-px bg-red-500/20 flex-1" />
+                <div className="bg-red-500/10 text-red-500 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm border border-red-500/20">
+                  New Messages
+                </div>
+                <div className="h-px bg-red-500/20 flex-1" />
               </div>
             ) : (
               <MessageBubble 

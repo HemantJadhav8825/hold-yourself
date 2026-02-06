@@ -9,7 +9,7 @@ interface GlobalChatSettingsProps {
 }
 
 export const GlobalChatSettings: React.FC<GlobalChatSettingsProps> = ({ onClose }) => {
-  const [settings, setSettings] = React.useState<{ showReadReceipts: boolean } | null>(null);
+  const [settings, setSettings] = React.useState<{ showReadReceipts: boolean; muteUnreadBadges: boolean } | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isUpdating, setIsUpdating] = React.useState(false);
 
@@ -41,6 +41,23 @@ export const GlobalChatSettings: React.FC<GlobalChatSettingsProps> = ({ onClose 
       setIsUpdating(false);
     }
   };
+
+  const handleToggleMuteBadges = async () => {
+    if (!settings) return;
+    try {
+      setIsUpdating(true);
+      const updated = await chatService.updateGlobalSettings({ 
+        muteUnreadBadges: !settings.muteUnreadBadges 
+      });
+      setSettings(updated);
+    } catch (err) {
+      console.error('Failed to update settings', err);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+
 
   if (isLoading) return null;
 
@@ -76,6 +93,26 @@ export const GlobalChatSettings: React.FC<GlobalChatSettingsProps> = ({ onClose 
             >
               <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${
                 settings?.showReadReceipts ? 'translate-x-6' : 'translate-x-0'
+              }`} />
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <Text weight="semibold">Mute Unread Badges</Text>
+              <Text size="sm" muted className="text-xs mt-0.5">
+                Hide unread counts on all conversations.
+              </Text>
+            </div>
+            <button 
+              onClick={handleToggleMuteBadges}
+              disabled={isUpdating}
+              className={`w-12 h-6 rounded-full transition-colors relative flex items-center px-1 ${
+                settings?.muteUnreadBadges ? 'bg-primary' : 'bg-muted-foreground/20'
+              }`}
+            >
+              <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${
+                settings?.muteUnreadBadges ? 'translate-x-6' : 'translate-x-0'
               }`} />
             </button>
           </div>
