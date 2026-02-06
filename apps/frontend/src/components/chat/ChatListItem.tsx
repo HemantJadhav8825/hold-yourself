@@ -13,6 +13,7 @@ interface ChatListItemProps {
   isActive?: boolean;
   isOnline?: boolean;
   isMuted?: boolean;
+  unreadCount?: number;
   onClick?: () => void;
 }
 
@@ -24,6 +25,7 @@ export const ChatListItem: React.FC<ChatListItemProps> = ({
   isActive = false,
   isOnline = false,
   isMuted = false,
+  unreadCount = 0,
   onClick,
 }) => {
   return (
@@ -51,6 +53,11 @@ export const ChatListItem: React.FC<ChatListItemProps> = ({
             <Text size="xs" muted className="whitespace-nowrap flex-shrink-0">
               {timestamp}
             </Text>
+          )}
+          {unreadCount > 0 && (
+            <div className="min-w-[1.25rem] h-5 px-1.5 flex items-center justify-center bg-primary text-primary-foreground text-[10px] font-bold rounded-full ml-2">
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </div>
           )}
         </div>
         {lastMessage && (

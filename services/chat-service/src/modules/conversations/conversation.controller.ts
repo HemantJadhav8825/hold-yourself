@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { AuthRequest } from '../../middleware/auth';
 import { ConversationService } from './conversation.service';
+import { socketService } from '../../socket';
 
 export class ConversationController {
   static async list(req: AuthRequest, res: Response) {
@@ -22,6 +23,24 @@ export class ConversationController {
 
       const conversation = await ConversationService.updateParticipantSettings(id, userId, { isMuted, isArchived });
       res.json(conversation);
+    } catch (err: any) {
+      const status = err.message === 'Unauthorized' ? 403 : (err.message === 'Conversation not found' ? 404 : 400);
+      res.status(status).json({ error: err.message });
+    }
+  }
+
+  static async markAsRead(req: AuthRequest, res: Response) {
+    try {
+      const userId = req.user!.sub;
+      const { id } = req.params;
+      
+      const result = await ConversationService.markAsRead(id, userId);
+      
+      
+      // Emit socket event for real-time update
+      socketService.emitToUser(userId, 'conversation:read', { conversationId: id, userId });
+      
+      res.json(result);
     } catch (err: any) {
       const status = err.message === 'Unauthorized' ? 403 : (err.message === 'Conversation not found' ? 404 : 400);
       res.status(status).json({ error: err.message });

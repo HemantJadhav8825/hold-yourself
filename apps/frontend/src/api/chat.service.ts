@@ -68,6 +68,7 @@ export interface Conversation {
   id: string;
   participants: (string | Participant)[];
   participantSettings?: ParticipantSettings[];
+  unreadCount?: number;
   lastMessageAt: string;
   createdAt: string;
   updatedAt: string;
@@ -137,7 +138,7 @@ export const chatService = {
   },
 
   async markConversationRead(conversationId: string): Promise<void> {
-    await chatClient.post(`/v1/messages/read/${conversationId}`);
+    await chatClient.put(`/v1/conversations/${conversationId}/read`);
   },
 
   async getGlobalSettings(): Promise<UserSettings> {

@@ -1,5 +1,6 @@
 import { ConversationModel } from '../../models/conversation.model';
 import { ModerationService } from '../moderation/moderation.service';
+import { MessageModel } from '../../models/message.model';
 
 export class ConversationService {
   static async listConversations(userId: string, includeArchived: boolean = false) {
@@ -13,7 +14,47 @@ export class ConversationService {
       };
     }
 
-    return ConversationModel.find(query).sort({ lastMessageAt: -1 });
+    const conversations = await ConversationModel.find(query).sort({ lastMessageAt: -1 }).lean();
+
+    // Populate unread counts
+    const enrichedConversations = await Promise.all(conversations.map(async (conv) => {
+      const userSettings = conv.participantSettings?.find((p: any) => p.userId === userId);
+      const lastReadAt = userSettings?.lastReadAt || new Date(0);
+      
+      const unreadCount = await MessageModel.countDocuments({
+        conversationId: conv._id,
+        createdAt: { $gt: lastReadAt },
+        senderId: { $ne: userId } // Don't count own messages as unread
+      });
+
+      return {
+        ...conv,
+        id: conv._id, // Ensure id is present for frontend
+        unreadCount
+      };
+    }));
+
+    return enrichedConversations;
+  }
+
+  static async markAsRead(conversationId: string, userId: string) {
+    const conversation = await ConversationModel.findById(conversationId);
+    if (!conversation) throw new Error('Conversation not found');
+
+    const isParticipant = conversation.participants.some(p => p.toString() === userId);
+    if (!isParticipant) throw new Error('Unauthorized');
+
+    let userSettings = conversation.participantSettings.find(s => s.userId === userId);
+    if (!userSettings) {
+      // Should ideally exist, but safe fallback
+      userSettings = { userId, isMuted: false, isArchived: false, lastReadAt: new Date() };
+      conversation.participantSettings.push(userSettings);
+    } else {
+      userSettings.lastReadAt = new Date();
+    }
+
+    await conversation.save();
+    return { success: true, conversationId, lastReadAt: userSettings.lastReadAt };
   }
 
   static async updateParticipantSettings(conversationId: string, userId: string, settings: { isMuted?: boolean; isArchived?: boolean }) {
@@ -28,7 +69,7 @@ export class ConversationService {
 
     let userSettings = conversation.participantSettings.find(s => s.userId === userId);
     if (!userSettings) {
-      userSettings = { userId, isMuted: false, isArchived: false };
+      userSettings = { userId, isMuted: false, isArchived: false, lastReadAt: new Date(0) };
       conversation.participantSettings.push(userSettings);
     }
 

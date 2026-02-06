@@ -144,6 +144,20 @@ export class SocketService {
         }
       });
 
+      socket.on('conversation:markRead', async ({ conversationId }) => {
+        try {
+          await ConversationService.markAsRead(conversationId, userId);
+          // Sync to other devices of the same user
+          this.emitToUser(userId, 'conversation:read', { conversationId, userId });
+        } catch (error: any) {
+          structuredLog('error', 'socket:conversation_error', 'Error handling conversation:markRead', { userId, conversationId, error });
+        }
+      });
+
+      /* 
+       * DEPRECATED in V3: message:read relies on per-message flags which we are moving away from.
+       * Keeping for backward compatibility but V3 clients should use conversation:markRead.
+       */
       socket.on('message:read', async ({ conversationId }) => {
         try {
           await MessageService.markAsRead(conversationId, userId);
