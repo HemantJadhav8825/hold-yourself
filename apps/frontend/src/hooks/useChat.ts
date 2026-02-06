@@ -8,11 +8,16 @@ export function useChat(conversationId: string | null) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set());
+  const [onlineStatus, setOnlineStatus] = useState<Map<string, { status: 'online' | 'offline', lastSeen?: string }>>(new Map());
   const { user: currentUser } = useCurrentUser();
   
   // Ref for pagination
   const offsetRef = useRef(0);
   const [hasMore, setHasMore] = useState(true);
+
+  // Typing expiry timer ref
+  const typingTimersRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
   const fetchMessages = useCallback(async (isLoadMore = false) => {
     if (!conversationId) return;
@@ -46,6 +51,7 @@ export function useChat(conversationId: string | null) {
     setMessages([]);
     offsetRef.current = 0;
     setHasMore(true);
+    setTypingUsers(new Set());
     if (conversationId) {
       fetchMessages();
     }
@@ -71,6 +77,68 @@ export function useChat(conversationId: string | null) {
     };
   }, [resyncMessages]);
 
+  useEffect(() => {
+    const handlePresenceUpdate = ({ userId, status, lastSeen }: { userId: string, status: 'online' | 'offline', lastSeen?: string }) => {
+      setOnlineStatus(prev => {
+        const next = new Map(prev);
+        next.set(userId, { status, lastSeen });
+        return next;
+      });
+    };
+
+    const handleTypingStart = ({ userId, conversationId: typingConvId }: { userId: string, conversationId: string }) => {
+      if (typingConvId !== conversationId) return;
+      
+      setTypingUsers(prev => {
+        const next = new Set(prev);
+        next.add(userId);
+        return next;
+      });
+
+      // Auto-expire typing indicator after 7 seconds if no stop event follows
+      if (typingTimersRef.current.has(userId)) {
+        clearTimeout(typingTimersRef.current.get(userId));
+      }
+      const timeout = setTimeout(() => {
+        setTypingUsers(prev => {
+          const next = new Set(prev);
+          next.delete(userId);
+          return next;
+        });
+        typingTimersRef.current.delete(userId);
+      }, 7000);
+      typingTimersRef.current.set(userId, timeout);
+    };
+
+    const handleTypingStop = ({ userId, conversationId: typingConvId }: { userId: string, conversationId: string }) => {
+      if (typingConvId !== conversationId) return;
+      
+      setTypingUsers(prev => {
+        const next = new Set(prev);
+        next.delete(userId);
+        return next;
+      });
+
+      if (typingTimersRef.current.has(userId)) {
+        clearTimeout(typingTimersRef.current.get(userId));
+        typingTimersRef.current.delete(userId);
+      }
+    };
+
+    socketService.on('presence:update', handlePresenceUpdate);
+    socketService.on('typing:start', handleTypingStart);
+    socketService.on('typing:stop', handleTypingStop);
+
+    return () => {
+      socketService.off('presence:update', handlePresenceUpdate);
+      socketService.off('typing:start', handleTypingStart);
+      socketService.off('typing:stop', handleTypingStop);
+      // Clear all typing timers on unmount
+      typingTimersRef.current.forEach(timer => clearTimeout(timer));
+      typingTimersRef.current.clear();
+    };
+  }, [conversationId]);
+  
 // Helper to deduplicate messages by ID and handle optimistic replacements
   const deduplicateMessages = (current: Message[], incoming: Message[]): Message[] => {
     const messageMap = new Map<string, Message>();
@@ -107,6 +175,14 @@ export function useChat(conversationId: string | null) {
   useEffect(() => {
     const handleNewMessage = (newMessage: Message) => {
       if (newMessage.conversationId !== conversationId) return;
+      
+      // Stop typing on new message
+      setTypingUsers(prev => {
+        const next = new Set(prev);
+        next.delete(newMessage.senderId);
+        return next;
+      });
+
       setMessages(prev => deduplicateMessages(prev, [newMessage]));
     };
 
@@ -190,13 +266,21 @@ export function useChat(conversationId: string | null) {
     }
   };
 
+  const setTyping = useCallback((isTyping: boolean) => {
+    if (!conversationId) return;
+    socketService.emit(isTyping ? 'typing:start' : 'typing:stop', { conversationId });
+  }, [conversationId]);
+
   return {
     messages,
     isLoading,
     isSending,
     error,
     hasMore,
+    typingUsers,
+    onlineStatus,
     loadMore: () => fetchMessages(true),
-    sendMessage
+    sendMessage,
+    setTyping
   };
 }

@@ -10,6 +10,7 @@ interface ChatListItemProps {
   lastMessage?: string;
   timestamp?: string;
   isActive?: boolean;
+  isOnline?: boolean;
   onClick?: () => void;
 }
 
@@ -19,6 +20,7 @@ export const ChatListItem: React.FC<ChatListItemProps> = ({
   lastMessage,
   timestamp,
   isActive = false,
+  isOnline = false,
   onClick,
 }) => {
   return (
@@ -29,7 +31,12 @@ export const ChatListItem: React.FC<ChatListItemProps> = ({
         isActive ? 'bg-primary/5' : 'hover:bg-muted/50'
       )}
     >
-      <ProfileAvatar src={avatar} name={name} size="md" hasStory storySeen />
+      <div className="relative">
+        <ProfileAvatar src={avatar} name={name} size="md" />
+        {isOnline && (
+          <span className="absolute bottom-0.5 right-0.5 w-2.5 h-2.5 bg-primary border-2 border-background rounded-full" />
+        )}
+      </div>
       
       <div className="flex-1 text-left min-w-0">
         <div className="flex justify-between items-baseline gap-2">

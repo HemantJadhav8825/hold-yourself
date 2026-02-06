@@ -27,7 +27,15 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
   conversation,
   onBack,
 }) => {
-  const { messages, sendMessage, isLoading, isSending } = useChat(conversation?.id || null);
+  const { 
+    messages, 
+    sendMessage, 
+    isLoading, 
+    isSending, 
+    typingUsers, 
+    onlineStatus, 
+    setTyping 
+  } = useChat(conversation?.id || null);
   const { users } = useUsers(50);
   const { user: currentUser } = useCurrentUser();
 
@@ -42,6 +50,9 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
   const chatName = otherUser?.displayName || otherUser?.username || 'Chat';
   const chatAvatar = otherUser?.avatar;
 
+  const otherUserPresence = otherUser ? onlineStatus.get(otherUser.id) : null;
+  const isOnline = otherUserPresence?.status === 'online';
+
   // Calm Utility: Group messages by sender and time (5-min threshold)
   const groupedMessages = messages.reduce((acc: any[], msg, i) => {
     const prevMsg = messages[i + 1]; // We are in flex-col-reverse
@@ -52,17 +63,21 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
     
     // Day Separator Check
     const isNewDay = !prevDate || currDate.toDateString() !== prevDate.toDateString();
+    const isLargeGap = prevDate && (currDate.getTime() - prevDate.getTime() > 30 * 60 * 1000);
     
     // Grouping Check
     const isSameSender = prevMsg && prevMsg.senderId === msg.senderId;
     const isWithinThreshold = prevDate && (currDate.getTime() - prevDate.getTime() < 5 * 60 * 1000);
-    const isFirstInGroup = isNewDay || !isSameSender || !isWithinThreshold;
+    const isFirstInGroup = isNewDay || isLargeGap || !isSameSender || !isWithinThreshold;
     
     const isLastInGroup = !nextMsg || nextMsg.senderId !== msg.senderId || 
-                         (new Date(nextMsg.createdAt).getTime() - currDate.getTime() > 5 * 60 * 1000);
+                         (new Date(nextMsg.createdAt).getTime() - currDate.getTime() > 5 * 60 * 1000) ||
+                         (new Date(nextMsg.createdAt).getTime() - currDate.getTime() > 30 * 60 * 1000);
 
     if (isNewDay) {
       acc.push({ type: 'day', date: currDate.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' }) });
+    } else if (isLargeGap) {
+      acc.push({ type: 'gap', time: currDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
     }
 
     acc.push({
@@ -85,10 +100,25 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
               <ChevronLeft className="w-6 h-6" />
             </button>
           )}
-          <ProfileAvatar src={chatAvatar} name={chatName} size="sm" hasStory storySeen />
+          <div className="relative">
+            <ProfileAvatar src={chatAvatar} name={chatName} size="sm" />
+            {isOnline && (
+              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-primary border-2 border-background rounded-full" />
+            )}
+          </div>
           <div className="flex flex-col">
-            <Text weight="semibold" className="text-sm cursor-pointer">{chatName}</Text>
-            <Text size="xs" muted className="hidden lg:block text-primary/40 italic">In a quiet space</Text>
+            <div className="flex items-center gap-2">
+              <Text weight="semibold" className="text-sm cursor-pointer">{chatName}</Text>
+            </div>
+            <Text size="xs" muted className="text-[10px] uppercase tracking-wider opacity-60">
+              {isOnline ? (
+                <span className="text-primary font-medium">Online now</span>
+              ) : otherUserPresence?.lastSeen ? (
+                `Last seen ${new Date(otherUserPresence.lastSeen).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+              ) : (
+                'Quietly away'
+              )}
+            </Text>
           </div>
         </div>
         
@@ -98,7 +128,23 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
       </header>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 lg:p-6 no-scrollbar flex flex-col-reverse">
+      <div className="flex-1 overflow-y-auto p-4 lg:p-6 no-scrollbar flex flex-col-reverse relative">
+        {/* Typing Indicators */}
+        {otherUser && typingUsers.has(otherUser.id) && (
+          <div className="absolute bottom-4 left-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+             <div className="bg-muted/30 px-3 py-1.5 rounded-2xl rounded-bl-none flex items-center gap-1.5">
+                <div className="flex gap-1">
+                  <span className="w-1 h-1 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                  <span className="w-1 h-1 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                  <span className="w-1 h-1 bg-primary/40 rounded-full animate-bounce" />
+                </div>
+                <Text className="text-[10px] text-muted-foreground font-medium italic opacity-60">
+                  {chatName} is thinking...
+                </Text>
+             </div>
+          </div>
+        )}
+
         {groupedMessages.length > 0 ? (
           groupedMessages.map((item, idx) => (
             item.type === 'day' ? (
@@ -108,6 +154,12 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
                     {item.date}
                   </Text>
                 </div>
+              </div>
+            ) : item.type === 'gap' ? (
+              <div key={`gap-${idx}`} className="flex justify-center my-4">
+                <Text size="xs" muted className="text-[10px] uppercase tracking-widest opacity-20 font-medium">
+                  {item.time}
+                </Text>
               </div>
             ) : (
               <MessageBubble 
@@ -129,7 +181,7 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
           </div>
         ) : (
           <div className="h-full flex flex-col items-center justify-center text-center p-8 space-y-4">
-            <ProfileAvatar src={chatAvatar} name={chatName} size="xl" hasStory storySeen />
+            <ProfileAvatar src={chatAvatar} name={chatName} size="xl" />
             <div>
               <Text weight="bold" className="text-xl">{chatName}</Text>
               <Text size="sm" muted className="opacity-40 italic">Nature is always here for you</Text>
@@ -139,7 +191,10 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
       </div>
 
       {/* Input */}
-      <MessageInput onSend={sendMessage} />
+      <MessageInput 
+        onSend={sendMessage} 
+        onTypingChange={setTyping}
+      />
     </div>
   );
 };

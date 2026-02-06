@@ -4,13 +4,16 @@ import { cn } from '@/lib/utils';
 
 interface MessageInputProps {
   onSend?: (message: string) => void;
+  onTypingChange?: (isTyping: boolean) => void;
   className?: string;
 }
 
 const MAX_LENGTH = 2000;
 
-export const MessageInput: React.FC<MessageInputProps> = ({ onSend, className }) => {
-  const [message, setMessage] = useState('');
+export const MessageInput: React.FC<MessageInputProps> = ({ onSend, onTypingChange, className }) => {
+  const [message, setMessage] = React.useState('');
+  const [isTyping, setIsTyping] = React.useState(false);
+  const typingTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   
   const isTooLong = message.length > MAX_LENGTH;
   const isNotEmpty = message.trim().length > 0;
@@ -20,8 +23,37 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSend, className })
     if (canSend && onSend) {
       onSend(message);
       setMessage('');
+      if (isTyping) {
+        setIsTyping(false);
+        onTypingChange?.(false);
+      }
     }
   };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setMessage(newValue);
+
+    if (!isTyping && newValue.trim().length > 0) {
+      setIsTyping(true);
+      onTypingChange?.(true);
+    }
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    typingTimeoutRef.current = setTimeout(() => {
+      setIsTyping(false);
+      onTypingChange?.(false);
+    }, 3000);
+  };
+
+  React.useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    };
+  }, []);
 
   return (
     <div className={cn('p-4 bg-background border-t border-border', className)}>
@@ -34,7 +66,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSend, className })
           <input 
             type="text"
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={handleChange}
             placeholder="Write something..."
             className="flex-1 bg-transparent border-none focus:ring-0 focus:outline-none text-sm py-2"
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
