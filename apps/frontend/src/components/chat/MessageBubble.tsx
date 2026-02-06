@@ -1,40 +1,49 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Text } from '@/components/ui/Text';
+import { AlertCircle, RotateCcw } from 'lucide-react';
 
 interface MessageBubbleProps {
   content: string;
   isSelf: boolean;
+  status?: 'sending' | 'sent' | 'failed';
+  error?: string;
   timestamp?: string;
   isFirstInGroup?: boolean;
   isLastInGroup?: boolean;
+  onRetry?: () => void;
 }
 
 export const MessageBubble: React.FC<MessageBubbleProps> = ({
   content,
   isSelf,
+  status = 'sent',
+  error,
   timestamp,
   isFirstInGroup = true,
   isLastInGroup = true,
+  onRetry,
 }) => {
   return (
     <div 
       className={cn(
         'flex w-full group relative transition-all duration-300',
         isSelf ? 'justify-end' : 'justify-start',
-        isLastInGroup ? 'mb-4' : 'mb-0.5'
+        isLastInGroup ? 'mb-4' : 'mb-0.5',
+        status === 'sending' && 'opacity-70'
       )}
     >
       <div 
         className={cn(
-          'max-w-[75%] px-4 py-2 text-sm leading-relaxed transition-all duration-200',
+          'max-w-[75%] px-4 py-2 text-sm leading-relaxed transition-all duration-200 relative',
           // Adaptive Radius Logic
           isSelf 
             ? cn(
                 'bg-primary text-primary-foreground',
                 'rounded-2xl rounded-tr-sm',
                 !isFirstInGroup && 'rounded-tr-2xl',
-                !isLastInGroup && 'rounded-br-sm'
+                !isLastInGroup && 'rounded-br-sm',
+                status === 'failed' && 'bg-destructive text-destructive-foreground'
               )
             : cn(
                 'bg-muted text-foreground',
@@ -51,6 +60,33 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           {content}
         </Text>
         
+        {status === 'failed' && isSelf && (
+          <div className="mt-2 flex items-center gap-2 pt-1 border-t border-white/20">
+            <AlertCircle className="w-3 h-3" />
+            <Text size="xs" className="text-[10px] flex-1">
+              {error || 'Failed to send'}
+            </Text>
+            {onRetry && (
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRetry();
+                }}
+                className="p-1 hover:bg-white/10 rounded-full transition-colors flex items-center gap-1"
+              >
+                <RotateCcw className="w-3 h-3" />
+                <span className="text-[10px] font-bold uppercase tracking-tighter">Retry</span>
+              </button>
+            )}
+          </div>
+        )}
+        
+        {status === 'sending' && isSelf && (
+          <div className="absolute -left-6 top-1/2 -translate-y-1/2">
+             <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+          </div>
+        )}
+
         {timestamp && (
           <div className={cn(
             'absolute top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap px-2',

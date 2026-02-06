@@ -28,6 +28,10 @@ export class ConversationService {
     return conversation;
   }
 
+  static async findConversationById(conversationId: string) {
+    return ConversationModel.findById(conversationId);
+  }
+
   static async isParticipant(conversationId: string, userId: string) {
     const conversation = await ConversationModel.findById(conversationId);
     return conversation?.participants.includes(userId) || false;

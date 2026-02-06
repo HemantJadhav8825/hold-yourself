@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { chatService, Conversation } from '@/api/chat.service';
 import { useAuth } from '@/context/AuthContext';
+import { socketService } from '@/api/socket.service';
 
 export function useConversations() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
   const { isAuthenticated, isLoading: authLoading } = useAuth();
 
   const fetchConversations = useCallback(async () => {
@@ -34,11 +36,45 @@ export function useConversations() {
     fetchConversations();
   }, [fetchConversations, authLoading]);
 
+  // Presence logic
+  useEffect(() => {
+    const handlePresenceUpdate = ({ userId, status }: { userId: string, status: 'online' | 'offline' }) => {
+      setOnlineUsers(prev => {
+        const next = new Set(prev);
+        if (status === 'online') next.add(userId);
+        else next.delete(userId);
+        return next;
+      });
+    };
+
+    const handlePresenceInitial = (userIds: string[]) => {
+      setOnlineUsers(new Set(userIds));
+    };
+
+    const syncPresence = () => {
+      socketService.emit('presence:sync', {});
+    };
+
+    socketService.on('presence:initial', handlePresenceInitial);
+    socketService.on('presence:update', handlePresenceUpdate);
+    socketService.on('reconnected', syncPresence);
+    
+    // Initial sync attempt
+    syncPresence();
+
+    return () => {
+      socketService.off('presence:initial', handlePresenceInitial);
+      socketService.off('presence:update', handlePresenceUpdate);
+      socketService.off('reconnected', syncPresence);
+    };
+  }, []);
+
   return {
     conversations,
     isLoading,
     isEmpty: conversations.length === 0,
     error,
+    onlineUsers,
     refresh: fetchConversations
   };
 }
