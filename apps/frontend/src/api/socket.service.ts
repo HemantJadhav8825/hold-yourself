@@ -1,8 +1,8 @@
 import { io, Socket } from "socket.io-client";
 import { getAccessToken } from "./client";
+import { env } from "@/config/env";
 
-const CHAT_API_URL =
-  process.env.NEXT_PUBLIC_CHAT_API_URL || "http://localhost:3200";
+const CHAT_API_URL = env.NEXT_PUBLIC_CHAT_API_URL;
 
 class SocketService {
   private socket: Socket | null = null;

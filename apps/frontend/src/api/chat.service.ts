@@ -2,7 +2,7 @@ import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import { getAccessToken, setAccessToken } from './client';
 import { env } from '../config/env';
 
-const CHAT_API_URL = process.env.NEXT_PUBLIC_CHAT_API_URL || 'http://localhost:3200';
+const CHAT_API_URL = env.NEXT_PUBLIC_CHAT_API_URL;
 const MAIN_API_URL = env.NEXT_PUBLIC_API_URL;
 
 const chatClient: AxiosInstance = axios.create({
