@@ -8,6 +8,9 @@ import featureFlagRoutes from './modules/feature-flags/feature-flags.routes';
 
 const app = express();
 
+// Trust the first proxy (e.g. Nginx, Load Balancer) to ensure correct IP resolution
+app.set('trust proxy', 1);
+
 app.use(cors({
   origin: [
     'https://webelong.world',
