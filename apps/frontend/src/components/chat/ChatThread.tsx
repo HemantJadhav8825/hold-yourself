@@ -114,9 +114,12 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
                 key={item.id}
                 content={item.content}
                 isSelf={item.senderId === currentUser?.id}
+                status={item.status}
+                error={item.error}
                 timestamp={new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 isFirstInGroup={item.isFirstInGroup}
                 isLastInGroup={item.isLastInGroup}
+                onRetry={() => sendMessage(item.content, item.clientMessageId)}
               />
             )
           ))

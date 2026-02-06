@@ -73,6 +73,7 @@ export interface Message {
   senderId: string;
   content: string;
   status?: 'sending' | 'sent' | 'failed';
+  error?: string;
   createdAt: string;
 }
 

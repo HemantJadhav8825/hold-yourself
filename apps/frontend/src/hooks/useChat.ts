@@ -138,22 +138,31 @@ export function useChat(conversationId: string | null) {
     return () => clearInterval(intervalId);
   }, [conversationId, currentUser?.id]);
 
-  const sendMessage = async (content: string) => {
+  const sendMessage = async (content: string, retryClientMessageId?: string) => {
     if (!conversationId || !content.trim() || !currentUser) return;
 
-    const clientMessageId = crypto.randomUUID();
-    const optimisticMessage: Message = {
-      id: clientMessageId,
-      clientMessageId,
-      conversationId,
-      senderId: currentUser.id,
-      content,
-      status: 'sending',
-      createdAt: new Date().toISOString(),
-    };
-
-    // Optimistic update
-    setMessages(prev => [optimisticMessage, ...prev]);
+    const clientMessageId = retryClientMessageId || crypto.randomUUID();
+    
+    if (retryClientMessageId) {
+      // If retrying, update existing message to 'sending' and clear previous error
+      setMessages(prev => prev.map(msg => 
+        msg.clientMessageId === retryClientMessageId 
+          ? { ...msg, status: 'sending', error: undefined } 
+          : msg
+      ));
+    } else {
+      const optimisticMessage: Message = {
+        id: clientMessageId,
+        clientMessageId,
+        conversationId,
+        senderId: currentUser.id,
+        content,
+        status: 'sending',
+        createdAt: new Date().toISOString(),
+      };
+      // Optimistic update
+      setMessages(prev => [optimisticMessage, ...prev]);
+    }
 
     try {
       setIsSending(true);
@@ -161,13 +170,19 @@ export function useChat(conversationId: string | null) {
       
       // Update with real message and 'sent' status
       setMessages(prev => prev.map(msg => 
-        msg.id === clientMessageId ? { ...realMessage, status: 'sent' } : msg
+        (msg.id === clientMessageId || msg.clientMessageId === clientMessageId)
+          ? { ...realMessage, status: 'sent' } 
+          : msg
       ));
       return realMessage;
     } catch (err: any) {
+      const errorMessage = err.response?.data?.error || err.message || 'Failed to send';
+      
       // Mark as failed instead of removing
       setMessages(prev => prev.map(msg => 
-        msg.id === clientMessageId ? { ...msg, status: 'failed' } : msg
+        (msg.id === clientMessageId || msg.clientMessageId === clientMessageId)
+          ? { ...msg, status: 'failed', error: errorMessage } 
+          : msg
       ));
       throw err;
     } finally {
