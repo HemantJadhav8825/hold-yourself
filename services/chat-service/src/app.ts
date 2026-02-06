@@ -3,6 +3,7 @@ import cors from 'cors';
 import conversationRoutes from './modules/conversations/conversation.routes';
 import messageRoutes from './modules/messages/message.routes';
 import settingsRoutes from './modules/settings/settings.routes';
+import moderationRoutes from './modules/moderation/moderation.routes';
 
 const app = express();
 
@@ -25,5 +26,6 @@ app.get('/health', (req, res) => res.json({ status: 'ok', service: 'chat-service
 app.use('/v1/conversations', conversationRoutes);
 app.use('/v1/messages', messageRoutes);
 app.use('/v1/settings', settingsRoutes);
+app.use('/v1/moderation', moderationRoutes);
 
 export default app;

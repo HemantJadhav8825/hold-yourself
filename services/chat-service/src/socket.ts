@@ -5,6 +5,7 @@ import { structuredLog } from '@hold-yourself/utils';
 import { UserPresenceModel } from './models/user-presence.model';
 import { ConversationService } from './modules/conversations/conversation.service';
 import { MessageService } from './modules/messages/message.service';
+import { ModerationService } from './modules/moderation/moderation.service';
 
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGINS || 'http://localhost:3002'; // Updated to frontend port
 const JWT_PUBLIC_KEY = process.env.JWT_PUBLIC_KEY || process.env.JWT_SECRET || 'dev_secret_key_123';
@@ -93,9 +94,13 @@ export class SocketService {
           if (!conversation) return;
 
           const recipientId = conversation.participants.find((p: string) => p !== userId);
-          if (recipientId) {
-            this.emitToUser(recipientId as string, 'typing:start', { userId, conversationId });
-          }
+          if (!recipientId) return;
+
+          // Check if blocked
+          const isBlocked = await ModerationService.isBlocked(userId, recipientId as string);
+          if (isBlocked) return; // Silently ignore typing from blocked users
+
+          this.emitToUser(recipientId as string, 'typing:start', { userId, conversationId });
         } catch (error: any) {
           structuredLog('error', 'socket:typing_error', 'Error handling typing:start', { userId, conversationId, error });
         }
@@ -107,9 +112,13 @@ export class SocketService {
           if (!conversation) return;
 
           const recipientId = conversation.participants.find((p: string) => p !== userId);
-          if (recipientId) {
-            this.emitToUser(recipientId as string, 'typing:stop', { userId, conversationId });
-          }
+          if (!recipientId) return;
+
+          // Check if blocked
+          const isBlocked = await ModerationService.isBlocked(userId, recipientId as string);
+          if (isBlocked) return; // Silently ignore typing from blocked users
+
+          this.emitToUser(recipientId as string, 'typing:stop', { userId, conversationId });
         } catch (error: any) {
           structuredLog('error', 'socket:typing_error', 'Error handling typing:stop', { userId, conversationId, error });
         }
@@ -177,3 +186,12 @@ export class SocketService {
 }
 
 export const socketService = SocketService.getInstance();
+
+// Helper function to get IO instance
+export const getIO = (): SocketIOServer => {
+  const io = socketService.io;
+  if (!io) {
+    throw new Error('Socket.IO not initialized');
+  }
+  return io;
+};

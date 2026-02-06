@@ -4,6 +4,7 @@ import { UserSettingsModel } from '../../models/user-settings.model';
 import { socketService } from '../../socket';
 import { GuardrailService } from '../../security/guardrails';
 import { structuredLog } from '@hold-yourself/utils';
+import { ModerationService } from '../moderation/moderation.service';
 
 export class MessageService {
   static async listMessages(conversationId: string, limit: number = 50, beforeDate?: Date) {
@@ -134,6 +135,29 @@ export class MessageService {
     // Guardrail: Sanitization
     const sanitizedContent = GuardrailService.sanitizeContent(content.trim());
 
+    // Get conversation to check participants
+    const conversation = await ConversationModel.findById(conversationId);
+    if (!conversation) {
+      throw new Error('Conversation not found');
+    }
+
+    // Get recipient ID
+    const recipientId = conversation.participants.find((p: string) => p !== senderId);
+    if (!recipientId) {
+      throw new Error('Invalid conversation');
+    }
+
+    // Guardrail: Block Check
+    const isBlocked = await ModerationService.isBlocked(senderId, recipientId as string);
+    if (isBlocked) {
+      structuredLog('warn', 'message:send_failure', 'Blocked user attempted to send message', {
+        userId: senderId,
+        conversationId,
+        recipientId,
+      });
+      throw new Error('Cannot send message to this user');
+    }
+
     // Idempotency check
     if (clientMessageId) {
       const existingMessage = await MessageModel.findOne({ clientMessageId });
@@ -157,10 +181,10 @@ export class MessageService {
       clientMessageId,
     });
 
-    // Update conversation lastMessageAt
-    const conversation = await ConversationModel.findByIdAndUpdate(conversationId, {
+    // Update conversation lastMessageAt (reuse conversation from block check)
+    await ConversationModel.findByIdAndUpdate(conversationId, {
       lastMessageAt: message.createdAt,
-    }, { new: true });
+    });
 
     // Emit real-time event to participants
     if (conversation && conversation.participants) {
