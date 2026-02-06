@@ -79,9 +79,12 @@ export function useConversations() {
       
       setConversations(prev => {
         const index = prev.findIndex(c => c.id === conversationId);
-        // If conversation not found, we should probably fetch it or ignore.
-        // For now ignore to prevent errors.
-        if (index === -1) return prev; 
+        // If conversation not found, it's a new conversation (or we were removed and added back).
+        // Since we don't have full conversation details in this event, we must fetch fresh.
+        if (index === -1) {
+          fetchConversations();
+          return prev;
+        } 
         
         const updated = [...prev];
         const conv = { ...updated[index] };
