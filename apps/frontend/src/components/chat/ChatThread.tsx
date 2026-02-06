@@ -41,9 +41,17 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
 
   // Resolve the other participant's info from the conversation participants list
   const getOtherParticipant = () => {
-    if (!conversation) return null;
-    const otherId = conversation.participants.find((p: any) => (typeof p === 'string' ? p : p.id) !== currentUser?.id);
-    return users.find(u => u.id === (typeof otherId === 'string' ? otherId : otherId?.id));
+    if (!conversation || !currentUser) return null;
+    const other = conversation.participants.find((p: any) => {
+      const pId = typeof p === 'string' ? p : (p.id || p._id);
+      const currentId = currentUser.id || (currentUser as any)._id;
+      return pId !== currentId;
+    });
+    
+    if (!other) return null;
+    if (typeof other !== 'string') return other as any;
+
+    return users.find(u => (u.id || (u as any)._id) === other);
   };
 
   const otherUser = getOtherParticipant();

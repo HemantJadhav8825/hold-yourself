@@ -65,6 +65,9 @@ export class SocketService {
       // Join a room specific to this user (for direct targeting)
       socket.join(userId);
       
+      // Send initial list of online users to the connecting user
+      socket.emit('presence:initial', Array.from(this.onlineUsers.keys()));
+      
       // Add to online users
       if (!this.onlineUsers.has(userId)) {
         this.onlineUsers.set(userId, new Set());
@@ -79,6 +82,10 @@ export class SocketService {
       });
 
       // Typing Handlers
+      socket.on('presence:sync', () => {
+        socket.emit('presence:initial', Array.from(this.onlineUsers.keys()));
+      });
+
       socket.on('typing:start', async ({ conversationId }) => {
         try {
           const conversation = await ConversationService.findConversationById(conversationId);

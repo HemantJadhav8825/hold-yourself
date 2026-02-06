@@ -125,14 +125,37 @@ export function useChat(conversationId: string | null) {
       }
     };
 
+    const handlePresenceInitial = (userIds: string[]) => {
+      setOnlineStatus(prev => {
+        const next = new Map(prev);
+        userIds.forEach(uid => {
+          if (!next.has(uid) || next.get(uid)?.status !== 'online') {
+            next.set(uid, { status: 'online' });
+          }
+        });
+        return next;
+      });
+    };
+
+    const syncPresence = () => {
+      socketService.emit('presence:sync', {});
+    };
+
+    socketService.on('presence:initial', handlePresenceInitial);
     socketService.on('presence:update', handlePresenceUpdate);
     socketService.on('typing:start', handleTypingStart);
     socketService.on('typing:stop', handleTypingStop);
+    socketService.on('reconnected', syncPresence);
+
+    // Initial sync attempt
+    syncPresence();
 
     return () => {
+      socketService.off('presence:initial', handlePresenceInitial);
       socketService.off('presence:update', handlePresenceUpdate);
       socketService.off('typing:start', handleTypingStart);
       socketService.off('typing:stop', handleTypingStop);
+      socketService.off('reconnected', syncPresence);
       // Clear all typing timers on unmount
       typingTimersRef.current.forEach(timer => clearTimeout(timer));
       typingTimersRef.current.clear();

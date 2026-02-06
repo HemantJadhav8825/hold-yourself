@@ -47,9 +47,25 @@ export function useConversations() {
       });
     };
 
+    const handlePresenceInitial = (userIds: string[]) => {
+      setOnlineUsers(new Set(userIds));
+    };
+
+    const syncPresence = () => {
+      socketService.emit('presence:sync', {});
+    };
+
+    socketService.on('presence:initial', handlePresenceInitial);
     socketService.on('presence:update', handlePresenceUpdate);
+    socketService.on('reconnected', syncPresence);
+    
+    // Initial sync attempt
+    syncPresence();
+
     return () => {
+      socketService.off('presence:initial', handlePresenceInitial);
       socketService.off('presence:update', handlePresenceUpdate);
+      socketService.off('reconnected', syncPresence);
     };
   }, []);
 
