@@ -83,6 +83,11 @@ export class SocketService {
       });
 
       socket.on('disconnect', (reason) => {
+        structuredLog('info', 'room:leave', `User left individual room: ${user.sub}`, {
+          userId: user.sub,
+          socketId: socket.id,
+          room: user.sub,
+        });
         structuredLog('info', 'socket:disconnect', `User disconnected: ${user.sub}`, {
           userId: user.sub,
           socketId: socket.id,
