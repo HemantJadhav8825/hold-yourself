@@ -373,8 +373,8 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
           isOpen={showReportModal}
           onClose={() => setShowReportModal(false)}
           onSuccess={() => {
-            // Optional: Show success toast or notification
-            console.log('Report submitted successfully');
+            // TODO: Show success toast notification
+            // Example: toast.success('Report submitted successfully');
           }}
         />
       )}
