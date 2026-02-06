@@ -28,7 +28,7 @@ export class MessageController {
 
   static async create(req: AuthRequest, res: Response) {
     try {
-      const { conversationId, content } = req.body;
+      const { conversationId, content, clientMessageId } = req.body;
       const userId = req.user!.sub;
 
       if (!conversationId || !content) {
@@ -41,7 +41,7 @@ export class MessageController {
         return res.status(403).json({ error: 'Access denied: You are not a participant in this conversation.' });
       }
 
-      const message = await MessageService.sendMessage(conversationId, userId, content);
+      const message = await MessageService.sendMessage(conversationId, userId, content, clientMessageId);
       res.status(201).json(message);
     } catch (err: any) {
       res.status(400).json({ error: err.message });

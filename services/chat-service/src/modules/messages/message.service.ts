@@ -16,14 +16,23 @@ export class MessageService {
       .limit(limit);
   }
 
-  static async sendMessage(conversationId: string, senderId: string, content: string) {
+  static async sendMessage(conversationId: string, senderId: string, content: string, clientMessageId?: string) {
     if (!content.trim()) {
       throw new Error('Message content cannot be empty.');
+    }
+
+    // Idempotency check
+    if (clientMessageId) {
+      const existingMessage = await MessageModel.findOne({ clientMessageId });
+      if (existingMessage) {
+        return existingMessage;
+      }
     }
 
     // Create message
     const message = await MessageModel.create({
       conversationId,
+      clientMessageId,
       senderId,
       content: content.trim(),
     });

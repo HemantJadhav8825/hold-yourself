@@ -1,7 +1,8 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document } from "mongoose";
 
 export interface IMessage extends Document {
   conversationId: mongoose.Types.ObjectId;
+  clientMessageId?: string;
   senderId: string;
   content: string;
   createdAt: Date;
@@ -10,7 +11,12 @@ export interface IMessage extends Document {
 
 const MessageSchema: Schema = new Schema(
   {
-    conversationId: { type: Schema.Types.ObjectId, ref: 'Conversation', required: true },
+    conversationId: {
+      type: Schema.Types.ObjectId,
+      ref: "Conversation",
+      required: true,
+    },
+    clientMessageId: { type: String, unique: true, sparse: true }, // sparse because old messages don't have it
     senderId: { type: String, required: true },
     content: { type: String, required: true, trim: true },
   },
@@ -24,10 +30,11 @@ const MessageSchema: Schema = new Schema(
         return ret;
       },
     },
-  }
+  },
 );
 
 // Index for pagination and conversation lookup
 MessageSchema.index({ conversationId: 1, createdAt: -1 });
+MessageSchema.index({ clientMessageId: 1 }, { unique: true, sparse: true });
 
-export const MessageModel = mongoose.model<IMessage>('Message', MessageSchema);
+export const MessageModel = mongoose.model<IMessage>("Message", MessageSchema);

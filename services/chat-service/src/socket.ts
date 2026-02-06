@@ -58,7 +58,24 @@ export class SocketService {
       // Join a room specific to this user (for direct targeting)
       socket.join(user.sub);
 
-      socket.on('disconnect', () => {
+      console.log(`User connected: ${user.sub} (${socket.id})`);
+
+      // Heartbeat to detect ghost connections
+      const heartbeatInterval = setInterval(() => {
+        if (!socket.connected) {
+          clearInterval(heartbeatInterval);
+          return;
+        }
+        socket.emit('ping');
+      }, 30000);
+
+      socket.on('pong', () => {
+        // Heartbeat received
+      });
+
+      socket.on('disconnect', (reason) => {
+        console.log(`User disconnected: ${user.sub} (${socket.id}). Reason: ${reason}`);
+        clearInterval(heartbeatInterval);
       });
     });
 
