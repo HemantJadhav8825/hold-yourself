@@ -5,7 +5,7 @@ import { Heading } from '@/components/ui/Heading';
 import { Text } from '@/components/ui/Text';
 import { Aura } from '@/components/ui/Aura';
 import { motion } from 'framer-motion';
-import { Book, Users,Lock, Shield } from 'lucide-react';
+import { Book, Users, Lock, Shield, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const TABS = [
@@ -17,10 +17,12 @@ const TABS = [
 import { ProfileMessageButton } from './ProfileMessageButton';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { ProfileAvatar } from '@/components/ui/ProfileAvatar';
+import { useAuth } from '@/context/AuthContext';
 
 export const ProfileView: React.FC = () => {
   const [activeTab, setActiveTab] = useState('journey');
   const { user, isLoading } = useCurrentUser();
+  const { logout } = useAuth();
 
   const joinDate = user?.createdAt 
     ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
@@ -102,6 +104,17 @@ export const ProfileView: React.FC = () => {
           {activeTab === 'circles' && "You haven't joined any circles yet. Circles are small, safe groups for deep sharing."}
           {activeTab === 'vault' && "This space is strictly for you. Your moods and private logs are stored safely here."}
         </Text>
+      </div>
+
+      {/* Logout Button */}
+      <div className="flex justify-center pt-8">
+        <button
+          onClick={logout}
+          className="flex items-center gap-3 px-6 py-3 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-all font-medium"
+        >
+          <LogOut className="w-5 h-5" />
+          Logout
+        </button>
       </div>
     </div>
   );
