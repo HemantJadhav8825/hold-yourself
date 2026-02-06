@@ -21,6 +21,10 @@ export class ConversationService {
       const userSettings = conv.participantSettings?.find((p: any) => p.userId === userId);
       const lastReadAt = userSettings?.lastReadAt || new Date(0);
       
+      const lastMessage = await MessageModel.findOne({ conversationId: conv._id })
+        .sort({ createdAt: -1 })
+        .select('content senderId type');
+
       const unreadCount = await MessageModel.countDocuments({
         conversationId: conv._id,
         createdAt: { $gt: lastReadAt },
@@ -30,7 +34,9 @@ export class ConversationService {
       return {
         ...conv,
         id: conv._id, // Ensure id is present for frontend
-        unreadCount
+        unreadCount,
+        lastMessageContent: lastMessage?.content || '',
+        lastMessageSenderId: lastMessage?.senderId
       };
     }));
 

@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IUserSettings extends Document {
   userId: string;
   showReadReceipts: boolean;
+  muteUnreadBadges: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -11,6 +12,7 @@ const UserSettingsSchema: Schema = new Schema(
   {
     userId: { type: String, required: true, unique: true },
     showReadReceipts: { type: Boolean, default: true },
+    muteUnreadBadges: { type: Boolean, default: false },
   },
   {
     timestamps: true,
