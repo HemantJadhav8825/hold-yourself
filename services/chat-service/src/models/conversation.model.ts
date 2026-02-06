@@ -1,7 +1,14 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
+export interface IParticipantSettings {
+  userId: string;
+  isMuted: boolean;
+  isArchived: boolean;
+}
+
 export interface IConversation extends Document {
   participants: string[]; // User IDs
+  participantSettings: IParticipantSettings[];
   lastMessageAt: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -23,6 +30,13 @@ const ConversationSchema: Schema = new Schema(
         }
       ],
     },
+    participantSettings: [
+      {
+        userId: { type: String, required: true },
+        isMuted: { type: Boolean, default: false },
+        isArchived: { type: Boolean, default: false },
+      },
+    ],
     lastMessageAt: { type: Date, default: Date.now },
   },
   {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ProfileAvatar } from '@/components/ui/ProfileAvatar';
 import { Text } from '@/components/ui/Text';
+import { BellOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ChatListItemProps {
@@ -11,6 +12,7 @@ interface ChatListItemProps {
   timestamp?: string;
   isActive?: boolean;
   isOnline?: boolean;
+  isMuted?: boolean;
   onClick?: () => void;
 }
 
@@ -21,6 +23,7 @@ export const ChatListItem: React.FC<ChatListItemProps> = ({
   timestamp,
   isActive = false,
   isOnline = false,
+  isMuted = false,
   onClick,
 }) => {
   return (
@@ -40,7 +43,10 @@ export const ChatListItem: React.FC<ChatListItemProps> = ({
       
       <div className="flex-1 text-left min-w-0">
         <div className="flex justify-between items-baseline gap-2">
-          <Text weight="semibold" className="text-sm truncate">{name}</Text>
+          <div className="flex items-center gap-2 min-w-0">
+            <Text weight="semibold" className="text-sm truncate">{name}</Text>
+            {isMuted && <BellOff className="w-3 h-3 text-muted-foreground/30 flex-shrink-0" />}
+          </div>
           {timestamp && (
             <Text size="xs" muted className="whitespace-nowrap flex-shrink-0">
               {timestamp}

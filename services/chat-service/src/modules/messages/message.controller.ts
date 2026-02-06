@@ -26,6 +26,30 @@ export class MessageController {
     }
   }
 
+  static async markDelivered(req: AuthRequest, res: Response) {
+    try {
+      const { messageId } = req.params;
+      const userId = req.user!.sub;
+
+      await MessageService.markAsDelivered(messageId, userId);
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+
+  static async markRead(req: AuthRequest, res: Response) {
+    try {
+      const { conversationId } = req.params;
+      const userId = req.user!.sub;
+
+      await MessageService.markAsRead(conversationId, userId);
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+
   static async create(req: AuthRequest, res: Response) {
     try {
       const { conversationId, content, clientMessageId } = req.body;

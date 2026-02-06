@@ -1,5 +1,6 @@
 import { MessageModel } from '../../models/message.model';
 import { ConversationModel } from '../../models/conversation.model';
+import { UserSettingsModel } from '../../models/user-settings.model';
 import { socketService } from '../../socket';
 import { GuardrailService } from '../../security/guardrails';
 import { structuredLog } from '@hold-yourself/utils';
@@ -16,6 +17,59 @@ export class MessageService {
     return MessageModel.find(query)
       .sort({ createdAt: -1 })
       .limit(limit);
+  }
+
+  static async markAsDelivered(messageId: string, userId: string) {
+    const message = await MessageModel.findById(messageId);
+    if (!message) return;
+
+    if (message.senderId === userId) return; // Sender doesn't mark own as delivered
+
+    if (!message.deliveredAt) {
+      message.deliveredAt = new Date();
+      await message.save();
+
+      // Notify sender
+      socketService.emitToUser(message.senderId, 'message:delivered', {
+        messageId: message._id,
+        conversationId: message.conversationId,
+        deliveredAt: message.deliveredAt,
+      });
+    }
+  }
+
+  static async markAsRead(conversationId: string, userId: string) {
+    const now = new Date();
+    
+    // Find messages in this conversation not sent by this user and not read yet
+    const unreadMessages = await MessageModel.find({
+      conversationId,
+      senderId: { $ne: userId },
+      readAt: { $exists: false }
+    });
+
+    if (unreadMessages.length === 0) return;
+
+    // Check if the reader has read receipts enabled
+    const userSettings = await UserSettingsModel.findOne({ userId });
+    const showReceipts = userSettings ? userSettings.showReadReceipts : true;
+
+    await MessageModel.updateMany(
+      { _id: { $in: unreadMessages.map(m => m._id) } },
+      { $set: { readAt: now, deliveredAt: now } } // If read, it must have been delivered
+    );
+
+    // Notify senders of these messages
+    if (showReceipts) {
+      const senderIds = Array.from(new Set(unreadMessages.map(m => m.senderId)));
+      senderIds.forEach(senderId => {
+        socketService.emitToUser(senderId, 'message:read', {
+          conversationId,
+          readAt: now,
+          readerId: userId
+        });
+      });
+    }
   }
 
   static async sendMessage(conversationId: string, senderId: string, content: string, clientMessageId?: string) {

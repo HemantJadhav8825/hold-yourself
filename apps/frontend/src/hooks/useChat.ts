@@ -16,6 +16,12 @@ export function useChat(conversationId: string | null) {
   const offsetRef = useRef(0);
   const [hasMore, setHasMore] = useState(true);
 
+  const [clearedAt, setClearedAt] = useState<number | null>(() => {
+    if (!conversationId) return null;
+    const val = localStorage.getItem(`chat_cleared_${conversationId}`);
+    return val ? parseInt(val, 10) : null;
+  });
+
   // Typing expiry timer ref
   const typingTimersRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
@@ -30,32 +36,65 @@ export function useChat(conversationId: string | null) {
       
       const data = await chatService.listMessages(conversationId, limit, currentOffset);
       
+      // Filter by clearedAt if exists
+      const filteredData = clearedAt 
+        ? data.filter(msg => new Date(msg.createdAt).getTime() > clearedAt)
+        : data;
+
       if (isLoadMore) {
-        setMessages(prev => [...prev, ...data]);
+        setMessages(prev => [...prev, ...filteredData]);
         offsetRef.current += data.length;
       } else {
-        setMessages(data);
+        setMessages(filteredData);
         offsetRef.current = data.length;
       }
       
-      setHasMore(data.length === limit);
+      setHasMore(data.length === limit && filteredData.length > 0);
       setError(null);
+
+      // Post-fetch: Mark as read and delivered
+      if (document.visibilityState === 'visible' && !isLoadMore) {
+        chatService.markConversationRead(conversationId);
+      }
+      
+      // Mark individually delivered for any newly fetched messages not sent by self
+      filteredData.forEach(msg => {
+        if (msg.senderId !== currentUser?.id && !msg.deliveredAt) {
+          chatService.markMessageDelivered(msg.id);
+        }
+      });
+
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to load messages');
     } finally {
       if (!isLoadMore) setIsLoading(false);
     }
-  }, [conversationId]);
+  }, [conversationId, clearedAt, currentUser?.id]);
 
   useEffect(() => {
     setMessages([]);
     offsetRef.current = 0;
     setHasMore(true);
     setTypingUsers(new Set());
+    
+    const storedClearedAt = conversationId ? localStorage.getItem(`chat_cleared_${conversationId}`) : null;
+    setClearedAt(storedClearedAt ? parseInt(storedClearedAt, 10) : null);
+
     if (conversationId) {
       fetchMessages();
     }
   }, [conversationId, fetchMessages]);
+
+  useEffect(() => {
+    if (!conversationId || document.visibilityState === 'hidden') return;
+    
+    const handleFocus = () => {
+      chatService.markConversationRead(conversationId);
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [conversationId]);
 
   // SOCKET LOGIC
   const resyncMessages = useCallback(async () => {
@@ -64,11 +103,14 @@ export function useChat(conversationId: string | null) {
     try {
       // Fetch latest messages to see if we missed any during disconnection
       const latestMessages = await chatService.listMessages(conversationId, 20, 0);
-      setMessages(prev => deduplicateMessages(prev, latestMessages));
+      const filtered = clearedAt 
+        ? latestMessages.filter(msg => new Date(msg.createdAt).getTime() > clearedAt)
+        : latestMessages;
+      setMessages(prev => deduplicateMessages(prev, filtered));
     } catch (err) {
       console.warn('Resync failed', err);
     }
-  }, [conversationId, messages.length]);
+  }, [conversationId, messages.length, clearedAt]);
 
   useEffect(() => {
     socketService.on('reconnected', resyncMessages);
@@ -125,6 +167,19 @@ export function useChat(conversationId: string | null) {
       }
     };
 
+    const handleMessageDelivered = ({ messageId, deliveredAt: time }: { messageId: string, deliveredAt: string }) => {
+      setMessages(prev => prev.map(msg => 
+        msg.id === messageId ? { ...msg, deliveredAt: time } : msg
+      ));
+    };
+
+    const handleMessageRead = ({ conversationId: readConvId, readAt: time }: { conversationId: string, readAt: string }) => {
+      if (readConvId !== conversationId) return;
+      setMessages(prev => prev.map(msg => 
+        !msg.readAt && msg.senderId === currentUser?.id ? { ...msg, readAt: time, deliveredAt: msg.deliveredAt || time } : msg
+      ));
+    };
+
     const handlePresenceInitial = (userIds: string[]) => {
       setOnlineStatus(prev => {
         const next = new Map(prev);
@@ -145,6 +200,8 @@ export function useChat(conversationId: string | null) {
     socketService.on('presence:update', handlePresenceUpdate);
     socketService.on('typing:start', handleTypingStart);
     socketService.on('typing:stop', handleTypingStop);
+    socketService.on('message:delivered', handleMessageDelivered);
+    socketService.on('message:read', handleMessageRead);
     socketService.on('reconnected', syncPresence);
 
     // Initial sync attempt
@@ -155,12 +212,14 @@ export function useChat(conversationId: string | null) {
       socketService.off('presence:update', handlePresenceUpdate);
       socketService.off('typing:start', handleTypingStart);
       socketService.off('typing:stop', handleTypingStop);
+      socketService.off('message:delivered', handleMessageDelivered);
+      socketService.off('message:read', handleMessageRead);
       socketService.off('reconnected', syncPresence);
       // Clear all typing timers on unmount
       typingTimersRef.current.forEach(timer => clearTimeout(timer));
       typingTimersRef.current.clear();
     };
-  }, [conversationId]);
+  }, [conversationId, currentUser?.id]);
   
 // Helper to deduplicate messages by ID and handle optimistic replacements
   const deduplicateMessages = (current: Message[], incoming: Message[]): Message[] => {
@@ -199,6 +258,9 @@ export function useChat(conversationId: string | null) {
     const handleNewMessage = (newMessage: Message) => {
       if (newMessage.conversationId !== conversationId) return;
       
+      // Filter by clearedAt
+      if (clearedAt && new Date(newMessage.createdAt).getTime() <= clearedAt) return;
+
       // Stop typing on new message
       setTypingUsers(prev => {
         const next = new Set(prev);
@@ -207,13 +269,21 @@ export function useChat(conversationId: string | null) {
       });
 
       setMessages(prev => deduplicateMessages(prev, [newMessage]));
+
+      // If visible, mark as read
+      if (document.visibilityState === 'visible') {
+        chatService.markConversationRead(conversationId);
+      } else {
+        // If not visible, at least mark as delivered
+        chatService.markMessageDelivered(newMessage.id);
+      }
     };
 
     socketService.on('message:new', handleNewMessage);
     return () => {
       socketService.off('message:new', handleNewMessage);
     };
-  }, [conversationId, currentUser?.id]);
+  }, [conversationId, currentUser?.id, clearedAt]);
 
   // SMART POLLING LOGIC - SAFETY BACKUP
   useEffect(() => {
@@ -228,14 +298,17 @@ export function useChat(conversationId: string | null) {
 
       try {
         const latestMessages = await chatService.listMessages(conversationId, 20, 0);
-        setMessages(prev => deduplicateMessages(prev, latestMessages));
+        const filtered = clearedAt 
+          ? latestMessages.filter(msg => new Date(msg.createdAt).getTime() > clearedAt)
+          : latestMessages;
+        setMessages(prev => deduplicateMessages(prev, filtered));
       } catch (err) {
         console.warn('Polling skipped due to error', err);
       }
     }, pollInterval);
 
     return () => clearInterval(intervalId);
-  }, [conversationId, currentUser?.id]);
+  }, [conversationId, currentUser?.id, clearedAt]);
 
   const sendMessage = async (content: string, retryClientMessageId?: string) => {
     if (!conversationId || !content.trim() || !currentUser) return;
@@ -294,6 +367,14 @@ export function useChat(conversationId: string | null) {
     socketService.emit(isTyping ? 'typing:start' : 'typing:stop', { conversationId });
   }, [conversationId]);
 
+  const clearHistory = useCallback(() => {
+    if (!conversationId) return;
+    const now = Date.now();
+    localStorage.setItem(`chat_cleared_${conversationId}`, now.toString());
+    setClearedAt(now);
+    setMessages([]);
+  }, [conversationId]);
+
   return {
     messages,
     isLoading,
@@ -304,6 +385,8 @@ export function useChat(conversationId: string | null) {
     onlineStatus,
     loadMore: () => fetchMessages(true),
     sendMessage,
-    setTyping
+    setTyping,
+    clearHistory
   };
 }
+
