@@ -3,7 +3,7 @@ import { ProfileAvatar } from '@/components/ui/ProfileAvatar';
 import { Text } from '@/components/ui/Text';
 import { MessageBubble } from './MessageBubble';
 import { MessageInput } from './MessageInput';
-import { ChevronLeft, Info } from 'lucide-react';
+import { ChevronLeft, Info, Archive, Bell, BellOff, Trash2 } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -16,7 +16,7 @@ import { useChat } from '@/hooks/useChat';
 import { useUsers } from '@/hooks/useUsers';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
-import { Conversation } from '@/api/chat.service';
+import { chatService, Conversation } from '@/api/chat.service';
 
 interface ChatThreadProps {
   conversation?: Conversation;
@@ -34,10 +34,44 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
     isSending, 
     typingUsers, 
     onlineStatus, 
-    setTyping 
+    setTyping,
+    clearHistory
   } = useChat(conversation?.id || null);
   const { users } = useUsers(50);
   const { user: currentUser } = useCurrentUser();
+  
+  const [showSettings, setShowSettings] = React.useState(false);
+  const [isMuted, setIsMuted] = React.useState(false);
+  const [isArchived, setIsArchived] = React.useState(false);
+
+  React.useEffect(() => {
+    if (conversation && currentUser) {
+      const settings = conversation.participantSettings?.find(s => s.userId === currentUser.id);
+      setIsMuted(settings?.isMuted || false);
+      setIsArchived(settings?.isArchived || false);
+    }
+  }, [conversation, currentUser]);
+
+  const handleToggleMute = async () => {
+    if (!conversation) return;
+    try {
+      await chatService.updateConversationSettings(conversation.id, { isMuted: !isMuted });
+      setIsMuted(!isMuted);
+    } catch (err) {
+      console.error('Failed to update mute status', err);
+    }
+  };
+
+  const handleToggleArchive = async () => {
+    if (!conversation) return;
+    try {
+      await chatService.updateConversationSettings(conversation.id, { isArchived: !isArchived });
+      setIsArchived(!isArchived);
+      if (!isArchived && onBack) onBack(); // If archiving, go back
+    } catch (err) {
+      console.error('Failed to update archive status', err);
+    }
+  };
 
   // Resolve the other participant's info from the conversation participants list
   const getOtherParticipant = () => {
@@ -117,6 +151,7 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
               <Text weight="semibold" className="text-sm cursor-pointer">{chatName}</Text>
+              {isMuted && <BellOff className="w-3 h-3 text-muted-foreground/40" />}
             </div>
             <Text size="xs" muted className="text-[10px] uppercase tracking-wider opacity-60">
               {isOnline ? (
@@ -130,9 +165,46 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
           </div>
         </div>
         
-        <button className="p-2 hover:bg-muted rounded-full transition-colors">
-          <Info className="w-5 h-5 text-muted-foreground/50" />
-        </button>
+        <div className="relative">
+          <button 
+            onClick={() => setShowSettings(!showSettings)}
+            className="p-2 hover:bg-muted rounded-full transition-colors"
+          >
+            <Info className="w-5 h-5 text-muted-foreground/50" />
+          </button>
+
+          {showSettings && (
+            <div className="absolute right-0 top-full mt-2 w-48 bg-background border border-border rounded-xl shadow-xl z-50 p-1 animate-in fade-in zoom-in-95 duration-200">
+              <button 
+                onClick={handleToggleMute}
+                className="w-full text-left px-3 py-2 hover:bg-muted rounded-lg flex items-center gap-3 transition-colors"
+              >
+                {isMuted ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
+                <Text size="sm">{isMuted ? 'Unmute' : 'Mute'}</Text>
+              </button>
+              <button 
+                onClick={handleToggleArchive}
+                className="w-full text-left px-3 py-2 hover:bg-muted rounded-lg flex items-center gap-3 transition-colors"
+              >
+                <Archive className="w-4 h-4" />
+                <Text size="sm">{isArchived ? 'Unarchive' : 'Archive'}</Text>
+              </button>
+              <div className="h-px bg-border my-1" />
+              <button 
+                onClick={() => {
+                  if (confirm('Clear local history? This only affects this device.')) {
+                    clearHistory();
+                    setShowSettings(false);
+                  }
+                }}
+                className="w-full text-left px-3 py-2 hover:bg-red-500/10 text-red-500 rounded-lg flex items-center gap-3 transition-colors"
+              >
+                <Trash2 className="w-4 h-4" />
+                <Text size="sm" className="text-red-500">Clear local history</Text>
+              </button>
+            </div>
+          )}
+        </div>
       </header>
 
       {/* Messages */}
@@ -175,6 +247,8 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
                 content={item.content}
                 isSelf={item.senderId === currentUser?.id}
                 status={item.status}
+                deliveredAt={item.deliveredAt}
+                readAt={item.readAt}
                 error={item.error}
                 timestamp={new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 isFirstInGroup={item.isFirstInGroup}

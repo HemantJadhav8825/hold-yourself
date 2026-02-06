@@ -1,12 +1,14 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Text } from '@/components/ui/Text';
-import { AlertCircle, RotateCcw } from 'lucide-react';
+import { AlertCircle, RotateCcw, Check, CheckCheck } from 'lucide-react';
 
 interface MessageBubbleProps {
   content: string;
   isSelf: boolean;
   status?: 'sending' | 'sent' | 'failed';
+  deliveredAt?: string;
+  readAt?: string;
   error?: string;
   timestamp?: string;
   isFirstInGroup?: boolean;
@@ -18,6 +20,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   content,
   isSelf,
   status = 'sent',
+  deliveredAt,
+  readAt,
   error,
   timestamp,
   isFirstInGroup = true,
@@ -77,6 +81,18 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                 <RotateCcw className="w-3 h-3" />
                 <span className="text-[10px] font-bold uppercase tracking-tighter">Retry</span>
               </button>
+            )}
+          </div>
+        )}
+
+        {isSelf && status === 'sent' && (
+          <div className="absolute right-2 bottom-1 flex items-center gap-0.5 opacity-40 group-hover:opacity-100 transition-opacity">
+            {readAt ? (
+              <CheckCheck className="w-3 h-3 text-white" />
+            ) : deliveredAt ? (
+              <CheckCheck className="w-3 h-3 text-white/60" />
+            ) : (
+              <Check className="w-3 h-3 text-white/60" />
             )}
           </div>
         )}

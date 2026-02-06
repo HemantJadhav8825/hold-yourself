@@ -5,6 +5,8 @@ export interface IMessage extends Document {
   clientMessageId?: string;
   senderId: string;
   content: string;
+  deliveredAt?: Date;
+  readAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -19,6 +21,8 @@ const MessageSchema: Schema = new Schema(
     clientMessageId: { type: String, unique: true, sparse: true }, // sparse because old messages don't have it
     senderId: { type: String, required: true },
     content: { type: String, required: true, trim: true },
+    deliveredAt: { type: Date },
+    readAt: { type: Date },
   },
   {
     timestamps: { createdAt: true, updatedAt: false }, // Messages are immutable

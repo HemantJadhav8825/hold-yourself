@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { structuredLog } from '@hold-yourself/utils';
 import { UserPresenceModel } from './models/user-presence.model';
 import { ConversationService } from './modules/conversations/conversation.service';
+import { MessageService } from './modules/messages/message.service';
 
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGINS || 'http://localhost:3002'; // Updated to frontend port
 const JWT_PUBLIC_KEY = process.env.JWT_PUBLIC_KEY || process.env.JWT_SECRET || 'dev_secret_key_123';
@@ -111,6 +112,22 @@ export class SocketService {
           }
         } catch (error: any) {
           structuredLog('error', 'socket:typing_error', 'Error handling typing:stop', { userId, conversationId, error });
+        }
+      });
+
+      socket.on('message:delivered', async ({ messageId }) => {
+        try {
+          await MessageService.markAsDelivered(messageId, userId);
+        } catch (error: any) {
+          structuredLog('error', 'socket:message_error', 'Error handling message:delivered', { userId, messageId, error });
+        }
+      });
+
+      socket.on('message:read', async ({ conversationId }) => {
+        try {
+          await MessageService.markAsRead(conversationId, userId);
+        } catch (error: any) {
+          structuredLog('error', 'socket:message_error', 'Error handling message:read', { userId, conversationId, error });
         }
       });
 
