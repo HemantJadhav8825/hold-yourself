@@ -5,6 +5,8 @@ import messageRoutes from './modules/messages/message.routes';
 import settingsRoutes from './modules/settings/settings.routes';
 import moderationRoutes from './modules/moderation/moderation.routes';
 import featureFlagRoutes from './modules/feature-flags/feature-flags.routes';
+import circleRoutes from './modules/circles/circle.routes';
+import ventRoutes from './modules/vents/vent.routes';
 
 const app = express();
 
@@ -29,6 +31,8 @@ app.get('/health', (req, res) => res.json({ status: 'ok', service: 'chat-service
 // Routes
 app.use('/v1/conversations', conversationRoutes);
 app.use('/v1/messages', messageRoutes);
+app.use('/v1/circles', circleRoutes);
+app.use('/v1/vents', ventRoutes);
 app.use('/v1/settings', settingsRoutes);
 app.use('/v1/moderation', moderationRoutes);
 app.use('/v1/admin/feature-flags', featureFlagRoutes);

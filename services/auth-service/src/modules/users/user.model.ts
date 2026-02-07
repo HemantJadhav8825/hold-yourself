@@ -14,6 +14,11 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
   isRevoked: boolean;
+  anonymousProfile?: {
+    pseudonym: string;
+    avatar: string; // URL or identifier for abstract avatar
+    bio?: string;
+  };
 }
 
 export interface UserCreateDTO {
@@ -45,5 +50,10 @@ export interface UserProfileResponseDTO {
   fullName?: string;
   avatar?: string;
   bio?: string;
+  anonymousProfile?: {
+    pseudonym: string;
+    avatar: string;
+    bio?: string;
+  };
   createdAt: Date;
 }
