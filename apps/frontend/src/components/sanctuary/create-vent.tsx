@@ -95,14 +95,22 @@ export function CreateVent({ onPosted }: CreateVentProps) {
         <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Vent into the void</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Textarea 
-          placeholder="Share it safely. It won&apos;t stay." 
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          className="resize-none bg-muted/20 border-border focus-visible:ring-muted-foreground"
-          rows={3}
-          disabled={loading}
-        />
+        <div className="space-y-1">
+          <Textarea 
+            placeholder="Share it safely. It won&apos;t stay." 
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            className="resize-none bg-muted/20 border-border focus-visible:ring-muted-foreground"
+            rows={3}
+            disabled={loading}
+            maxLength={280}
+          />
+          <div className="flex justify-end pr-1">
+            <span className={`text-[9px] uppercase tracking-widest ${content.length >= 250 ? 'text-orange-400' : 'text-muted-foreground/40'}`}>
+              {content.length} / 280
+            </span>
+          </div>
+        </div>
         {error && (
           <p className="text-[10px] text-muted-foreground text-center">
             {error}

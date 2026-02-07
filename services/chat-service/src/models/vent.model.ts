@@ -23,7 +23,7 @@ const VentSchema: Schema = new Schema(
       pseudonym: { type: String, required: true },
       color: { type: String, required: true },
     },
-    content: { type: String, required: true, maxlength: 500 },
+    content: { type: String, required: true, maxlength: 280 },
     mood: { type: String },
     expiresAt: { type: Date, required: true },
     reactions: [
