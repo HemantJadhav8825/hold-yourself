@@ -53,14 +53,14 @@ export function VentCard({ vent, onReact }: VentCardProps) {
         <p className="text-sm whitespace-pre-wrap leading-relaxed">{vent.content}</p>
       </CardContent>
       <CardFooter className="pt-2 flex gap-4 border-t border-border/50 mt-2 bg-muted/5">
-        <Button variant="ghost" size="sm" className="h-7 px-2 gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors" onClick={() => onReact(vent.id, 'heart')}>
+        <Button variant="ghost" size="sm" className="h-7 px-2 gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors" onClick={() => onReact(vent.id, 'SUPPORT')}>
           <Heart className="h-3 w-3" />
           <span>Support</span>
         </Button>
-        <Button variant="ghost" size="sm" className="h-7 px-2 gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors" onClick={() => onReact(vent.id, 'hug')}>
+        <Button variant="ghost" size="sm" className="h-7 px-2 gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors" onClick={() => onReact(vent.id, 'HUG')}>
             🫂 Hug
         </Button>
-         <Button variant="ghost" size="sm" className="h-7 px-2 gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors" onClick={() => onReact(vent.id, 'same')}>
+         <Button variant="ghost" size="sm" className="h-7 px-2 gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors" onClick={() => onReact(vent.id, 'SAME')}>
             ✋ Me too
         </Button>
         <div className="flex-1" />

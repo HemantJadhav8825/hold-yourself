@@ -34,7 +34,7 @@ export class VentController {
         });
       }
 
-      const { content, circle } = req.body;
+      const { content } = req.body;
       if (!content || typeof content !== 'string') {
         return res.status(400).json({ error: 'Content is required' });
       }
@@ -44,7 +44,6 @@ export class VentController {
 
       const vent = await this.ventService.create({
         content: sanitizedContent,
-        ...(circle ? { circle } : {}),
         author: {
           id: user.sub,
           pseudonym: user.anonymousProfile.pseudonym,

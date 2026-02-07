@@ -12,11 +12,10 @@ import { Loader2, Send } from "lucide-react"
 import { markSanctuaryInteraction } from "@/lib/sanctuary-suppression"
 
 interface CreateVentProps {
-  circleId: string
   onPosted: () => void
 }
 
-export function CreateVent({ circleId, onPosted }: CreateVentProps) {
+export function CreateVent({ onPosted }: CreateVentProps) {
   const [content, setContent] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -30,7 +29,6 @@ export function CreateVent({ circleId, onPosted }: CreateVentProps) {
     try {
       const chatApiUrl = process.env.NEXT_PUBLIC_CHAT_API_URL || 'http://localhost:3200'
       await client.post(`${chatApiUrl}/v1/vents`, {
-          ...(circleId ? { circle: circleId } : {}),
           content,
           mood: 'neutral' // Default to neutral
       })

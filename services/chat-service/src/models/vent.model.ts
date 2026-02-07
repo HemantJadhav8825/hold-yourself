@@ -6,13 +6,12 @@ export interface IVent extends Document {
     pseudonym: string;
     color: string;
   };
-  circle?: string;
   content: string;
   mood?: string;
   expiresAt: Date;
   reactions: Array<{
     userId: string;
-    type: 'SUPPORT' | 'HUG' | 'SAME' | 'LISTEN' | 'hug' | 'listen' | 'heart';
+    type: 'SUPPORT' | 'HUG' | 'SAME' | 'LISTEN';
   }>;
   createdAt: Date;
 }
@@ -24,14 +23,13 @@ const VentSchema: Schema = new Schema(
       pseudonym: { type: String, required: true },
       color: { type: String, required: true },
     },
-    circle: { type: Schema.Types.ObjectId, ref: 'Circle', required: false },
     content: { type: String, required: true, maxlength: 500 },
     mood: { type: String },
     expiresAt: { type: Date, required: true },
     reactions: [
       {
         userId: { type: String, required: true },
-        type: { type: String, enum: ['SUPPORT', 'HUG', 'SAME', 'LISTEN', 'hug', 'listen', 'heart'], required: true },
+        type: { type: String, enum: ['SUPPORT', 'HUG', 'SAME', 'LISTEN'], required: true },
       },
     ],
   },

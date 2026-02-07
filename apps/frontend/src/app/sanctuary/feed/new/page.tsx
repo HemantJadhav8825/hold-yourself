@@ -34,7 +34,7 @@ export default function NewVentPage() {
         </p>
       </div>
 
-      <CreateVent circleId="" onPosted={handlePosted} />
+      <CreateVent onPosted={handlePosted} />
 
       <div className="mt-8 text-center bg-muted/5 border border-dashed border-border/30 p-4 rounded-lg">
         <p className="text-[10px] text-muted-foreground uppercase tracking-widest leading-relaxed">
