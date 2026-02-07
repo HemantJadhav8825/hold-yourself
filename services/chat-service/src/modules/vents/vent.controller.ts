@@ -57,6 +57,7 @@ export class VentController {
         delete response.author.id;
       }
       
+      
       res.status(201).json(response);
     } catch (error: any) {
       if (error.message.includes('Limit reached')) {

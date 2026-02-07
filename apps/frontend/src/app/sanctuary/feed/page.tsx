@@ -13,18 +13,22 @@ import { SanctuaryFeedAffordance } from "@/components/sanctuary/feed-affordance"
 
 export default function GlobalFeedPage() {
   const router = useRouter()
-  const { user } = useCurrentUser()
+  const { user, isLoading: isAuthLoading } = useCurrentUser()
   
   const [vents, setVents] = useState<Vent[]>([])
   const [loading, setLoading] = useState(true)
   const [suppressed, setSuppressed] = useState(true)
 
-  const fetchVents = useCallback(async () => {
+  const fetchVents = useCallback(async (signal?: AbortSignal) => {
     try {
         // Fetch global feed (no circle filter)
-        const res = await client.get('/v1/vents')
+        const res = await client.get('/v1/vents', { signal })
         setVents(res.data)
-    } catch (error) {
+    } catch (error: any) {
+        if (error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {
+          console.log('Request canceled', error.message);
+          return;
+        }
         console.error(error)
     } finally {
         setLoading(false)
@@ -32,9 +36,16 @@ export default function GlobalFeedPage() {
   }, [])
 
   useEffect(() => {
-    fetchVents()
-    setSuppressed(hasRecentlyInteracted())
-  }, [fetchVents])
+    if (isAuthLoading) return
+    
+    const controller = new AbortController();
+    fetchVents(controller.signal);
+    setSuppressed(hasRecentlyInteracted());
+
+    return () => {
+      controller.abort();
+    }
+  }, [fetchVents, isAuthLoading])
 
   const handleReact = async (ventId: string, emoji: string) => {
     try {
