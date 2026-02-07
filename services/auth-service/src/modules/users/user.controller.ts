@@ -40,8 +40,6 @@ export class UserController {
         return res.status(404).json({ error: 'User not found' });
       }
 
-      console.log('getProfile user found:', { id: user.id || user._id, anonymousProfile: user.anonymousProfile });
-
       const response: UserProfileResponseDTO = {
         id: user.id || user._id,
         username: user.username,
@@ -50,13 +48,6 @@ export class UserController {
         bio: user.bio,
         createdAt: user.createdAt,
       };
-
-      // If user is requesting their own profile, include private fields
-      const requestingUserId = (req as any).user?.id || (req as any).user?.sub;
-      if (requestingUserId && requestingUserId === (user.id || user._id).toString()) {
-          // Add anonymousProfile if it exists (even if empty object)
-          (response as any).anonymousProfile = user.anonymousProfile;
-      }
 
       res.json(response);
     } catch (error: any) {
@@ -85,8 +76,8 @@ export class UserController {
         createdAt: user.createdAt,
       };
 
-      // Explicitly include anonymousProfile for own profile
-      if (user.anonymousProfile) {
+      // Explicitly include anonymousProfile for own profile only if Sanctuary is enabled
+      if (ENV.SANCTUARY_ENABLED && user.anonymousProfile) {
         (response as any).anonymousProfile = user.anonymousProfile;
       }
 
