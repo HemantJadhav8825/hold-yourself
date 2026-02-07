@@ -17,16 +17,8 @@
   - This identity is separate from their main account profile but linked via the `anonymousProfile` field in the user database.
   - **Endpoint**: `POST /v1/users/anonymous` (Auth Service) generates and assigns this profile.
 
-### 2. Circles (Communities)
-
-- **Purpose**: To group users into smaller, thematic communities for more relevant interactions (e.g., "Anxiety Support", "Vent Space").
-- **Implementation**:
-  - Users can browse and join Circles.
-  - "My Circles" personalized view shows joined communities.
-  - **Endpoints**:
-    - `GET /v1/circles` (List all)
-    - `POST /v1/circles/:id/join` (Join)
-    - `GET /v1/circles/my` (List joined)
+> [!IMPORTANT]
+> **Circles & Grouping**: Circles (communities) are explicitly NOT part of Sanctuary v0. Any future grouping logic belongs outside the Sanctuary module to maintain its "quiet moment" philosophy.
 
 ### 3. The Vent (Ephemeral Content)
 
@@ -34,7 +26,7 @@
 - **Implementation**:
   - **Ephemeral Nature**: All posts ("Vents") automatically expire and are deleted after **24 hours**.
   - **Interaction**: Users can react to vents with emojis (Support, Hug, Same, Listen) but cannot leave text comments, minimizing conflict and toxicity.
-  - **Feed**: A global feed "The Void" aggregates vents from all circles (or specific ones).
+  - **Feed**: A global feed "The Void" aggregates all vents.
   - **Endpoints**:
     - `GET /v1/vents` (Feed)
     - `POST /v1/vents` (Create Vent)
@@ -62,7 +54,6 @@ The Sanctuary follows a microservices architecture to ensure scalability and sep
 - **Role**: Sits between the frontend and microservices. It routes requests to the appropriate service based on the URL path.
 - **Routes**:
   - `/v1/users/*` -> Proxied to **Auth Service** (Port 3100)
-  - `/v1/circles/*` -> Proxied to **Chat Service** (Port 3200)
   - `/v1/vents/*` -> Proxied to **Chat Service** (Port 3200)
 
 ### Services
@@ -77,7 +68,7 @@ The Sanctuary follows a microservices architecture to ensure scalability and sep
 
 - **Port**: 3200
 - **Responsibility**: Real-time messaging, Circles, Vents, and Interactions.
-- **Key Models**: `Circle`, `Vent`, `Reaction`.
+- **Key Models**: `Vent`, `Reaction`.
 - **Database**: MongoDB (stores ephemeral Vents with TTL indexes for auto-deletion).
 
 ## Design Decisions

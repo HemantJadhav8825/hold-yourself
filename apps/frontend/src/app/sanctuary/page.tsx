@@ -6,20 +6,13 @@ import { useRouter } from "next/navigation"
 import client from "@/api/client"
 import { Button } from "@/components/ui/Button"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card"
-import { Loader2, Users, MessageCircle } from "lucide-react"
+import { Loader2, MessageCircle } from "lucide-react"
 import { markSanctuaryInteraction } from "@/lib/sanctuary-suppression"
-
-interface CircleSummary {
-    id: string
-    name: string
-    description: string
-}
 
 export default function SanctuaryPage() {
   const { user, isLoading } = useCurrentUser()
   const router = useRouter()
   const [checkingIdentity, setCheckingIdentity] = useState(true)
-  const [myCircles, setMyCircles] = useState<CircleSummary[]>([])
 
   useEffect(() => {
     if (isLoading) return
@@ -30,19 +23,7 @@ export default function SanctuaryPage() {
     }
 
     if (user.anonymousProfile) {
-      // Fetch my circles
-      const fetchMyCircles = async () => {
-          try {
-            // Use gateway URL (configured in client) instead of direct service URL
-            const res = await client.get(`/v1/circles/my?userId=${user.id}`)
-            setMyCircles(res.data)
-          } catch (e) {
-              console.error(e)
-          } finally {
-            setCheckingIdentity(false)
-          }
-      }
-      fetchMyCircles()
+      setCheckingIdentity(false)
     } else {
       router.push('/sanctuary/setup')
     }
@@ -68,36 +49,6 @@ export default function SanctuaryPage() {
       </div>
 
       <div className="space-y-8 mb-16">
-        {/* Circles Flow - Primary prompt if they have circles */}
-        {myCircles.length > 0 && (
-          <Card className="border-border bg-card shadow-none">
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-2 mb-1">
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                  <CardTitle className="text-base">Continue your conversations</CardTitle>
-              </div>
-              <CardDescription>Topic-specific spaces you've joined.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="space-y-2">
-                  {myCircles.slice(0, 3).map(circle => (
-                      <div key={circle.id} 
-                           onClick={() => router.push(`/sanctuary/circles/${circle.id}`)}
-                           className="p-4 rounded-xl bg-muted/50 hover:bg-muted cursor-pointer flex justify-between items-center transition-colors">
-                          <span className="text-sm font-medium">{circle.name}</span>
-                          <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Open</span>
-                      </div>
-                  ))}
-              </div>
-              <div className="pt-2">
-                  <Button variant="ghost" className="w-full text-xs text-muted-foreground" onClick={() => router.push('/sanctuary/circles')}>
-                  Find more circles
-                  </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         {/* Global Vent / Feed Flow - Always leading towards the action */}
         <Card className="border-border bg-card shadow-none overflow-hidden">
           <CardContent className="p-0">
@@ -115,13 +66,6 @@ export default function SanctuaryPage() {
                 Release a thought
               </Button>
             </div>
-            {myCircles.length === 0 && (
-              <div className="p-4 bg-muted/10 text-center">
-                <Button variant="link" className="text-xs text-muted-foreground" onClick={() => router.push('/sanctuary/circles')}>
-                  Or find a specific circle to join
-                </Button>
-              </div>
-            )}
           </CardContent>
         </Card>
       </div>
