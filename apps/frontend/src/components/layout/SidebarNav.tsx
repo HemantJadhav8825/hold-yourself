@@ -22,9 +22,8 @@ export const SidebarNav: React.FC = () => {
     { icon: User, label: 'Profile', href: '/dashboard/profile' },
   ];
 
-  if (env.NEXT_PUBLIC_SANCTUARY_ENABLED === 'true') {
-     navItems.push({ icon: Tent, label: 'Sanctuary', href: '/sanctuary' });
-  }
+  // Sanctuary is no longer a persistent destination in the sidebar.
+  // Milestone 1 requires removal from persistent navigation.
 
   return (
     <aside className="hidden lg:flex flex-col fixed top-0 left-0 h-screen w-64 border-r border-border bg-background px-4 py-8 z-40">
