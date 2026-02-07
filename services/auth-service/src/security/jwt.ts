@@ -6,6 +6,10 @@ export interface TokenPayload {
   role: string;
   scopes: string[];
   type: 'access' | 'refresh' | 'service';
+  anonymousProfile?: {
+    pseudonym: string;
+    color: string;
+  };
 }
 
 export const JwtSigner = {

@@ -10,4 +10,7 @@ export const AUTH_CONFIG = {
   
   // Expected issuer from auth-service
   ISSUER: process.env.AUTH_ISSUER!,
+
+  // Chat Service URL
+  CHAT_SERVICE_URL: process.env.CHAT_SERVICE_URL!,
 };

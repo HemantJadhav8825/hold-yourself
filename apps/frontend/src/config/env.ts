@@ -17,6 +17,7 @@ const REQUIRED_ENV_VARS = [
   'NEXT_PUBLIC_CHAT_SERVICE_URL',
   'NEXT_PUBLIC_CHAT_API_URL',
   'ALLOWED_DEV_ORIGINS',
+  // 'NEXT_PUBLIC_SANCTUARY_ENABLED', // Optional, defaults to false
 ] as const;
 
 type RequiredEnvVar = typeof REQUIRED_ENV_VARS[number];
@@ -105,6 +106,7 @@ export const env = {
   NEXT_PUBLIC_GOOGLE_REDIRECT_URI: process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI!,
   NEXT_PUBLIC_CHAT_SERVICE_URL: process.env.NEXT_PUBLIC_CHAT_SERVICE_URL!,
   NEXT_PUBLIC_CHAT_API_URL: process.env.NEXT_PUBLIC_CHAT_API_URL!,
+  NEXT_PUBLIC_SANCTUARY_ENABLED: process.env.NEXT_PUBLIC_SANCTUARY_ENABLED || 'false',
 } as const;
 
 export type Env = typeof env;

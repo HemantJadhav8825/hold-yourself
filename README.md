@@ -1,4 +1,4 @@
-# Hold Yourself
+# We belong (Hold Yourself Monorepo)
 
 > A mental health-focused social platform designed to foster meaningful connections without the pressure of metrics.
 
@@ -8,7 +8,7 @@
 
 ---
 
-**Hold Yourself** is a production-ready monorepo workspace built for scalability and performance. It leverages modern web technologies to deliver a secure, responsive, and intuitive user experience.
+**We belong** is a production-ready monorepo workspace built for scalability and performance. It leverages modern web technologies to deliver a secure, responsive, and intuitive user experience.
 
 ## 🛠️ Tech Stack
 
@@ -19,6 +19,10 @@
 - **Database**: MongoDB (via Mongoose)
 - **Monorepo Tools**: [PNPM Workspaces](https://pnpm.io/workspaces), [Turborepo](https://turbo.build/)
 - **Infrastructure**: Docker
+
+> [!NOTE]
+> **Sanctuary Module (v0)**
+> The Sanctuary module is currently in v0 and disabled by default. Setup `SANCTUARY_ENABLED=true` to enable experimental features.
 
 ## 🏗️ Project Structure
 

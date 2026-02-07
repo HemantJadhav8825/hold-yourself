@@ -1,5 +1,6 @@
 import { User, UserCreateDTO } from './user.model';
 import { UserModel } from './user.schema';
+import { generateAnonymousProfile } from './anonymous-profile.util';
 
 export class UserService {
   async findByEmail(email: string): Promise<any | null> {
@@ -43,5 +44,15 @@ export class UserService {
 
   async updateUser(id: string, data: Partial<User>): Promise<any | null> {
     return UserModel.findByIdAndUpdate(id, { $set: data }, { new: true }).exec();
+  }
+
+  async createAnonymousProfile(userId: string): Promise<any> {
+    const anonymousProfile = generateAnonymousProfile();
+    
+    return UserModel.findByIdAndUpdate(
+      userId,
+      { $set: { anonymousProfile } },
+      { new: true }
+    ).exec();
   }
 }

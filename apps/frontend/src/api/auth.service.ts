@@ -6,11 +6,16 @@ export interface User {
   id: string;
   email: string;
   username?: string;
-  displayName?: string;
+  displayName?: string; // e.g. "John Doe"
   fullName?: string;
   bio?: string;
-  role: string;
   avatar?: string;
+  role: 'user' | 'admin' | 'moderator';
+  anonymousProfile?: {
+    pseudonym: string;
+    avatar: string;
+    bio?: string;
+  };
   createdAt?: string;
 }
 

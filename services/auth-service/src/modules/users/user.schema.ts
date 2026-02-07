@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document } from "mongoose";
 
 export interface IUser extends Document {
   email: string;
@@ -7,12 +7,16 @@ export interface IUser extends Document {
   fullName?: string;
   bio?: string;
   passwordHash?: string;
-  authProvider: 'email' | 'google';
+  authProvider: "email" | "google";
   googleId?: string;
   avatar?: string;
   role: string;
   scopes: string[];
   isRevoked: boolean;
+  anonymousProfile?: {
+    pseudonym: string;
+    color: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,12 +29,21 @@ const UserSchema: Schema = new Schema(
     fullName: { type: String },
     bio: { type: String },
     passwordHash: { type: String, required: false },
-    authProvider: { type: String, required: true, enum: ['email', 'google'], default: 'email' },
+    authProvider: {
+      type: String,
+      required: true,
+      enum: ["email", "google"],
+      default: "email",
+    },
     googleId: { type: String, index: { unique: true, sparse: true } },
     avatar: { type: String },
     role: { type: String, required: true },
     scopes: { type: [String], default: [] },
     isRevoked: { type: Boolean, default: false },
+    anonymousProfile: {
+      pseudonym: { type: String },
+      color: { type: String },
+    },
   },
   {
     timestamps: true,
@@ -43,7 +56,7 @@ const UserSchema: Schema = new Schema(
         return ret;
       },
     },
-  }
+  },
 );
 
-export const UserModel = mongoose.model<IUser>('User', UserSchema);
+export const UserModel = mongoose.model<IUser>("User", UserSchema);
