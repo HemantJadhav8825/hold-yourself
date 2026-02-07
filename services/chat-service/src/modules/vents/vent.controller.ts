@@ -27,10 +27,10 @@ export class VentController {
         return res.status(401).json({ error: 'Unauthorized' });
       }
 
-      if (!user.anonymousProfile) {
+      if (!user.anonymousProfile || !user.anonymousProfile.pseudonym || !user.anonymousProfile.color) {
         return res.status(403).json({ 
-          error: 'Forbidden: Anonymous profile required',
-          details: 'Please create an anonymous identity via Auth Service first.' 
+          error: 'Forbidden: Complete anonymous profile required',
+          details: 'Your session may be stale. Please try re-entering Sanctuary.' 
         });
       }
 

@@ -109,7 +109,7 @@ export class UserController {
         return res.status(404).json({ error: 'User not found' });
       }
 
-      if (existingUser.anonymousProfile && existingUser.anonymousProfile.pseudonym) {
+      if (existingUser.anonymousProfile && existingUser.anonymousProfile.pseudonym && existingUser.anonymousProfile.color) {
         return res.json(existingUser.anonymousProfile);
       }
 

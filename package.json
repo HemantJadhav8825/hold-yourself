@@ -26,9 +26,11 @@
     "git:cleanup:remote": "bash scripts/git-cleanup-remote.sh"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.4",
     "@types/dotenv": "^8.2.3",
     "@types/node": "^25.1.0",
     "@types/pg": "^8.16.0",
+    "axios": "^1.13.4",
     "dotenv": "^17.2.3",
     "mongodb": "^7.0.0",
     "pg": "^8.18.0",

@@ -87,7 +87,10 @@ router.use('/v1/circles', requireAuth, async (req, res, next) => {
       method: req.method,
       url: url,
       data: req.method !== 'GET' ? req.body : undefined,
-      params: req.query
+      params: req.query,
+      headers: {
+        Authorization: req.headers.authorization
+      }
     });
     res.json(response.data);
   } catch (error: any) {
@@ -110,7 +113,10 @@ router.use('/v1/vents', requireAuth, async (req, res, next) => {
       method: req.method,
       url: url,
       data: req.method !== 'GET' ? req.body : undefined,
-      params: req.query
+      params: req.query,
+      headers: {
+        Authorization: req.headers.authorization
+      }
     });
     res.json(response.data);
   } catch (error: any) {

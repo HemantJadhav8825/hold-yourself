@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useCurrentUser } from "@/hooks/useCurrentUser"
 import client from "@/api/client"
+import { authService } from "@/api/auth.service"
 import { Button } from "@/components/ui/Button"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card"
 import { AnonymousAvatar } from "@/components/ui/anonymous-avatar"
@@ -22,6 +23,14 @@ export default function AnonymousSetupPage() {
       const res = await client.post('/v1/users/anonymous', { userId: user?.id })
 
       toast.success(`Welcome to the sanctuary, ${res.data.pseudonym}!`)
+      
+      // Refresh token to include the new anonymousProfile in the JWT
+      try {
+        await authService.refresh()
+      } catch (refreshError) {
+        console.error("Failed to refresh token after setup:", refreshError)
+      }
+
       if (refreshUser) await refreshUser()
       
       router.push('/sanctuary')
