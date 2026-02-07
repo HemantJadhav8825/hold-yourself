@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useCurrentUser } from "@/hooks/useCurrentUser"
 import { Button } from "@/components/ui/Button"
 import client from "@/api/client"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card"
@@ -16,6 +17,7 @@ interface CreateVentProps {
 }
 
 export function CreateVent({ onPosted }: CreateVentProps) {
+  const { user } = useCurrentUser()
   const [content, setContent] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -28,9 +30,17 @@ export function CreateVent({ onPosted }: CreateVentProps) {
     setError(null)
     try {
       const chatApiUrl = process.env.NEXT_PUBLIC_CHAT_API_URL || 'http://localhost:3200'
+      
+      const author = user?.anonymousProfile ? {
+        id: user.id,
+        pseudonym: user.anonymousProfile.pseudonym,
+        color: user.anonymousProfile.color
+      } : undefined;
+
       await client.post(`${chatApiUrl}/v1/vents`, {
           content,
-          mood: 'neutral' // Default to neutral
+          mood: 'neutral', // Default to neutral
+          author
       })
 
       setContent("")
@@ -95,14 +105,22 @@ export function CreateVent({ onPosted }: CreateVentProps) {
         <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Vent into the void</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Textarea 
-          placeholder="Share it safely. It won&apos;t stay." 
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          className="resize-none bg-muted/20 border-border focus-visible:ring-muted-foreground"
-          rows={3}
-          disabled={loading}
-        />
+        <div className="space-y-1">
+          <Textarea 
+            placeholder="Share it safely. It won&apos;t stay." 
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            className="resize-none bg-muted/20 border-border focus-visible:ring-muted-foreground"
+            rows={3}
+            disabled={loading}
+            maxLength={280}
+          />
+          <div className="flex justify-end pr-1">
+            <span className={`text-[9px] uppercase tracking-widest ${content.length >= 250 ? 'text-orange-400' : 'text-muted-foreground/40'}`}>
+              {content.length} / 280
+            </span>
+          </div>
+        </div>
         {error && (
           <p className="text-[10px] text-muted-foreground text-center">
             {error}

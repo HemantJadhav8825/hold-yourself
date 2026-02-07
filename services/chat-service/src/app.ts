@@ -40,7 +40,7 @@ const sanctuaryGuard = (req: express.Request, res: express.Response, next: expre
   next();
 };
 
-app.use('/v1/circles', sanctuaryGuard, circleRoutes);
+// app.use('/v1/circles', sanctuaryGuard, circleRoutes);
 app.use('/v1/vents', sanctuaryGuard, ventRoutes);
 app.use('/v1/settings', settingsRoutes);
 app.use('/v1/moderation', moderationRoutes);

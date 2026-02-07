@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { authService, User } from '../api/auth.service';
+import { userService } from '../api/user.service';
 import { socketService } from '../api/socket.service';
 import { useRouter } from 'next/navigation';
 
@@ -14,6 +15,7 @@ interface AuthContextType {
   signup: (data: any) => Promise<void>;
   logout: () => Promise<void>;
   error: string | null;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,6 +25,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  const fetchProfile = useCallback(async () => {
+    try {
+      const profile = await userService.me();
+      setUser(profile);
+      localStorage.setItem('user_hint', JSON.stringify(profile));
+    } catch (err) {
+      console.error('Failed to fetch profile:', err);
+    }
+  }, []);
 
   useEffect(() => {
     const initAuth = async () => {
@@ -42,9 +54,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // 3. Connect WebSocket
           socketService.connect();
           
-          // Optional: Fetch fresh user profile if needed
-          // const profile = await authService.me(); 
-          // setUser(profile);
+          // 4. Fetch fresh user profile
+          await fetchProfile();
           
         } catch (e) {
           console.error('Session restoration failed:', e);
@@ -62,16 +73,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     initAuth();
-  }, []);
+  }, [fetchProfile]);
 
   const login = useCallback(async (credentials: any) => {
     setIsLoading(true);
     setError(null);
     try {
       const data = await authService.login(credentials);
+      // Store basic user first
       setUser(data.user);
       localStorage.setItem('user_hint', JSON.stringify(data.user));
+      
+      // Store tokens handled by authService
+      
       socketService.connect();
+      
+      // Fetch full profile
+      await fetchProfile();
+      
       router.push('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.error || 'Login failed');
@@ -79,7 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsLoading(false);
     }
-  }, [router]);
+  }, [router, fetchProfile]);
 
   const googleLogin = useCallback(async (code: string, redirectUri?: string) => {
     setIsLoading(true);
@@ -89,6 +108,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(data.user);
       localStorage.setItem('user_hint', JSON.stringify(data.user));
       socketService.connect();
+      
+      // Fetch full profile
+      await fetchProfile();
+      
       router.push('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.error || 'Google login failed');
@@ -96,7 +119,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsLoading(false);
     }
-  }, [router]);
+  }, [router, fetchProfile]);
 
   const signup = useCallback(async (data: any) => {
     setIsLoading(true);
@@ -130,6 +153,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         signup,
         logout,
         error,
+        refreshUser: fetchProfile,
       }}
     >
       {children}

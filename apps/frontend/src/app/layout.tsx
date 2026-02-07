@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { constructMetadata } from "@/components/seo/metadata";
 import { AuthProvider } from "@/context/AuthContext";
+import { UsersProvider } from "@/context/UsersContext";
+import { ConversationsProvider } from "@/context/ConversationsContext";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -18,14 +20,18 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <AuthProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
+          <UsersProvider>
+            <ConversationsProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                {children}
+              </ThemeProvider>
+            </ConversationsProvider>
+          </UsersProvider>
         </AuthProvider>
       </body>
     </html>

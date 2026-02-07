@@ -87,7 +87,10 @@ router.use('/v1/circles', requireAuth, async (req, res, next) => {
       method: req.method,
       url: url,
       data: req.method !== 'GET' ? req.body : undefined,
-      params: req.query
+      params: req.query,
+      headers: {
+        Authorization: req.headers.authorization
+      }
     });
     res.json(response.data);
   } catch (error: any) {
@@ -110,13 +113,24 @@ router.use('/v1/vents', requireAuth, async (req, res, next) => {
       method: req.method,
       url: url,
       data: req.method !== 'GET' ? req.body : undefined,
-      params: req.query
+      params: req.query,
+      headers: {
+        Authorization: req.headers.authorization
+      }
     });
     res.json(response.data);
   } catch (error: any) {
+    const realError = {
+      message: error.message,
+      code: error.code,
+      response: error.response?.data,
+      status: error.response?.status,
+      url: `${CHAT_SERVICE_URL}/v1/vents${req.url === '/' ? '' : req.url}`
+    }
+    console.error('Chat Service Proxy Error:', realError);
     const status = error.response?.status || 500;
     const message = error.response?.data?.error || 'Chat Service Error';
-    res.status(status).json({ error: message });
+    res.status(status).json({ error: JSON.stringify(realError, null, 2) });
   }
 });
 
