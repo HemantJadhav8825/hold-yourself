@@ -21,6 +21,22 @@ export const markSanctuaryInteraction = () => {
 };
 
 /**
+ * Check if the user has recently interacted (posted or exited) 
+ * in a way that requires a 24-hour cooldown.
+ */
+export const hasRecentlyInteracted = (): boolean => {
+  if (typeof window === 'undefined') return true;
+
+  const lastInteraction = localStorage.getItem(STORAGE_KEY_24H);
+  if (lastInteraction) {
+    const elapsed = Date.now() - parseInt(lastInteraction, 10);
+    if (elapsed < COOLDOWN_24H) return true;
+  }
+
+  return false;
+};
+
+/**
  * Mark that the user has entered Sanctuary in the current session.
  * This is used to prevent re-prompting during the same session.
  */
@@ -36,11 +52,7 @@ export const isSanctuarySuppressed = (): boolean => {
   if (typeof window === 'undefined') return true;
 
   // Rule 1: 24-hour suppression after interaction
-  const lastInteraction = localStorage.getItem(STORAGE_KEY_24H);
-  if (lastInteraction) {
-    const elapsed = Date.now() - parseInt(lastInteraction, 10);
-    if (elapsed < COOLDOWN_24H) return true;
-  }
+  if (hasRecentlyInteracted()) return true;
 
   // Rule 2: Session-level suppression if entered
   const isSessionActive = sessionStorage.getItem(SESSION_KEY);

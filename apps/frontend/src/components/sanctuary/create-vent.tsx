@@ -26,7 +26,7 @@ export function CreateVent({ circleId, onPosted }: CreateVentProps) {
     try {
       const chatApiUrl = process.env.NEXT_PUBLIC_CHAT_API_URL || 'http://localhost:3200'
       await client.post(`${chatApiUrl}/v1/vents`, {
-          circle: circleId,
+          ...(circleId ? { circle: circleId } : {}),
           content,
           mood: 'neutral' // Default to neutral
       })

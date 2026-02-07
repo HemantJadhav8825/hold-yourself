@@ -8,7 +8,8 @@ import { CreateVent } from "@/components/sanctuary/create-vent"
 import { Button } from "@/components/ui/Button"
 import { Loader2, ArrowLeft } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { markSanctuaryInteraction } from "@/lib/sanctuary-suppression"
+import { markSanctuaryInteraction, hasRecentlyInteracted } from "@/lib/sanctuary-suppression"
+import { SanctuaryFeedAffordance } from "@/components/sanctuary/feed-affordance"
 
 export default function GlobalFeedPage() {
   const router = useRouter()
@@ -16,6 +17,7 @@ export default function GlobalFeedPage() {
   
   const [vents, setVents] = useState<Vent[]>([])
   const [loading, setLoading] = useState(true)
+  const [suppressed, setSuppressed] = useState(true)
 
   const fetchVents = useCallback(async () => {
     try {
@@ -31,6 +33,7 @@ export default function GlobalFeedPage() {
 
   useEffect(() => {
     fetchVents()
+    setSuppressed(hasRecentlyInteracted())
   }, [fetchVents])
 
   const handleReact = async (ventId: string, emoji: string) => {
@@ -69,6 +72,8 @@ export default function GlobalFeedPage() {
        <div className="border border-dashed border-border p-4 rounded-lg mb-8 text-center text-xs text-muted-foreground">
          Speak your truth. Thoughts here are not held.
        </div>
+
+       {!suppressed && <SanctuaryFeedAffordance />}
 
       <div className="space-y-6 mb-12">
         {vents.length === 0 ? (

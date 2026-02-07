@@ -30,13 +30,13 @@ interface VentCardProps {
 
 export function VentCard({ vent, onReact }: VentCardProps) {
   // Construct seed for AnonymousAvatar (Format: "HEX:INITIALS")
-  const initials = vent.author.pseudonym
+  const initials = (vent.author?.pseudonym || "Anonymous")
     .split(' ')
     .map(word => word[0])
     .join('')
     .substring(0, 2)
     .toUpperCase();
-  const avatarSeed = `${vent.author.color}:${initials}`;
+  const avatarSeed = `${vent.author?.color || '#cccccc'}:${initials}`;
 
   return (
     <Card className="mb-4 overflow-hidden border-border bg-card shadow-none">

@@ -2,8 +2,9 @@ import { VentModel, IVent } from '../../models/vent.model';
 
 export class VentService {
   async create(data: { 
-    author: { id: string; anonymousName: string; anonymousColor: string }; 
+    author: { id: string; pseudonym: string; color: string }; 
     content: string; 
+    circle?: string;
   }): Promise<IVent> {
     // Soft limit: One active vent per user
     const activeVent = await VentModel.findOne({ 
