@@ -10,15 +10,41 @@ project:
   node_version: 20
 
 server:
-  # The path on the VPS where the project should be deployed
-  # IMPORTANT: Update this to your actual VPS path if different
   deploy_path: /root/hold-yourself
 
 steps:
   install:
-    - pnpm install
+    - corepack enable
+    - pnpm store prune
+    - pnpm install --force
+
   build:
-    - pnpm build
+    # Kill monorepo caches
+    - rm -rf .turbo
+
+    # Kill runtime build outputs
+    - rm -rf apps/frontend/.next
+    - rm -rf apps/backend/dist
+    - rm -rf services/**/dist
+
+    # Force fresh builds for ALL runtime targets
+    - TURBO_FORCE=true pnpm build --filter frontend...
+    - TURBO_FORCE=true pnpm build --filter backend...
+    - TURBO_FORCE=true pnpm build --filter ./services/...
+
   deploy:
-    - pm2 startOrReload ecosystem.config.js
+    # Frontend
+    - pm2 delete frontend || true
+    - pm2 start ecosystem.config.js --only frontend
+
+    # Backend
+    - pm2 delete backend || true
+    - pm2 start ecosystem.config.js --only backend
+
+    # Services
+    - pm2 delete auth || true
+    - pm2 delete payment || true
+    - pm2 delete notification || true
+    - pm2 start ecosystem.config.js --only auth,payment,notification
+
     - pm2 save
