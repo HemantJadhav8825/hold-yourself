@@ -1,6 +1,7 @@
 import React from 'react';
 import { StoriesRow } from './StoriesRow';
 import { FeedCard } from './FeedCard';
+import { SanctuaryCheckIn } from './SanctuaryCheckIn';
 import { EmptyQuiet } from '@/illustrations/components/EmptyQuiet';
 import { Text } from '@/components/ui/Text';
 import { useUsers } from '@/hooks/useUsers';
@@ -35,6 +36,10 @@ export const Feed: React.FC = () => {
     <div className="pb-10">
       <StoriesRow />
       
+      <div className="px-4 lg:px-0">
+        <SanctuaryCheckIn />
+      </div>
+
       <div className="flex flex-col">
         {!isEmpty ? (
           users.map((user) => (

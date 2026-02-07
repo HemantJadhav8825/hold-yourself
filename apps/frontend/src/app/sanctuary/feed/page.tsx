@@ -8,6 +8,8 @@ import { CreateVent } from "@/components/sanctuary/create-vent"
 import { Button } from "@/components/ui/Button"
 import { Loader2, ArrowLeft } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { markSanctuaryInteraction, hasRecentlyInteracted } from "@/lib/sanctuary-suppression"
+import { SanctuaryFeedAffordance } from "@/components/sanctuary/feed-affordance"
 
 export default function GlobalFeedPage() {
   const router = useRouter()
@@ -15,6 +17,7 @@ export default function GlobalFeedPage() {
   
   const [vents, setVents] = useState<Vent[]>([])
   const [loading, setLoading] = useState(true)
+  const [suppressed, setSuppressed] = useState(true)
 
   const fetchVents = useCallback(async () => {
     try {
@@ -30,6 +33,7 @@ export default function GlobalFeedPage() {
 
   useEffect(() => {
     fetchVents()
+    setSuppressed(hasRecentlyInteracted())
   }, [fetchVents])
 
   const handleReact = async (ventId: string, emoji: string) => {
@@ -50,7 +54,10 @@ export default function GlobalFeedPage() {
         <Button variant="ghost" className="pl-0 text-muted-foreground hover:text-foreground text-xs" onClick={() => router.push('/sanctuary')}>
           <ArrowLeft className="mr-2 h-3 w-3" /> Sanctuary Home
         </Button>
-        <Button variant="link" className="text-muted-foreground hover:text-foreground text-xs" onClick={() => router.push('/dashboard')}>
+        <Button variant="link" className="text-muted-foreground hover:text-foreground text-xs" onClick={() => {
+            markSanctuaryInteraction();
+            router.push('/dashboard');
+        }}>
           Return to We belong
         </Button>
       </div>
@@ -65,6 +72,8 @@ export default function GlobalFeedPage() {
        <div className="border border-dashed border-border p-4 rounded-lg mb-8 text-center text-xs text-muted-foreground">
          Speak your truth. Thoughts here are not held.
        </div>
+
+       {!suppressed && <SanctuaryFeedAffordance />}
 
       <div className="space-y-6 mb-12">
         {vents.length === 0 ? (
@@ -84,7 +93,10 @@ export default function GlobalFeedPage() {
         </p>
         <div className="space-y-2">
             <p className="text-sm text-muted-foreground">You&apos;re not alone. This will pass. You still belong.</p>
-            <Button variant="outline" className="text-xs" onClick={() => router.push('/dashboard')}>
+            <Button variant="outline" className="text-xs" onClick={() => {
+                markSanctuaryInteraction();
+                router.push('/dashboard');
+            }}>
                 Close Sanctuary
             </Button>
         </div>

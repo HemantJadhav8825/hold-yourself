@@ -46,8 +46,8 @@ export class VentController {
         content: sanitizedContent,
         author: {
           id: user.sub,
-          anonymousName: user.anonymousProfile.pseudonym,
-          anonymousColor: user.anonymousProfile.color
+          pseudonym: user.anonymousProfile.pseudonym,
+          color: user.anonymousProfile.color
         },
       });
 
