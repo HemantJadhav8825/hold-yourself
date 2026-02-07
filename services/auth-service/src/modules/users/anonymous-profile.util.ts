@@ -18,7 +18,7 @@ export const AVATAR_COLORS = [
 
 export interface AnonymousProfileData {
   pseudonym: string;
-  avatar: string;
+  color: string;
 }
 
 export function generateAnonymousProfile(): AnonymousProfileData {
@@ -26,12 +26,8 @@ export function generateAnonymousProfile(): AnonymousProfileData {
   const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
   const color = AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
 
-  // Avatar string could be a URL or just a color/initils config for the frontend
-  // For now, let's use a simple format: "color:initials"
-  const avatar = `${color}:${adj[0]}${noun[0]}`;
-
   return {
     pseudonym: `${adj} ${noun}`,
-    avatar,
+    color,
   };
 }

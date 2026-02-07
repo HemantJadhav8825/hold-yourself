@@ -12,10 +12,9 @@ export interface Vent {
   createdAt: string
   expiresAt: string
   author: {
-    anonymousProfile: {
-      pseudonym: string
-      avatar: string
-    }
+    id: string
+    pseudonym: string
+    color: string
   }
   reactions: Array<{
     emoji: string
@@ -33,12 +32,21 @@ export function VentCard({ vent, onReact }: VentCardProps) {
   const timeLeft = new Date(vent.expiresAt).getTime() - Date.now()
   const hoursLeft = Math.max(0, Math.floor(timeLeft / (1000 * 60 * 60)))
   
+  // Construct seed for AnonymousAvatar (Format: "HEX:INITIALS")
+  const initials = vent.author.pseudonym
+    .split(' ')
+    .map(word => word[0])
+    .join('')
+    .substring(0, 2)
+    .toUpperCase();
+  const avatarSeed = `${vent.author.color}:${initials}`;
+
   return (
     <Card className="mb-4 overflow-hidden border-l-4 border-l-primary/40">
       <CardHeader className="flex flex-row items-center gap-3 space-y-0 text-sm pb-2">
-        <AnonymousAvatar seed={vent.author.anonymousProfile.avatar} size="sm" />
+        <AnonymousAvatar seed={avatarSeed} size="sm" />
         <div className="flex flex-col">
-          <span className="font-semibold">{vent.author.anonymousProfile.pseudonym}</span>
+          <span className="font-semibold">{vent.author.pseudonym}</span>
           <span className="text-xs text-muted-foreground">
              {formatDistanceToNow(new Date(vent.createdAt))} ago • {hoursLeft}h left
           </span>

@@ -31,14 +31,14 @@ router.get('/v1/users', requireAuth, async (req, res) => {
 // GET /v1/users/profile (expanded)
 router.get('/v1/users/profile', requireAuth, async (req, res) => {
   try {
-    // req.auth.userId is provided by jwtValidationMiddleware
-    const userId = req.auth?.userId;
-    
-    if (!userId) {
-      return res.status(401).json({ error: 'User ID not found in token' });
-    }
-
-    const response = await axios.get(`${AUTH_SERVICE_URL}/v1/users/${userId}`);
+    // Forward the request to the dedicated profile endpoint in Auth Service
+    // We MUST forward the Authorization header so Auth Service can identify the user
+    // and return private fields like anonymousProfile
+    const response = await axios.get(`${AUTH_SERVICE_URL}/v1/users/profile`, {
+      headers: {
+        Authorization: req.headers.authorization
+      }
+    });
     res.json(response.data);
   } catch (error: any) {
     const status = error.response?.status || 500;
@@ -58,7 +58,11 @@ router.get('/v1/admin/stats', requireAuth, requireRole('admin'), (req, res) => {
 // Anonymous User Creation (Auth Service)
 router.post('/v1/users/anonymous', requireAuth, async (req, res) => {
   try {
-    const response = await axios.post(`${AUTH_SERVICE_URL}/v1/users/anonymous`, req.body);
+    const response = await axios.post(`${AUTH_SERVICE_URL}/v1/users/anonymous`, req.body, {
+      headers: {
+        Authorization: req.headers.authorization
+      }
+    });
     res.json(response.data);
   } catch (error: any) {
     const status = error.response?.status || 500;

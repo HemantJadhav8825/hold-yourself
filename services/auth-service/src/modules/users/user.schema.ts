@@ -15,8 +15,7 @@ export interface IUser extends Document {
   isRevoked: boolean;
   anonymousProfile?: {
     pseudonym: string;
-    avatar: string;
-    bio?: string;
+    color: string;
   };
   createdAt: Date;
   updatedAt: Date;
@@ -43,8 +42,7 @@ const UserSchema: Schema = new Schema(
     isRevoked: { type: Boolean, default: false },
     anonymousProfile: {
       pseudonym: { type: String },
-      avatar: { type: String },
-      bio: { type: String },
+      color: { type: String },
     },
   },
   {

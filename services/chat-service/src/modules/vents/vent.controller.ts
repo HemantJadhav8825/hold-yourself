@@ -10,12 +10,26 @@ export class VentController {
 
   async createVent(req: Request, res: Response) {
     try {
-      const userId = (req as any).user?.sub || req.body.userId;
-      if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+      const user = (req as any).user;
+      
+      if (!user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+
+      if (!user.anonymousProfile) {
+        return res.status(403).json({ 
+          error: 'Forbidden: Anonymous profile required',
+          details: 'Please create an anonymous identity via Auth Service first.' 
+        });
+      }
 
       const vent = await this.ventService.create({
         ...req.body,
-        author: userId,
+        author: {
+          id: user.sub,
+          pseudonym: user.anonymousProfile.pseudonym,
+          color: user.anonymousProfile.color
+        },
       });
       res.status(201).json(vent);
     } catch (error: any) {

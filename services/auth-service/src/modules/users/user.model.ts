@@ -16,8 +16,7 @@ export interface User {
   isRevoked: boolean;
   anonymousProfile?: {
     pseudonym: string;
-    avatar: string; // URL or identifier for abstract avatar
-    bio?: string;
+    color: string;
   };
 }
 
@@ -50,10 +49,7 @@ export interface UserProfileResponseDTO {
   fullName?: string;
   avatar?: string;
   bio?: string;
-  anonymousProfile?: {
-    pseudonym: string;
-    avatar: string;
-    bio?: string;
-  };
+  // Explicitly NOT including anonymousProfile here to prevent leakage
+  // anonymousProfile should only be returned via specialized endpoints or tokens
   createdAt: Date;
 }

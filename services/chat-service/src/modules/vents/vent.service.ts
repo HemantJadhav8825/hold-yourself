@@ -1,7 +1,12 @@
 import { VentModel, IVent } from '../../models/vent.model';
 
 export class VentService {
-  async create(data: { author: string; circle: string; content: string; mood?: string }): Promise<IVent> {
+  async create(data: { 
+    author: { id: string; pseudonym: string; color: string }; 
+    circle: string; 
+    content: string; 
+    mood?: string 
+  }): Promise<IVent> {
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 24); // 24 hour expiry
 

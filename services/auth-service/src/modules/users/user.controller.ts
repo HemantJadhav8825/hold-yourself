@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { UserService } from './user.service';
 import { UserListResponseDTO, UserProfileResponseDTO } from './user.model';
+import { ENV } from '../../config/env';
 
 export class UserController {
   private userService: UserService;
@@ -47,9 +48,47 @@ export class UserController {
         displayName: user.displayName,
         avatar: user.avatar,
         bio: user.bio,
-        anonymousProfile: user.anonymousProfile,
         createdAt: user.createdAt,
       };
+
+      // If user is requesting their own profile, include private fields
+      const requestingUserId = (req as any).user?.id || (req as any).user?.sub;
+      if (requestingUserId && requestingUserId === (user.id || user._id).toString()) {
+          // Add anonymousProfile if it exists (even if empty object)
+          (response as any).anonymousProfile = user.anonymousProfile;
+      }
+
+      res.json(response);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async getMyProfile(req: Request, res: Response) {
+    try {
+      const userId = (req as any).user?.id || (req as any).user?.sub;
+      if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+
+      const user = await this.userService.findById(userId);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const response: UserProfileResponseDTO = {
+        id: user.id || user._id,
+        username: user.username,
+        displayName: user.displayName,
+        avatar: user.avatar,
+        bio: user.bio,
+        createdAt: user.createdAt,
+      };
+
+      // Explicitly include anonymousProfile for own profile
+      if (user.anonymousProfile) {
+        (response as any).anonymousProfile = user.anonymousProfile;
+      }
 
       res.json(response);
     } catch (error: any) {
@@ -59,14 +98,28 @@ export class UserController {
 
   async createAnonymousProfile(req: Request, res: Response) {
     try {
+      if (!ENV.SANCTUARY_ENABLED) {
+        return res.status(404).json({ error: 'Not Found: Sanctuary is disabled' });
+      }
+
       // Assuming authentication middleware populates req.user
       // For now, allow passing userId in body for testing if auth not fully set up in this file context
       // But ideally it should be: const userId = req.user.id;
       // Let's rely on a header or body for now to be safe with existing unknown middleware
-      const userId = req.body.userId || (req as any).user?.id;
+      const userId = req.body.userId || (req as any).user?.id || (req as any).user?.sub;
 
       if (!userId) {
         return res.status(401).json({ error: 'Unauthorized: User ID required' });
+      }
+
+      // Idempotency check: fetch user first
+      const existingUser = await this.userService.findById(userId);
+      if (!existingUser) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      if (existingUser.anonymousProfile && existingUser.anonymousProfile.pseudonym) {
+        return res.json(existingUser.anonymousProfile);
       }
 
       const user = await this.userService.createAnonymousProfile(userId);

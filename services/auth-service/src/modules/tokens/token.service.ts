@@ -9,6 +9,7 @@ export class TokenService {
       role: user.role,
       scopes: user.scopes,
       type: 'access',
+      anonymousProfile: user.anonymousProfile,
     };
 
     const accessToken = JwtSigner.sign(payload, ENV.ACCESS_TOKEN_EXPIRES_IN);

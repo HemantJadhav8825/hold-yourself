@@ -1,7 +1,11 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IVent extends Document {
-  author: string; // User ID
+  author: {
+    id: string;
+    pseudonym: string;
+    color: string;
+  };
   circle: string; // Circle ID
   content: string;
   mood?: string;
@@ -15,7 +19,11 @@ export interface IVent extends Document {
 
 const VentSchema: Schema = new Schema(
   {
-    author: { type: String, required: true }, // We will mask this in API responses
+    author: {
+      id: { type: String, required: true },
+      pseudonym: { type: String, required: true },
+      color: { type: String, required: true },
+    },
     circle: { type: Schema.Types.ObjectId, ref: 'Circle', required: true },
     content: { type: String, required: true, maxlength: 500 },
     mood: { type: String },
