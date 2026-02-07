@@ -1,45 +1,17 @@
-import { useState, useEffect } from 'react';
-import { userService } from '../api/user.service';
-import { User } from '../api/auth.service';
-import { useAuth } from '../context/AuthContext';
+import { useUsersContext } from '../context/UsersContext';
 
 export const useUsers = (limit: number = 20, offset: number = 0) => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
-
-  useEffect(() => {
-    // Don't fetch if auth is still loading or user is not authenticated
-    if (authLoading) {
-      return;
-    }
-
-    if (!isAuthenticated) {
-      setIsLoading(false);
-      return;
-    }
-
-    const fetchUsers = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const data = await userService.listUsers(limit, offset);
-        setUsers(data);
-      } catch (err: any) {
-        setError('Something didn\'t load. Try again later.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUsers();
-  }, [limit, offset, isAuthenticated, authLoading]);
+  const { users, isLoading, error } = useUsersContext();
+  
+  // Slice the cached users based on limit and offset
+  // Note: If we need pagination beyond the initial 50, we would need to enhance the context
+  // But for now, this prevents the repeated initial calls.
+  const slicedUsers = users.slice(offset, offset + limit);
 
   return {
-    users,
+    users: slicedUsers,
     isLoading,
     error,
-    isEmpty: !isLoading && users.length === 0,
+    isEmpty: !isLoading && slicedUsers.length === 0,
   };
 };
