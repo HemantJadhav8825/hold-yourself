@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useCurrentUser } from "@/hooks/useCurrentUser"
 import { Button } from "@/components/ui/Button"
 import client from "@/api/client"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card"
@@ -16,6 +17,7 @@ interface CreateVentProps {
 }
 
 export function CreateVent({ onPosted }: CreateVentProps) {
+  const { user } = useCurrentUser()
   const [content, setContent] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -28,9 +30,17 @@ export function CreateVent({ onPosted }: CreateVentProps) {
     setError(null)
     try {
       const chatApiUrl = process.env.NEXT_PUBLIC_CHAT_API_URL || 'http://localhost:3200'
+      
+      const author = user?.anonymousProfile ? {
+        id: user.id,
+        pseudonym: user.anonymousProfile.pseudonym,
+        color: user.anonymousProfile.color
+      } : undefined;
+
       await client.post(`${chatApiUrl}/v1/vents`, {
           content,
-          mood: 'neutral' // Default to neutral
+          mood: 'neutral', // Default to neutral
+          author
       })
 
       setContent("")

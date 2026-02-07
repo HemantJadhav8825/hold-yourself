@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { userService } from '../api/user.service';
 import { User } from '../api/auth.service';
@@ -42,7 +42,7 @@ export const useCurrentUser = () => {
     fetchProfile();
   }, [isAuthenticated, authUser, authLoading]);
 
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async () => {
     if (!authLoading && isAuthenticated) {
       // Re-fetch profile
       try {
@@ -52,7 +52,7 @@ export const useCurrentUser = () => {
         console.error(e);
       }
     }
-  };
+  }, [authLoading, isAuthenticated]);
 
   return {
     user: profile || authUser,

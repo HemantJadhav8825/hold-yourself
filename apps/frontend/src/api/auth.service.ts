@@ -13,8 +13,7 @@ export interface User {
   role: 'user' | 'admin' | 'moderator';
   anonymousProfile?: {
     pseudonym: string;
-    avatar: string;
-    bio?: string;
+    color: string;
   };
   createdAt?: string;
 }
