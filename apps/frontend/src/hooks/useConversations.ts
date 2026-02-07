@@ -39,13 +39,13 @@ export function useConversations() {
   }, [globalSettings]);
 
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (authLoading || !isAuthenticated) return;
     chatService.getGlobalSettings().then(settings => {
       const newSettings = { muteUnreadBadges: settings.muteUnreadBadges };
       setGlobalSettings(newSettings);
       globalSettingsRef.current = newSettings;
     }).catch(err => console.error('Failed to fetch global settings', err));
-  }, [isAuthenticated]);
+  }, [isAuthenticated, authLoading]);
 
   useEffect(() => {
     // Wait for auth to complete
