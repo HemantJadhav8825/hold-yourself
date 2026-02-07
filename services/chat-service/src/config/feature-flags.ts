@@ -8,6 +8,7 @@
 export interface FeatureFlags {
   ENABLE_TYPING_INDICATORS: boolean;
   ENABLE_READ_RECEIPTS: boolean;
+  SANCTUARY_ENABLED: boolean;
 }
 
 class FeatureFlagService {
@@ -19,6 +20,7 @@ class FeatureFlagService {
     this.flags = {
       ENABLE_TYPING_INDICATORS: this.parseEnvFlag('ENABLE_TYPING_INDICATORS', true),
       ENABLE_READ_RECEIPTS: this.parseEnvFlag('ENABLE_READ_RECEIPTS', true),
+      SANCTUARY_ENABLED: this.parseEnvFlag('SANCTUARY_ENABLED', false),
     };
   }
 
@@ -66,6 +68,7 @@ class FeatureFlagService {
     this.flags = {
       ENABLE_TYPING_INDICATORS: true,
       ENABLE_READ_RECEIPTS: true,
+      SANCTUARY_ENABLED: false, // Default to false for v0
     };
   }
 }

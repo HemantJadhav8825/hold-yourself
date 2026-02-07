@@ -18,10 +18,8 @@ export default function GlobalFeedPage() {
 
   const fetchVents = useCallback(async () => {
     try {
-        const chatApiUrl = process.env.NEXT_PUBLIC_CHAT_API_URL || 'http://localhost:3200'
-        
         // Fetch global feed (no circle filter)
-        const res = await client.get(`${chatApiUrl}/v1/vents`)
+        const res = await client.get('/v1/vents')
         setVents(res.data)
     } catch (error) {
         console.error(error)

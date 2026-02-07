@@ -33,8 +33,8 @@ export default function SanctuaryPage() {
       // Fetch my circles
       const fetchMyCircles = async () => {
           try {
-            const chatApiUrl = process.env.NEXT_PUBLIC_CHAT_API_URL || 'http://localhost:3200'
-            const res = await client.get(`${chatApiUrl}/v1/circles/my?userId=${user.id}`)
+            // Use gateway URL (configured in client) instead of direct service URL
+            const res = await client.get(`/v1/circles/my?userId=${user.id}`)
             setMyCircles(res.data)
           } catch (e) {
               console.error(e)

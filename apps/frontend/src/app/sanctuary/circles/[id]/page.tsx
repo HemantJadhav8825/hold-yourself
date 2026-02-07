@@ -22,14 +22,12 @@ export default function CircleDetailsPage() {
 
   const fetchVents = useCallback(async () => {
     try {
-        const chatApiUrl = process.env.NEXT_PUBLIC_CHAT_API_URL || 'http://localhost:3200'
-        
         // Fetch circle details first for the header
-        const circleRes = await client.get(`${chatApiUrl}/v1/circles/${circleId}`)
+        const circleRes = await client.get(`/v1/circles/${circleId}`)
         setCircleName(circleRes.data.name)
 
         // Fetch feed
-        const res = await client.get(`${chatApiUrl}/v1/vents?circle=${circleId}`)
+        const res = await client.get(`/v1/vents?circle=${circleId}`)
         setVents(res.data)
     } catch (error) {
         console.error(error)
@@ -46,8 +44,7 @@ export default function CircleDetailsPage() {
 
   const handleReact = async (ventId: string, emoji: string) => {
     try {
-        const chatApiUrl = process.env.NEXT_PUBLIC_CHAT_API_URL || 'http://localhost:3200'
-        await client.post(`${chatApiUrl}/v1/vents/${ventId}/react`, { emoji, userId: user?.id })
+        await client.post(`/v1/vents/${ventId}/react`, { emoji, userId: user?.id })
         // Optimistic update or refetch
         fetchVents()
     } catch (error) {
