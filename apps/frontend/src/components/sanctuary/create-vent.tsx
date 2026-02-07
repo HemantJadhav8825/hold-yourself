@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/Textarea"
 import { Label } from "@/components/ui/Label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select"
 import { Loader2, Send } from "lucide-react"
+import { markSanctuaryInteraction } from "@/lib/sanctuary-suppression"
 
 interface CreateVentProps {
   circleId: string
@@ -31,6 +32,7 @@ export function CreateVent({ circleId, onPosted }: CreateVentProps) {
       })
 
       setContent("")
+      markSanctuaryInteraction()
       onPosted()
     } catch (error) {
       console.error(error)

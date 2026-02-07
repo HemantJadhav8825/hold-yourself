@@ -7,6 +7,7 @@ import client from "@/api/client"
 import { Button } from "@/components/ui/Button"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card"
 import { Loader2, Users, MessageCircle } from "lucide-react"
+import { markSanctuaryInteraction } from "@/lib/sanctuary-suppression"
 
 interface CircleSummary {
     id: string
@@ -129,7 +130,10 @@ export default function SanctuaryPage() {
           <p className="text-xs text-muted-foreground mb-4">
               You&apos;re not alone. This will pass.
           </p>
-          <Button variant="link" className="text-xs text-muted-foreground hover:text-foreground transition-colors" onClick={() => router.push('/dashboard')}>
+          <Button variant="link" className="text-xs text-muted-foreground hover:text-foreground transition-colors" onClick={() => {
+              markSanctuaryInteraction();
+              router.push('/dashboard');
+          }}>
               Return to We belong
           </Button>
       </div>

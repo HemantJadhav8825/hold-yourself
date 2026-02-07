@@ -8,6 +8,7 @@ import { CreateVent } from "@/components/sanctuary/create-vent"
 import { Button } from "@/components/ui/Button"
 import { Loader2, ArrowLeft } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { markSanctuaryInteraction } from "@/lib/sanctuary-suppression"
 
 export default function GlobalFeedPage() {
   const router = useRouter()
@@ -50,7 +51,10 @@ export default function GlobalFeedPage() {
         <Button variant="ghost" className="pl-0 text-muted-foreground hover:text-foreground text-xs" onClick={() => router.push('/sanctuary')}>
           <ArrowLeft className="mr-2 h-3 w-3" /> Sanctuary Home
         </Button>
-        <Button variant="link" className="text-muted-foreground hover:text-foreground text-xs" onClick={() => router.push('/dashboard')}>
+        <Button variant="link" className="text-muted-foreground hover:text-foreground text-xs" onClick={() => {
+            markSanctuaryInteraction();
+            router.push('/dashboard');
+        }}>
           Return to We belong
         </Button>
       </div>
@@ -84,7 +88,10 @@ export default function GlobalFeedPage() {
         </p>
         <div className="space-y-2">
             <p className="text-sm text-muted-foreground">You&apos;re not alone. This will pass. You still belong.</p>
-            <Button variant="outline" className="text-xs" onClick={() => router.push('/dashboard')}>
+            <Button variant="outline" className="text-xs" onClick={() => {
+                markSanctuaryInteraction();
+                router.push('/dashboard');
+            }}>
                 Close Sanctuary
             </Button>
         </div>
