@@ -13,7 +13,7 @@ import { SanctuaryFeedAffordance } from "@/components/sanctuary/feed-affordance"
 
 export default function GlobalFeedPage() {
   const router = useRouter()
-  const { user } = useCurrentUser()
+  const { user, isLoading: isAuthLoading } = useCurrentUser()
   
   const [vents, setVents] = useState<Vent[]>([])
   const [loading, setLoading] = useState(true)
@@ -32,9 +32,10 @@ export default function GlobalFeedPage() {
   }, [])
 
   useEffect(() => {
+    if (isAuthLoading) return
     fetchVents()
     setSuppressed(hasRecentlyInteracted())
-  }, [fetchVents])
+  }, [fetchVents, isAuthLoading])
 
   const handleReact = async (ventId: string, emoji: string) => {
     try {
