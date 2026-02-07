@@ -13,38 +13,52 @@ server:
   deploy_path: /root/hold-yourself
 
 steps:
+  # ----------------------------
+  # INSTALL
+  # ----------------------------
   install:
     - corepack enable
     - pnpm store prune
     - pnpm install --force
 
+  # ----------------------------
+  # BUILD
+  # ----------------------------
   build:
-    # Kill monorepo caches
+    # Kill all caches (non-negotiable)
     - rm -rf .turbo
-
-    # Kill runtime build outputs
     - rm -rf apps/frontend/.next
     - rm -rf apps/backend/dist
     - rm -rf services/**/dist
 
-    # Force fresh builds for ALL runtime targets
-    - TURBO_FORCE=true pnpm build --filter frontend...
-    - TURBO_FORCE=true pnpm build --filter backend...
-    - TURBO_FORCE=true pnpm build --filter ./services/...
+    # Force fresh Turbo builds (package-name based)
+    - TURBO_FORCE=true pnpm build --filter @hold-yourself/frontend...
+    - TURBO_FORCE=true pnpm build --filter @hold-yourself/backend...
+    - TURBO_FORCE=true pnpm build --filter @hold-yourself/auth-service...
+    - TURBO_FORCE=true pnpm build --filter @hold-yourself/chat-service...
 
+    # Build guards (fail fast if something didn't compile)
+    - test -d apps/frontend/.next
+    - test -f apps/backend/dist/server.js
+    - test -f services/auth-service/dist/server.js
+    - test -f services/chat-service/dist/server.js
+
+  # ----------------------------
+  # DEPLOY
+  # ----------------------------
   deploy:
-    # Frontend
-    - pm2 delete frontend || true
-    - pm2 start ecosystem.config.js --only frontend
-
     # Backend
-    - pm2 delete backend || true
-    - pm2 start ecosystem.config.js --only backend
+    - pm2 delete hold-yourself-backend || true
+    - pm2 start ecosystem.config.js --only hold-yourself-backend
 
     # Services
-    - pm2 delete auth || true
-    - pm2 delete payment || true
-    - pm2 delete notification || true
-    - pm2 start ecosystem.config.js --only auth,payment,notification
+    - pm2 delete hold-yourself-auth || true
+    - pm2 delete hold-yourself-chat || true
+    - pm2 start ecosystem.config.js --only hold-yourself-auth,hold-yourself-chat
 
+    # Frontend (Next.js)
+    - pm2 delete hold-yourself-frontend || true
+    - pm2 start ecosystem.config.js --only hold-yourself-frontend
+
+    # Persist process list
     - pm2 save
