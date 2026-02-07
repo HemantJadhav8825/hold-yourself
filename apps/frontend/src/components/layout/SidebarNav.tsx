@@ -1,10 +1,11 @@
 import React from 'react';
-import { Home, Search, PlusSquare, MessageCircle, User, LogOut, Settings } from 'lucide-react';
+import { Home, Search, PlusSquare, MessageCircle, User, LogOut, Settings, Tent } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Heading } from '@/components/ui/Heading';
 import { brand } from '@/config/brand';
+import { env } from '@/config/env';
 import { useAuth } from '@/context/AuthContext';
 import { useConversations } from '@/hooks/useConversations';
 
@@ -20,6 +21,9 @@ export const SidebarNav: React.FC = () => {
     { icon: MessageCircle, label: 'Messages', href: '/messages' },
     { icon: User, label: 'Profile', href: '/dashboard/profile' },
   ];
+
+  // Sanctuary is no longer a persistent destination in the sidebar.
+  // Milestone 1 requires removal from persistent navigation.
 
   return (
     <aside className="hidden lg:flex flex-col fixed top-0 left-0 h-screen w-64 border-r border-border bg-background px-4 py-8 z-40">

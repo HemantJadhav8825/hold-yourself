@@ -14,6 +14,10 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
   isRevoked: boolean;
+  anonymousProfile?: {
+    pseudonym: string;
+    color: string;
+  };
 }
 
 export interface UserCreateDTO {
@@ -45,5 +49,7 @@ export interface UserProfileResponseDTO {
   fullName?: string;
   avatar?: string;
   bio?: string;
+  // Explicitly NOT including anonymousProfile here to prevent leakage
+  // anonymousProfile should only be returned via specialized endpoints or tokens
   createdAt: Date;
 }
