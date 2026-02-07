@@ -29,7 +29,6 @@ export default function SanctuaryPage() {
     }
 
     if (user.anonymousProfile) {
-      setCheckingIdentity(false)
       // Fetch my circles
       const fetchMyCircles = async () => {
           try {
@@ -38,6 +37,8 @@ export default function SanctuaryPage() {
             setMyCircles(res.data)
           } catch (e) {
               console.error(e)
+          } finally {
+            setCheckingIdentity(false)
           }
       }
       fetchMyCircles()
@@ -49,34 +50,32 @@ export default function SanctuaryPage() {
   if (isLoading || checkingIdentity) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <span className="ml-2 text-muted-foreground">Entering the sanctuary...</span>
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     )
   }
 
   return (
     <div className="container py-10 max-w-4xl">
-      <div className="mb-8 bg-gradient-to-r from-green-50 to-emerald-50 p-8 rounded-2xl border border-green-100 shadow-sm">
-        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-teal-600 mb-2">
-          Welcome, {user?.anonymousProfile?.pseudonym}
+      <div className="mb-10 p-8 rounded-2xl border border-border bg-muted/30">
+        <h1 className="text-2xl font-semibold tracking-tight mb-3">
+          A temporary space for your thoughts.
         </h1>
-        <p className="text-muted-foreground">
-          This is your safe space. Connect, share, and heal without judgment.
+        <p className="text-muted-foreground max-w-lg">
+          Speak your mind safely. Your presence here is ephemeral.
+          Nothing you share is permanent.
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2 mb-12">
         {/* Circles Card */}
-        <Card className="hover:shadow-md transition-shadow border-t-4 border-t-purple-400 flex flex-col">
-          <CardHeader>
-            <div className="flex items-center gap-2 mb-2">
-                <div className="p-2 bg-purple-100 rounded-lg text-purple-600">
-                    <Users className="h-5 w-5" />
-                </div>
-                <CardTitle>My Circles</CardTitle>
+        <Card className="border-border bg-card flex flex-col shadow-none">
+          <CardHeader className="pb-3 text-center md:text-left">
+            <div className="flex items-center gap-2 mb-2 justify-center md:justify-start">
+                <Users className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-lg">Circles</CardTitle>
             </div>
-            <CardDescription>Your communities.</CardDescription>
+            <CardDescription>Topic-specific spaces.</CardDescription>
           </CardHeader>
           <CardContent className="flex-grow space-y-3">
             {myCircles.length > 0 ? (
@@ -85,45 +84,49 @@ export default function SanctuaryPage() {
                         <div key={circle.id} 
                              onClick={() => router.push(`/sanctuary/circles/${circle.id}`)}
                              className="p-3 rounded-lg bg-muted/50 hover:bg-muted cursor-pointer flex justify-between items-center transition-colors">
-                            <span className="font-medium">{circle.name}</span>
-                            <span className="text-xs text-muted-foreground">View &rarr;</span>
+                            <span className="text-sm font-medium">{circle.name}</span>
+                            <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Enter</span>
                         </div>
                     ))}
-                    {myCircles.length > 3 && (
-                        <p className="text-xs text-center text-muted-foreground">+{myCircles.length - 3} more</p>
-                    )}
                 </div>
             ) : (
-                <p className="text-sm text-muted-foreground italic">You haven't joined any circles yet.</p>
+                <p className="text-sm text-muted-foreground italic text-center md:text-left">No circles joined.</p>
             )}
             <div className="pt-2">
-                <Button variant="outline" className="w-full" onClick={() => router.push('/sanctuary/circles')}>
-                Browse All Circles
+                <Button variant="ghost" className="w-full text-xs" onClick={() => router.push('/sanctuary/circles')}>
+                Browse Circles
                 </Button>
             </div>
           </CardContent>
         </Card>
 
         {/* Global Vent / Feed Card */}
-        <Card className="hover:shadow-md transition-shadow border-t-4 border-t-amber-400 flex flex-col">
-          <CardHeader>
-            <div className="flex items-center gap-2 mb-2">
-                <div className="p-2 bg-amber-100 rounded-lg text-amber-600">
-                    <MessageCircle className="h-5 w-5" />
-                </div>
-                <CardTitle>The Vent</CardTitle>
+        <Card className="border-border bg-card flex flex-col shadow-none">
+          <CardHeader className="pb-3 text-center md:text-left">
+            <div className="flex items-center gap-2 mb-2 justify-center md:justify-start">
+                <MessageCircle className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-lg">The Void</CardTitle>
             </div>
-            <CardDescription>Share ephemeral thoughts safely with everyone.</CardDescription>
+            <CardDescription>Global ephemeral feed.</CardDescription>
           </CardHeader>
           <CardContent className="flex-grow flex flex-col justify-end">
-            <p className="text-sm text-muted-foreground mb-4">
-                "The Void" is a global feed where posts disappear in 24 hours. No judgment, just release.
+            <p className="text-sm text-muted-foreground mb-6 text-center md:text-left">
+                Thoughts disappear after 24 hours. Release without dependency.
             </p>
-            <Button variant="default" className="w-full bg-amber-600 hover:bg-amber-700 text-white" onClick={() => router.push('/sanctuary/feed')}>
-              Enter The Void
+            <Button variant="outline" className="w-full" onClick={() => router.push('/sanctuary/feed')}>
+              Vent anonymously
             </Button>
           </CardContent>
         </Card>
+      </div>
+
+      <div className="flex flex-col items-center justify-center pt-8 border-t border-dashed border-border text-center">
+          <p className="text-sm text-muted-foreground mb-6">
+              You&apos;re not alone. This will pass. You still belong.
+          </p>
+          <Button variant="link" className="text-muted-foreground hover:text-foreground transition-colors" onClick={() => router.push('/dashboard')}>
+              Return to We belong
+          </Button>
       </div>
     </div>
   )

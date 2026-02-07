@@ -46,30 +46,29 @@ export default function GlobalFeedPage() {
 
   return (
     <div className="container max-w-2xl py-8">
-      <Button variant="ghost" className="mb-4 pl-0" onClick={() => router.back()}>
-        <ArrowLeft className="mr-2 h-4 w-4" /> Back to Sanctuary
-      </Button>
-
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-amber-600 mb-2">
-            The Void
-        </h1>
-        <p className="text-muted-foreground">Global ephemeral thoughts. Speak your mind.</p>
+      <div className="flex justify-between items-center mb-8">
+        <Button variant="ghost" className="pl-0 text-muted-foreground hover:text-foreground text-xs" onClick={() => router.push('/sanctuary')}>
+          <ArrowLeft className="mr-2 h-3 w-3" /> Sanctuary Home
+        </Button>
+        <Button variant="link" className="text-muted-foreground hover:text-foreground text-xs" onClick={() => router.push('/dashboard')}>
+          Return to We belong
+        </Button>
       </div>
 
-      {/* Typically "The Void" might not allow posting directly without a Circle, or maybe it posts to a "General" circle? 
-          For now let's omit posting directly to "The Void" unless we have a general/null circle support.
-          My implementation of CreateVent requires a circleId.
-          Actually, let's just show the feed for now. Users must post in a Circle.
-       */}
-       {/* <CreateVent circleId="" onPosted={fetchVents} /> */}
-       <div className="bg-muted p-4 rounded-lg mb-6 text-center text-sm text-muted-foreground">
-         To share your thoughts, join a Circle that matches your topic.
+      <div className="mb-10 text-center">
+        <h1 className="text-2xl font-semibold tracking-tight mb-2">
+            The Void
+        </h1>
+        <p className="text-xs text-muted-foreground uppercase tracking-wider">A temporary archive of thoughts.</p>
+      </div>
+
+       <div className="border border-dashed border-border p-4 rounded-lg mb-8 text-center text-xs text-muted-foreground">
+         Speak your truth. Thoughts here are not held.
        </div>
 
-      <div className="space-y-4">
+      <div className="space-y-6 mb-12">
         {vents.length === 0 ? (
-            <div className="text-center py-10 text-muted-foreground">
+            <div className="text-center py-20 text-muted-foreground/60 italic text-sm">
                 <p>The void is silent.</p>
             </div>
         ) : (
@@ -77,6 +76,18 @@ export default function GlobalFeedPage() {
                 <VentCard key={vent.id} vent={vent} onReact={handleReact} />
             ))
         )}
+      </div>
+
+      <div className="pt-12 border-t border-border flex flex-col items-center gap-6 text-center">
+        <p className="text-xs text-muted-foreground italic">
+            &quot;Vents disappear after 24h. Your release is temporary.&quot;
+        </p>
+        <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">You&apos;re not alone. This will pass. You still belong.</p>
+            <Button variant="outline" className="text-xs" onClick={() => router.push('/dashboard')}>
+                Close Sanctuary
+            </Button>
+        </div>
       </div>
     </div>
   )

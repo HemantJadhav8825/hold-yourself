@@ -16,7 +16,6 @@ interface CreateVentProps {
 
 export function CreateVent({ circleId, onPosted }: CreateVentProps) {
   const [content, setContent] = useState("")
-  const [mood, setMood] = useState("neutral")
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async () => {
@@ -28,54 +27,42 @@ export function CreateVent({ circleId, onPosted }: CreateVentProps) {
       await client.post(`${chatApiUrl}/v1/vents`, {
           circle: circleId,
           content,
-          mood
+          mood: 'neutral' // Default to neutral
       })
 
       setContent("")
-      setMood("neutral")
       onPosted()
     } catch (error) {
       console.error(error)
-      // toast error
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <Card className="mb-6 border-dashed">
+    <Card className="mb-6 border-dashed bg-card shadow-none">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-medium">Vent into the void</CardTitle>
+        <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Vent into the void</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <Textarea 
-          placeholder="What's weighing on you? (Disappears in 24h)" 
+          placeholder="Share it safely. It won&apos;t stay." 
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="resize-none"
+          className="resize-none bg-muted/20 border-border focus-visible:ring-muted-foreground"
           rows={3}
         />
-        <div className="flex items-center gap-4">
-            <div className="flex-1">
-                <Select value={mood} onValueChange={setMood}>
-                <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="How are you feeling?" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="neutral">😐 Neutral</SelectItem>
-                    <SelectItem value="sad">😔 Sad</SelectItem>
-                    <SelectItem value="anxious">😰 Anxious</SelectItem>
-                    <SelectItem value="angry">😠 Angry</SelectItem>
-                    <SelectItem value="hopeful">🙂 Hopeful</SelectItem>
-                </SelectContent>
-                </Select>
-            </div>
-        </div>
       </CardContent>
       <CardFooter className="justify-end pt-0">
-        <Button onClick={handleSubmit} disabled={loading || !content.trim()}>
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
-          Post
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleSubmit} 
+          disabled={loading || !content.trim()}
+          className="text-xs h-8"
+        >
+          {loading ? <Loader2 className="h-3 w-3 animate-spin mr-2" /> : <Send className="h-3 w-3 mr-2" />}
+          Release
         </Button>
       </CardFooter>
     </Card>
