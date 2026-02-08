@@ -107,7 +107,7 @@ export function CreateVent({ onPosted }: CreateVentProps) {
       <CardContent className="space-y-4">
         <div className="space-y-1">
           <Textarea 
-            placeholder="Share it safely. It won&apos;t stay." 
+            placeholder="You can write here, if you want." 
             value={content}
             onChange={(e) => setContent(e.target.value)}
             className="resize-none bg-muted/20 border-border focus-visible:ring-muted-foreground"

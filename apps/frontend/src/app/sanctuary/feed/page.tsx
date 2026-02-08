@@ -81,7 +81,7 @@ export default function GlobalFeedPage() {
       </div>
 
        <div className="border border-dashed border-border p-4 rounded-lg mb-8 text-center text-xs text-muted-foreground">
-         Speak your truth. Thoughts here are not held.
+         The space is open. Thoughts here are not held.
        </div>
 
        {!suppressed && <SanctuaryFeedAffordance />}
@@ -89,7 +89,8 @@ export default function GlobalFeedPage() {
       <div className="space-y-6 mb-12">
         {vents.length === 0 ? (
             <div className="text-center py-20 text-muted-foreground/60 italic text-sm">
-                <p>The void is silent.</p>
+                <p>This space is quiet right now.</p>
+                <p className="mt-2 text-xs not-italic">It is open if you want to write.</p>
             </div>
         ) : (
             vents.map(vent => (
