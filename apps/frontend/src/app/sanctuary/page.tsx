@@ -44,7 +44,7 @@ export default function SanctuaryPage() {
           A moment of quiet.
         </h1>
         <p className="text-muted-foreground text-lg">
-          Speak your mind safely. Your presence here is ephemeral.
+          This space is open to you. Your presence is enough.
         </p>
       </div>
 
@@ -60,10 +60,10 @@ export default function SanctuaryPage() {
               </div>
               <h2 className="text-xl font-medium mb-2">The Feed</h2>
               <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
-                Shared thoughts that disappear after 24 hours. Release without dependency.
+                Thoughts here disappear after 24 hours. Nothing is required.
               </p>
               <Button size="lg" className="px-8 rounded-full" onClick={() => router.push('/sanctuary/feed')}>
-                Release a thought
+                Write, if you want
               </Button>
             </div>
           </CardContent>

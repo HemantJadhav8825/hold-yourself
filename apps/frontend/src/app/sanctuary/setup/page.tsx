@@ -49,9 +49,9 @@ export default function AnonymousSetupPage() {
           <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-4">
             <Shield className="h-8 w-8 text-primary" />
           </div>
-          <CardTitle className="text-2xl font-bold text-primary">Enter The Sanctuary</CardTitle>
+          <CardTitle className="text-2xl font-bold text-primary">Sanctuary</CardTitle>
           <CardDescription>
-            Join our safe, anonymous space. 
+            A quiet space that is open. 
             <br/>Your real identity will be hidden.
           </CardDescription>
         </CardHeader>
@@ -94,12 +94,12 @@ export default function AnonymousSetupPage() {
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Creating your safe space...
+                Opening...
               </>
             ) : (
               <>
                 <RefreshCw className="mr-2 h-5 w-5" />
-                Generate My Identity
+                Enter Sanctuary
               </>
             )}
           </Button>
