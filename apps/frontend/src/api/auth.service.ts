@@ -16,6 +16,9 @@ export interface User {
     color: string;
   };
   createdAt?: string;
+  hasOnboarded?: boolean;
+  onboardingIntent?: string;
+  visibility?: 'visible' | 'ghost';
 }
 
 export interface AuthResponse {

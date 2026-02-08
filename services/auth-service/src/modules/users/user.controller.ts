@@ -87,6 +87,49 @@ export class UserController {
     }
   }
 
+  async updateMyProfile(req: Request, res: Response) {
+    try {
+      const userId = (req as any).user?.id || (req as any).user?.sub;
+      if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+
+      // Allow updating specific fields
+      const { hasOnboarded, onboardingIntent, visibility } = req.body;
+      const updateData: any = {};
+      
+      if (typeof hasOnboarded === 'boolean') updateData.hasOnboarded = hasOnboarded;
+      if (onboardingIntent) updateData.onboardingIntent = onboardingIntent;
+      if (visibility) updateData.visibility = visibility;
+
+      const user = await this.userService.updateUser(userId, updateData);
+      
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const response: UserProfileResponseDTO = {
+        id: user.id || user._id,
+        username: user.username,
+        displayName: user.displayName,
+        avatar: user.avatar,
+        bio: user.bio,
+        createdAt: user.createdAt,
+        hasOnboarded: user.hasOnboarded,
+        onboardingIntent: user.onboardingIntent,
+        visibility: user.visibility,
+      };
+
+      if (ENV.SANCTUARY_ENABLED && user.anonymousProfile) {
+        (response as any).anonymousProfile = user.anonymousProfile;
+      }
+
+      res.json(response);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
   async createAnonymousProfile(req: Request, res: Response) {
     try {
       if (!ENV.SANCTUARY_ENABLED) {
