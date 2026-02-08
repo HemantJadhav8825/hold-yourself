@@ -46,5 +46,12 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
     return null; // Return null to prevent rendering protected content while redirecting
   }
 
+  // Prevent flash of content for un-onboarded users
+  // We check this synchronously to block the render immediately
+  const onboardingStatus = getSafeOnboardingState(user);
+  if (onboardingStatus === 'not_started' || onboardingStatus === 'in_progress') {
+    return null; // Don't render protected children while redirecting happens in useEffect
+  }
+
   return <>{children}</>;
 };

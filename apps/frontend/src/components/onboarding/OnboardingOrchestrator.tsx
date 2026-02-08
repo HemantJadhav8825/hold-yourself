@@ -10,6 +10,7 @@ import { Step5_Completion } from '@/components/onboarding/steps/Step5_Completion
 
 import { useAuth } from '@/context/AuthContext';
 import { setOnboardingState } from '@/lib/onboarding/state';
+import { userService } from '@/api/user.service';
 
 const STEPS = [
   Step1_Arrival,
@@ -68,6 +69,19 @@ export const OnboardingOrchestrator: React.FC = () => {
 
       // C. Fire-and-Forget Backend Sync
       console.log('Syncing onboarding completion to backend:', finalState);
+      
+      // We don't await this to block navigation, but we trigger it.
+      // Actually, for critical state, maybe we should await loosely or catch errors?
+      // "Fire and forget" usually means we don't block.
+      userService.updateProfile({
+        hasOnboarded: true,
+        // @ts-ignore - Enums match string but TS might be strict
+        onboardingIntent: finalIntent,
+        visibility: finalVisibility
+      }).catch(err => {
+        console.error('Background onboarding sync failed:', err);
+        // We relied on local state (fail-open), so this is acceptable for now.
+      });
 
       // D. Navigate
       router.replace('/dashboard');

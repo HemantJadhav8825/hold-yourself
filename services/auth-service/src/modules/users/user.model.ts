@@ -18,6 +18,9 @@ export interface User {
     pseudonym: string;
     color: string;
   };
+  hasOnboarded?: boolean;
+  onboardingIntent?: string;
+  visibility?: 'visible' | 'ghost';
 }
 
 export interface UserCreateDTO {
@@ -52,4 +55,7 @@ export interface UserProfileResponseDTO {
   // Explicitly NOT including anonymousProfile here to prevent leakage
   // anonymousProfile should only be returned via specialized endpoints or tokens
   createdAt: Date;
+  hasOnboarded?: boolean;
+  onboardingIntent?: string;
+  visibility?: 'visible' | 'ghost';
 }

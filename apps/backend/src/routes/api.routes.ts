@@ -34,7 +34,13 @@ router.get('/v1/users/profile', requireAuth, async (req, res) => {
     // Forward the request to the dedicated profile endpoint in Auth Service
     // We MUST forward the Authorization header so Auth Service can identify the user
     // and return private fields like anonymousProfile
-    const response = await axios.get(`${AUTH_SERVICE_URL}/v1/users/profile`, {
+    // Forward the request to the dedicated profile endpoint in Auth Service
+    // We MUST forward the Authorization header so Auth Service can identify the user
+    // and return private fields like anonymousProfile
+    const url = `${AUTH_SERVICE_URL}/v1/users/profile`;
+    console.log(`[Proxy] Fetching profile from: ${url}`);
+    
+    const response = await axios.get(url, {
       headers: {
         Authorization: req.headers.authorization
       }
@@ -43,6 +49,22 @@ router.get('/v1/users/profile', requireAuth, async (req, res) => {
   } catch (error: any) {
     const status = error.response?.status || 500;
     const message = error.response?.data?.error || 'Failed to fetch profile';
+    res.status(status).json({ error: message });
+  }
+});
+
+// PATCH /v1/users/profile (update)
+router.patch('/v1/users/profile', requireAuth, async (req, res) => {
+  try {
+    const response = await axios.patch(`${AUTH_SERVICE_URL}/v1/users/profile`, req.body, {
+      headers: {
+        Authorization: req.headers.authorization
+      }
+    });
+    res.json(response.data);
+  } catch (error: any) {
+    const status = error.response?.status || 500;
+    const message = error.response?.data?.error || 'Failed to update profile';
     res.status(status).json({ error: message });
   }
 });
