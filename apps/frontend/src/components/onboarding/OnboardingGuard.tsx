@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { getSafeOnboardingState } from '@/lib/onboarding/state';
 
 const ONBOARDING_KEY = 'webelong_onboarding_state';
 
@@ -26,43 +27,23 @@ export const OnboardingGuard: React.FC<{ children: React.ReactNode }> = ({ child
       return;
     }
 
+
     // 2. Onboarding State Check
-    // We check both backend (truth) and local storage (session)
-    const hasBackEndOnboarded = (user as any).hasOnboarded; // Assuming user object has this or we rely on local for now
-    
-    // Safety Fallback Reading
-    let localStatus: string = 'not_started';
-    try {
-      const stored = localStorage.getItem(ONBOARDING_KEY);
-      if (stored) {
-        const parsed: StoredState = JSON.parse(stored);
-        localStatus = parsed.status;
-      }
-    } catch (e) {
-      // If error reading, assume skipped for safety (Fail Open)
-      localStatus = 'skipped';
-    }
+    // We check both backend (truth) and local storage (session) using the safety function.
+    const status = getSafeOnboardingState(user);
 
     // 3. Routing Logic
     // If completed or skipped locally OR backend says onboarded -> Dashboard
-    if (hasBackEndOnboarded || localStatus === 'completed' || localStatus === 'skipped') {
+    if (status === 'completed' || status === 'skipped') {
       router.replace('/dashboard');
       return;
     }
 
     // 4. Refresh Trap Safety
-    // If status is 'in_progress' but this is a fresh mount (reload), 
-    // strictly speaking per contract we might want to skip them. 
-    // However, if we are ON the onboarding page, we authorize the rendering.
-    // The "Refresh Trap" rule in contract says: "Check onboarded flag. If false, SKIP remaining steps."
-    // But for V1, if they are here and not done, let them proceed (or implementing strict skip logic here).
-    
-    // Implementing strict "Refresh Trap" from contract:
-    // "Refresh during Onboarding -> SKIP remaining steps"
-    // This implies we rely on session persistence. 
-    // If we want to detect a refresh, we'd need session storage vs local storage.
-    // For now, we allow "in_progress" to continue to Render.
-    // Explicit contract override: "If ANY part... throws exception... abort".
+    // The getSafeOnboardingState function handles 'in_progress' -> 'skipped' logic.
+    // If we are here, status is 'not_started' or legit 'in_progress' (if logic allowed re-entry, which it doesn't).
+    // Actually, getSafeOnboardingState returns 'skipped' for 'in_progress' on init.
+    // So 'in_progress' is effectively barred from re-entry on refresh.
     
     // Safe to render
     setIsAuthorized(true);
