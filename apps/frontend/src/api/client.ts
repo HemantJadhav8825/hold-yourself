@@ -7,7 +7,12 @@ import { env } from '../config/env';
  */
 let accessToken: string | null = null;
 let isRefreshing = false;
-let refreshSubscribers: ((token: string) => void)[] = [];
+
+type TokenSubscriber = (token: string) => void;
+type UnauthorizedSubscriber = () => void;
+
+let refreshSubscribers: TokenSubscriber[] = [];
+let unauthorizedSubscribers: UnauthorizedSubscriber[] = [];
 
 export const setAccessToken = (token: string | null) => {
   accessToken = token;
@@ -15,7 +20,18 @@ export const setAccessToken = (token: string | null) => {
 
 export const getAccessToken = () => accessToken;
 
-const subscribeTokenRefresh = (cb: (token: string) => void) => {
+export const subscribeToUnauthorized = (cb: UnauthorizedSubscriber) => {
+  unauthorizedSubscribers.push(cb);
+  return () => {
+    unauthorizedSubscribers = unauthorizedSubscribers.filter((sub) => sub !== cb);
+  };
+};
+
+const onUnauthorized = () => {
+  unauthorizedSubscribers.forEach((cb) => cb());
+};
+
+const subscribeTokenRefresh = (cb: TokenSubscriber) => {
   refreshSubscribers.push(cb);
 };
 
@@ -85,7 +101,7 @@ client.interceptors.response.use(
         // Refresh failed: Logout user
         setAccessToken(null);
         localStorage.removeItem('refresh_token');
-        // Optional: window.location.href = '/login';
+        onUnauthorized();
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

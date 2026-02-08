@@ -6,6 +6,7 @@ import { useEffect } from "react"
 import { markSanctuarySessionActive } from "@/lib/sanctuary-suppression"
 import { useCurrentUser } from "@/hooks/useCurrentUser"
 import { authService } from "@/api/auth.service"
+import { AuthGuard } from "@/components/auth/AuthGuard"
 
 export default function SanctuaryLayout({
   children,
@@ -65,5 +66,9 @@ export default function SanctuaryLayout({
     notFound()
   }
 
-  return <>{children}</>
+  return (
+    <AuthGuard>
+      {children}
+    </AuthGuard>
+  )
 }

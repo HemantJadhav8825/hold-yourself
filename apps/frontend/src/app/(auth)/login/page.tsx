@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { AuthLayout } from '@/components/auth/AuthLayout';
 import { LoginForm } from '@/components/auth/LoginForm';
+import { GuestGuard } from '@/components/auth/GuestGuard';
 
 function LoginContent() {
   const { login, googleLogin, isLoading, error, isAuthenticated } = useAuth();
@@ -16,12 +17,12 @@ function LoginContent() {
     password: '',
   });
 
-  // Redirect if already logged in
-  useEffect(() => {
-    if (isAuthenticated && !isLoading) {
-      router.push('/dashboard');
-    }
-  }, [isAuthenticated, isLoading, router]);
+  // Redirect if already logged in - Handled by GuestGuard now
+  // useEffect(() => {
+  //   if (isAuthenticated && !isLoading) {
+  //     router.push('/dashboard');
+  //   }
+  // }, [isAuthenticated, isLoading, router]);
 
   useEffect(() => {
     const code = searchParams.get('code');
@@ -74,7 +75,9 @@ function LoginContent() {
 export default function LoginPage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-white/20 uppercase tracking-widest font-bold text-xs">Loading WeBelong...</div>}>
-      <LoginContent />
+      <GuestGuard>
+        <LoginContent />
+      </GuestGuard>
     </Suspense>
   );
 }

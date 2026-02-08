@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { AuthLayout } from '@/components/auth/AuthLayout';
 import { SignupForm } from '@/components/auth/SignupForm';
+import { GuestGuard } from '@/components/auth/GuestGuard';
 
 export default function SignupPage() {
   const { signup, isLoading, error } = useAuth();
@@ -35,17 +36,19 @@ export default function SignupPage() {
   };
 
   return (
-    <AuthLayout 
-      title="Create Account" 
-      subtitle="Join WeBelong and find your community."
-    >
-      <SignupForm 
-        formData={formData}
-        isLoading={isLoading}
-        error={error || localError}
-        onSubmit={handleSubmit}
-        onChange={handleChange}
-      />
-    </AuthLayout>
+    <GuestGuard>
+      <AuthLayout 
+        title="Create Account" 
+        subtitle="Join WeBelong and find your community."
+      >
+        <SignupForm 
+          formData={formData}
+          isLoading={isLoading}
+          error={error || localError}
+          onSubmit={handleSubmit}
+          onChange={handleChange}
+        />
+      </AuthLayout>
+    </GuestGuard>
   );
 }
