@@ -17,5 +17,10 @@ export const userService = {
   async me(): Promise<User> {
     const response = await client.get('/v1/users/profile');
     return response.data;
+  },
+
+  async updateProfile(data: Partial<User>): Promise<User> {
+    const response = await client.patch('/v1/users/profile', data);
+    return response.data;
   }
 };

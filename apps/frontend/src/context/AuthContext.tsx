@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { authService, User } from '../api/auth.service';
 import { userService } from '../api/user.service';
 import { socketService } from '../api/socket.service';
+import { subscribeToUnauthorized } from '../api/client';
 import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
@@ -43,10 +44,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (refreshToken) {
         try {
-          // 1. Optimistic UI update from hint
-          if (userHint) {
-            setUser(JSON.parse(userHint));
-          }
+          // 1. (Removed) Optimistic UI update from hint - STRICT AUTH REQUIREMENT
+          // We wait for real verification to ensure no stale/invalid user state is ever shown
 
           // 2. Real verification: Get fresh access token
           await authService.refresh();
@@ -141,6 +140,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     router.push('/login');
   }, [router]);
+
+  // Global logout listener for 401s that fail refresh
+  useEffect(() => {
+    const unsubscribe = subscribeToUnauthorized(() => {
+      logout();
+    });
+    return unsubscribe;
+  }, [logout]);
 
   return (
     <AuthContext.Provider
