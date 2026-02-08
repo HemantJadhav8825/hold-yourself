@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { ArrivalHeader } from "@/components/home/ArrivalHeader"
 import { SanctuaryEntryCard } from "@/components/home/SanctuaryEntryCard"
-import { ChatOverview } from "@/components/home/ChatOverview"
 import { QuietFooter } from "@/components/home/QuietFooter"
 import { Container } from "@/components/ui/Container"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -28,7 +27,6 @@ export default function Home() {
         <Container className="max-w-2xl">
           <ArrivalHeader />
           <SanctuaryEntryCard />
-          <ChatOverview />
         </Container>
       </main>
 

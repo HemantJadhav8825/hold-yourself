@@ -24,7 +24,7 @@ export function SanctuaryEntryCard() {
             <Button 
               size="lg" 
               className="w-full sm:w-auto font-normal rounded-full px-8"
-              onClick={() => router.push('/sanctuary/feed')}
+              onClick={() => router.push('/sanctuary')}
               data-testid="sanctuary-release-btn"
             >
               Enter, if you want
@@ -32,7 +32,7 @@ export function SanctuaryEntryCard() {
             <Button 
               variant="ghost" 
               className="w-full sm:w-auto font-normal rounded-full text-muted-foreground hover:text-foreground"
-              onClick={() => router.push('/sanctuary/feed')}
+              onClick={() => {}}
               data-testid="sanctuary-read-btn"
             >
               Just be here
