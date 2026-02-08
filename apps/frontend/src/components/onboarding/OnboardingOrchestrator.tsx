@@ -8,15 +8,8 @@ import { Step3_Visibility, VisibilitySetting } from '@/components/onboarding/ste
 import { Step4_Action } from '@/components/onboarding/steps/Step4_Action';
 import { Step5_Completion } from '@/components/onboarding/steps/Step5_Completion';
 
-// Logic helpers (defined inline for now as requested, ideally in lib/onboarding/state.ts)
-const ONBOARDING_KEY = 'webelong_onboarding_state';
-
-interface OnboardingState {
-  status: 'completed' | 'skipped' | 'in_progress';
-  completedAt?: number;
-  intent?: OnboardingIntent;
-  visibility?: VisibilitySetting;
-}
+import { useAuth } from '@/context/AuthContext';
+import { setOnboardingState } from '@/lib/onboarding/state';
 
 const STEPS = [
   Step1_Arrival,
@@ -28,6 +21,7 @@ const STEPS = [
 
 export const OnboardingOrchestrator: React.FC = () => {
   const router = useRouter();
+  const { user } = useAuth(); // Get user for ID
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
   // Temporary In-Memory State (Not persisted until completion)
@@ -56,22 +50,23 @@ export const OnboardingOrchestrator: React.FC = () => {
 
   const handleCompletion = async () => {
     try {
+      if (!user?.id) throw new Error('No user ID found during completion');
+
       // A. Apply Defaults (CRITICAL: Visibility defaults to 'ghost' if undefined)
       const finalVisibility = visibility || 'ghost';
       const finalIntent = intent; // remains undefined if skipped
 
       // B. Persist State Locally
-      const finalState: OnboardingState = {
-        status: 'completed',
+      const finalState = {
+        status: 'completed' as const,
         completedAt: Date.now(),
         intent: finalIntent,
         visibility: finalVisibility,
       };
       
-      localStorage.setItem(ONBOARDING_KEY, JSON.stringify(finalState));
+      setOnboardingState(user.id, finalState);
 
-      // C. Fire-and-Forget Backend Sync (Mocked for now)
-      // await api.users.updateOnboarding({ intent, visibility: finalVisibility });
+      // C. Fire-and-Forget Backend Sync
       console.log('Syncing onboarding completion to backend:', finalState);
 
       // D. Navigate
@@ -81,10 +76,12 @@ export const OnboardingOrchestrator: React.FC = () => {
       console.error('Onboarding completion failed, forcing skip:', error);
       
       // FAIL-OPEN SAFETY: If anything breaks, mark skipped to unblock user.
-      localStorage.setItem(ONBOARDING_KEY, JSON.stringify({
-        status: 'skipped',
-        completedAt: Date.now()
-      }));
+      if (user?.id) {
+        setOnboardingState(user.id, {
+          status: 'skipped',
+          completedAt: Date.now()
+        });
+      }
       router.replace('/dashboard');
     }
   };

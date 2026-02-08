@@ -1,3 +1,5 @@
+import { User } from '@/api/auth.service';
+
 export type OnboardingStatus = 'not_started' | 'in_progress' | 'completed' | 'skipped';
 
 export interface OnboardingState {
@@ -5,30 +7,29 @@ export interface OnboardingState {
   completedAt?: number;
 }
 
-const ONBOARDING_KEY = 'webelong_onboarding_state';
+const getOnboardingKey = (userId: string) => `webelong_onboarding_state_${userId}`;
 
 /**
  * Resolves the deterministic state of onboarding for the current session.
  * This is the ONLY source of truth for "Am I allowed to onboard?"
  */
-export function getSafeOnboardingState(user: any): OnboardingStatus {
+export function getSafeOnboardingState(user: User | null): OnboardingStatus {
   try {
-    console.log('user', user);
+    if (!user?.id) return 'skipped'; // No user context = unsafe to route
+
     // 1. Backend Truth Wins (Absolute Authority)
-    // If the user profile says they are done, they are done.
-    if (user?.hasOnboarded === true) {
+    if ((user as any).hasOnboarded === true) {
       return 'completed';
     }
 
-    // 2. Local State Check
-    const stored = localStorage.getItem(ONBOARDING_KEY);
+    // 2. Local State Check (User-Scoped)
+    const key = getOnboardingKey(user.id);
+    const stored = localStorage.getItem(key);
+    
     if (stored) {
       const state = JSON.parse(stored) as OnboardingState;
       
       // REFRESH TRAP / CRASH SAFETY:
-      // If we find 'in_progress' in storage during a fresh boot/check,
-      // it means the user refreshed or crashed mid-flow.
-      // We must fail-open to 'skipped' to avoid locking them out.
       if (state.status === 'in_progress') {
         return 'skipped';
       }
@@ -36,9 +37,9 @@ export function getSafeOnboardingState(user: any): OnboardingStatus {
       return state.status;
     }
 
-    // 3. 🚨 NEW USER ENTRY (The Fix)
+    // 3. 🚨 NEW USER ENTRY
     // Defines first authenticated session entry into onboarding.
-    if (user && !stored && user.hasOnboarded !== true) {
+    if (user && !stored && (user as any).hasOnboarded !== true) {
       return 'not_started';
     }
 
@@ -46,17 +47,15 @@ export function getSafeOnboardingState(user: any): OnboardingStatus {
     return 'skipped';
 
   } catch (error) {
-    // 4. Absolute Safety Fallback
-    // If anything throws (JSON parse error, storage quota, etc),
-    // we assume 'skipped' to let the user into the app.
     console.warn('Onboarding state resolution failed, defaulting to skipped:', error);
     return 'skipped';
   }
 }
 
-export function setOnboardingState(state: OnboardingState) {
+export function setOnboardingState(userId: string, state: OnboardingState) {
   try {
-    localStorage.setItem(ONBOARDING_KEY, JSON.stringify(state));
+    const key = getOnboardingKey(userId);
+    localStorage.setItem(key, JSON.stringify(state));
   } catch (e) {
     console.error('Failed to save onboarding state:', e);
   }
