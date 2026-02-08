@@ -27,7 +27,7 @@ export function SanctuaryEntryCard() {
               onClick={() => router.push('/sanctuary/feed')}
               data-testid="sanctuary-release-btn"
             >
-              Write, if you want
+              Enter, if you want
             </Button>
             <Button 
               variant="ghost" 
@@ -35,7 +35,7 @@ export function SanctuaryEntryCard() {
               onClick={() => router.push('/sanctuary/feed')}
               data-testid="sanctuary-read-btn"
             >
-              Read quietly
+              Just be here
             </Button>
           </div>
         </CardContent>

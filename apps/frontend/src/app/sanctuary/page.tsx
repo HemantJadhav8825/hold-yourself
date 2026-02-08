@@ -60,7 +60,7 @@ export default function SanctuaryPage() {
               </div>
               <h2 className="text-xl font-medium mb-2">The Feed</h2>
               <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
-                Shared thoughts that disappear after 24 hours. Nothing is required.
+                Thoughts here disappear after 24 hours. Nothing is required.
               </p>
               <Button size="lg" className="px-8 rounded-full" onClick={() => router.push('/sanctuary/feed')}>
                 Write, if you want
