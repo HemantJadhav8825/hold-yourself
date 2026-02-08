@@ -7,7 +7,7 @@ export function ArrivalHeader({ className }: { className?: string }) {
         You’re here.
       </h1>
       <p className="mt-2 text-muted-foreground text-lg font-serif italic animate-fade-in animation-delay-200">
-        Take a moment.
+        Nothing else is required.
       </p>
     </header>
   )

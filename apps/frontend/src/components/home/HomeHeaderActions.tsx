@@ -19,7 +19,7 @@ export function HomeHeaderActions() {
         <Button variant="ghost" size="sm" disabled>
           Log in
         </Button>
-        <Button size="sm" disabled>Get Started</Button>
+        <Button size="sm" disabled>Enter</Button>
       </>
     )
   }
@@ -42,7 +42,7 @@ export function HomeHeaderActions() {
         </Button>
       </Link>
       <Link href="/signup">
-        <Button size="sm">Get Started</Button>
+        <Button size="sm">Enter</Button>
       </Link>
     </>
   )

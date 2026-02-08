@@ -29,7 +29,7 @@ export function ChatOverview() {
       {!hasConversations ? (
         <div className="text-center py-12 border-t border-b border-border/50">
           <p className="text-muted-foreground font-serif italic text-lg opacity-80">
-            Conversations happen when they’re ready.
+            Conversations happen in their own time.
           </p>
         </div>
       ) : (

@@ -13,7 +13,7 @@ export function SanctuaryEntryCard() {
         <CardContent className="p-8 text-center space-y-8">
           <div className="space-y-2">
             <h2 className="font-serif text-2xl text-foreground/80">
-              A space to release a thought.
+              A space that’s open to you.
             </h2>
             <p className="text-muted-foreground text-sm">
               Anonymous. No pressure.
@@ -27,7 +27,7 @@ export function SanctuaryEntryCard() {
               onClick={() => router.push('/sanctuary/feed')}
               data-testid="sanctuary-release-btn"
             >
-              Release a thought
+              Write, if you want
             </Button>
             <Button 
               variant="ghost" 
