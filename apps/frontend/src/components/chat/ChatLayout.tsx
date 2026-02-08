@@ -53,10 +53,10 @@ export const ChatLayout: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 lg:inset-y-0 lg:left-64 bg-background z-50 lg:z-0 flex overflow-hidden">
+    <div className="flex-1 h-full w-full flex overflow-hidden min-w-0">
       {/* List Pane */}
       <div className={cn(
-        'w-full lg:w-96 flex-shrink-0',
+        'w-full lg:w-96 flex-shrink-0 lg:border-r border-border flex flex-col min-w-0',
         activeChatId && 'hidden lg:flex'
       )}>
         {isViewingRequests ? (
@@ -74,7 +74,7 @@ export const ChatLayout: React.FC = () => {
 
       {/* Thread Pane */}
       <div className={cn(
-        'flex-1 flex flex-col',
+        'flex-1 flex flex-col min-w-0',
         !activeChatId && 'hidden lg:flex'
       )}>
         {activeChatId && activeChatId !== 'requests' ? (

@@ -6,7 +6,7 @@ import { DashShell } from '@/components/layout/DashShell';
 
 export default function MessagesPage() {
   return (
-    <DashShell>
+    <DashShell fullWidth>
        <ChatLayout />
     </DashShell>
   );
