@@ -6,11 +6,22 @@ import { DailyCheckInPrompt } from '../components/DailyCheckInPrompt';
 import { ShareCard } from '../components/ShareCard';
 import { EndOfFeedMessage } from '../components/EndOfFeedMessage';
 import { useHoldingSpaceFeed } from '../hooks/useHoldingSpaceFeed';
+import { useDailyCheckIn } from '../hooks/useDailyCheckIn';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 export const HoldingSpaceScreen = () => {
-  const { shares, loading, error, hasMore, loadMore } = useHoldingSpaceFeed();
+  const { 
+    shares, 
+    loading, 
+    error, 
+    hasMore, 
+    loadMore,
+    addOptimisticShare,
+    replaceShare,
+    removeShare
+  } = useHoldingSpaceFeed();
+  const { dismissCheckIn } = useDailyCheckIn();
   const composerRef = React.useRef<HTMLDivElement>(null);
 
   const handleScrollToComposer = () => {
@@ -25,7 +36,12 @@ export const HoldingSpaceScreen = () => {
 
       {/* Composer Area */}
       <div ref={composerRef} className="w-full mb-10">
-        <ShareComposer />
+        <ShareComposer 
+          addOptimisticShare={addOptimisticShare}
+          replaceShare={replaceShare}
+          removeShare={removeShare}
+          onPostSuccess={dismissCheckIn}
+        />
       </div>
 
       {/* Feed Divider */}

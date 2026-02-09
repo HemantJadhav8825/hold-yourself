@@ -48,11 +48,30 @@ export const useHoldingSpaceFeed = () => {
     }
   }, [loading, hasMore, cursor, fetchShares]);
 
+  // --- Optimistic UI Helpers ---
+
+  const addOptimisticShare = useCallback((share: ShareDTO) => {
+    setShares((prev) => [share, ...prev]);
+  }, []);
+
+  const replaceShare = useCallback((tempId: string, realShare: ShareDTO) => {
+    setShares((prev) =>
+      prev.map((s) => (s.id === tempId ? realShare : s))
+    );
+  }, []);
+
+  const removeShare = useCallback((id: string) => {
+    setShares((prev) => prev.filter((s) => s.id !== id));
+  }, []);
+
   return {
     shares,
     loading,
     error,
     hasMore,
     loadMore,
+    addOptimisticShare,
+    replaceShare,
+    removeShare,
   };
 };
