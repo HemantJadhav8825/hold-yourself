@@ -1,12 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ShareComposer } from '../components/ShareComposer';
 import { DailyCheckInPrompt } from '../components/DailyCheckInPrompt';
 import { ShareCard } from '../components/ShareCard';
 import { EndOfFeedMessage } from '../components/EndOfFeedMessage';
 import { useHoldingSpaceFeed } from '../hooks/useHoldingSpaceFeed';
 import { useDailyCheckIn } from '../hooks/useDailyCheckIn';
+import { updateShare } from '../api/updateShare';
+import { deleteShare } from '../api/deleteShare';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
@@ -19,7 +21,8 @@ export const HoldingSpaceScreen = () => {
     loadMore,
     addOptimisticShare,
     replaceShare,
-    removeShare
+    removeShare,
+    restoreShare
   } = useHoldingSpaceFeed();
   const { dismissCheckIn } = useDailyCheckIn();
   const composerRef = React.useRef<HTMLDivElement>(null);
@@ -27,6 +30,44 @@ export const HoldingSpaceScreen = () => {
   const handleScrollToComposer = () => {
     composerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
+
+  const handleUpdate = useCallback(async (id: string, content: string) => {
+    const originalShare = shares.find(s => s.id === id);
+    if (!originalShare) return;
+
+    // 1. Optimistic Update
+    const optimisticShare = { ...originalShare, content, updatedAt: new Date().toISOString() };
+    replaceShare(id, optimisticShare);
+
+    try {
+      // 2. Call API
+      const updatedShare = await updateShare(id, { content });
+      // 3. Confirm with server data
+      replaceShare(id, updatedShare);
+    } catch (err) {
+      console.error('Failed to update share:', err);
+      // 4. Rollback
+      replaceShare(id, originalShare);
+      // Optional: Trigger a toast here if we had a toast system
+    }
+  }, [shares, replaceShare]);
+
+  const handleDelete = useCallback(async (id: string) => {
+    const originalShare = shares.find(s => s.id === id);
+    if (!originalShare) return;
+
+    // 1. Optimistic Delete
+    removeShare(id);
+
+    try {
+      // 2. Call API
+      await deleteShare(id);
+    } catch (err) {
+      console.error('Failed to delete share:', err);
+      // 3. Rollback
+      restoreShare(originalShare);
+    }
+  }, [shares, removeShare, restoreShare]);
 
   return (
     <div className="w-full max-w-[720px] mx-auto px-4 py-8 flex flex-col items-center">
@@ -65,7 +106,12 @@ export const HoldingSpaceScreen = () => {
         )}
 
         {shares.map((share) => (
-          <ShareCard key={share.id} share={share} />
+          <ShareCard 
+            key={share.id} 
+            share={share} 
+            onUpdate={handleUpdate}
+            onDelete={handleDelete}
+          />
         ))}
 
         {!loading && shares.length > 0 && hasMore && (

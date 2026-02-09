@@ -64,6 +64,15 @@ export const useHoldingSpaceFeed = () => {
     setShares((prev) => prev.filter((s) => s.id !== id));
   }, []);
 
+  const restoreShare = useCallback((share: ShareDTO) => {
+    setShares((prev) => {
+      const newShares = [...prev, share];
+      // remove duplicates just in case
+      const unique = Array.from(new Map(newShares.map((s) => [s.id, s])).values());
+      return unique.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    });
+  }, []);
+
   return {
     shares,
     loading,
@@ -73,5 +82,8 @@ export const useHoldingSpaceFeed = () => {
     addOptimisticShare,
     replaceShare,
     removeShare,
+    updateShareInState: replaceShare,
+    deleteShareFromState: removeShare,
+    restoreShare, // Exported for rollback
   };
 };
