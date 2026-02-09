@@ -1,3 +1,5 @@
+'use client';
+
 import Link from "next/link"
 import { ArrivalHeader } from "@/components/home/ArrivalHeader"
 import { SanctuaryEntryCard } from "@/components/home/SanctuaryEntryCard"
@@ -6,8 +8,32 @@ import { Container } from "@/components/ui/Container"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { HomeHeaderActions } from "@/components/home/HomeHeaderActions"
 import { brand } from "@/config/brand"
+import { useAuth } from "@/context/AuthContext"
+import { AuthGuard } from "@/components/auth/AuthGuard"
+import { DashShell } from "@/components/layout/DashShell"
+import { HoldingSpaceScreen } from "@/features/holding-space/screens/HoldingSpaceScreen"
 
 export default function Home() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
+
+  if (isAuthenticated) {
+    return (
+      <AuthGuard>
+        <DashShell>
+          <HoldingSpaceScreen />
+        </DashShell>
+      </AuthGuard>
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       {/* Global Navigation (kept for utility) */}

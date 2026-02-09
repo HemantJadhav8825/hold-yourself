@@ -14,7 +14,7 @@ export const GuestGuard: React.FC<GuestGuardProps> = ({ children }) => {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      router.push('/dashboard');
+      router.push('/');
     }
   }, [isLoading, isAuthenticated, router]);
 

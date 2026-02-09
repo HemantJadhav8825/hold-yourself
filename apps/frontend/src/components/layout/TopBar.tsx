@@ -7,7 +7,7 @@ import Link from 'next/link';
 export const TopBar: React.FC = () => {
   return (
     <header className="lg:hidden fixed top-0 left-0 w-full h-14 bg-background border-b border-border z-40 flex items-center justify-between px-4">
-      <Link href="/dashboard">
+      <Link href="/">
         <Heading level={5} className="text-primary font-bold tracking-tight">
           {brand.PRODUCT_NAME}
         </Heading>
@@ -17,7 +17,7 @@ export const TopBar: React.FC = () => {
         <Link href="/messages" className="p-1 hover:text-primary transition-colors">
           <MessageCircle className="w-6 h-6" />
         </Link>
-        <Link href="/dashboard/profile" className="p-1 hover:text-primary transition-colors">
+        <Link href="/profile" className="p-1 hover:text-primary transition-colors">
           <User className="w-6 h-6" />
         </Link>
       </div>

@@ -37,6 +37,23 @@ export const hasRecentlyInteracted = (): boolean => {
 };
 
 /**
+ * Get the remaining time in milliseconds until the 24-hour cooldown expires.
+ * Returns 0 if no cooldown is active.
+ */
+export const getTimeUntilNextRelease = (): number => {
+  if (typeof window === 'undefined') return 0;
+
+  const lastInteraction = localStorage.getItem(STORAGE_KEY_24H);
+  if (lastInteraction) {
+    const elapsed = Date.now() - parseInt(lastInteraction, 10);
+    if (elapsed < COOLDOWN_24H) {
+      return COOLDOWN_24H - elapsed;
+    }
+  }
+  return 0;
+};
+
+/**
  * Mark that the user has entered Sanctuary in the current session.
  * This is used to prevent re-prompting during the same session.
  */

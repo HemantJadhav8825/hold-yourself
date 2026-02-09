@@ -76,7 +76,7 @@ export default function SanctuaryPage() {
           </p>
           <Button variant="link" className="text-xs text-muted-foreground hover:text-foreground transition-colors" onClick={() => {
               markSanctuaryInteraction();
-              router.push('/dashboard');
+              router.push('/');
           }}>
               Return to We belong
           </Button>

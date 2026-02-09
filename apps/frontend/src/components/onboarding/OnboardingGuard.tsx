@@ -35,7 +35,7 @@ export const OnboardingGuard: React.FC<{ children: React.ReactNode }> = ({ child
     // 3. Routing Logic
     // If completed or skipped locally OR backend says onboarded -> Dashboard
     if (status === 'completed' || status === 'skipped') {
-      router.replace('/dashboard');
+      router.replace('/');
       return;
     }
 

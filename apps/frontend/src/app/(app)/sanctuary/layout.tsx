@@ -67,8 +67,8 @@ export default function SanctuaryLayout({
   }
 
   return (
-    <AuthGuard>
+    <>
       {children}
-    </AuthGuard>
+    </>
   )
 }

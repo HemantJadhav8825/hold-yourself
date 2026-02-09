@@ -84,7 +84,7 @@ export const OnboardingOrchestrator: React.FC = () => {
       });
 
       // D. Navigate
-      router.replace('/dashboard');
+      router.replace('/');
 
     } catch (error) {
       console.error('Onboarding completion failed, forcing skip:', error);
@@ -96,7 +96,7 @@ export const OnboardingOrchestrator: React.FC = () => {
           completedAt: Date.now()
         });
       }
-      router.replace('/dashboard');
+      router.replace('/');
     }
   };
 

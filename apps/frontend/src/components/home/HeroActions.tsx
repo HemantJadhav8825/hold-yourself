@@ -24,7 +24,7 @@ export function HeroActions() {
     // Secondary "Learn More" can stay.
     return (
       <div className="flex flex-col gap-4 sm:flex-row">
-        <Link href="/dashboard">
+        <Link href="/">
           <Button size="lg" className="px-8 flex gap-2">
             Go to Dashboard <ArrowRight className="h-4 w-4" />
           </Button>
