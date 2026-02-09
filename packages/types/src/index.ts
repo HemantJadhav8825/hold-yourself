@@ -1,16 +1,25 @@
 export interface ShareDTO {
   id: string;
-  authorId: string;
+  authorId: string; // Will be "anonymous" if anonymous is true
   content: string;
-  visibility: 'public';
+  visibility: 'public' | 'followers';
   anonymous: boolean;
   commentsEnabled: boolean;
+  sensitivityTags: string[];
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CreateShareInput {
   content: string;
+  visibility?: 'public' | 'followers';
+  anonymous?: boolean;
+  sensitivityTags?: string[];
+}
+
+export interface UserPreferenceDTO {
+  userId: string;
+  mutedTags: string[];
 }
 
 export interface UpdateShareInput {

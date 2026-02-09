@@ -8,11 +8,12 @@ import { ShareDTO } from '@hold-yourself/types';
 export const serializeShare = (share: IShare): ShareDTO => {
   return {
     id: share._id.toString(),
-    authorId: share.authorId,
+    authorId: share.anonymous ? 'anonymous' : share.authorId,
     content: share.content,
     visibility: share.visibility,
     anonymous: share.anonymous,
     commentsEnabled: share.commentsEnabled,
+    sensitivityTags: share.sensitivityTags,
     createdAt: share.createdAt.toISOString(),
     updatedAt: share.updatedAt.toISOString(),
   };

@@ -28,3 +28,21 @@ export const authenticate = (req: AuthRequest, res: Response, next: NextFunction
     });
   }
 };
+
+export const optionalAuthenticate = (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (authHeader?.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1];
+      const payload = JwtVerifier.verify(token);
+      
+      if (payload.type === 'access') {
+        req.user = payload;
+      }
+    }
+    next();
+  } catch (err) {
+    // Silently continue for optional auth
+    next();
+  }
+};
