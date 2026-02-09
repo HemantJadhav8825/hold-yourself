@@ -36,7 +36,7 @@ export const ShareCard: React.FC<ShareCardProps> = ({ share, onUpdate, onDelete 
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Author check
-  const isAuthor = user?.id === share.authorId;
+  const isAuthor = !!share.isOwner;
   const isAnonymous = share.authorId === 'anonymous' || share.anonymous;
   
   const displayName = isAnonymous ? 'Anonymous' : 'Community Member';

@@ -53,7 +53,9 @@ export const HoldingSpaceScreen = () => {
   }, [shares, replaceShare]);
 
   const handleDelete = useCallback(async (id: string) => {
-    const originalShare = shares.find(s => s.id === id);
+    const originalIndex = shares.findIndex(s => s.id === id);
+    const originalShare = shares[originalIndex];
+    
     if (!originalShare) return;
 
     // 1. Optimistic Delete
@@ -65,7 +67,7 @@ export const HoldingSpaceScreen = () => {
     } catch (err) {
       console.error('Failed to delete share:', err);
       // 3. Rollback
-      restoreShare(originalShare);
+      restoreShare(originalShare, originalIndex);
     }
   }, [shares, removeShare, restoreShare]);
 

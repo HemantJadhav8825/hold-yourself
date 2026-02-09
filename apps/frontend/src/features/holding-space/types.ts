@@ -8,4 +8,5 @@ export interface ShareDTO {
   sensitivityTags: string[];
   createdAt: string;
   updatedAt: string;
+  isOwner?: boolean;
 }
