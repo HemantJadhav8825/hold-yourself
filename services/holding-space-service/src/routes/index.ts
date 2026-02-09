@@ -1,33 +1,24 @@
-import { Router, Request, Response } from 'express';
-import { assertChronologicalOnly } from '../guardrails';
+import { Router } from 'express';
+import { ShareController } from '../controllers/share.controller';
+import { authenticate } from '../middleware/auth';
 
 const router = Router();
+const controller = new ShareController();
 
 /**
- * GET /shares
- * Returns a list of shares, enforced to be chronological.
+ * Expression Layer Endpoints (Milestone 1)
  */
-router.get('/shares', (req: Request, res: Response) => {
-  const { sort, order } = req.query as { sort?: string; order?: string };
 
-  try {
-    // Chronological ordering is mandatory for emotional safety.
-    assertChronologicalOnly({ sort, order });
+// POST /shares - Create a new share (Authenticated)
+router.post('/shares', authenticate, (req, res) => controller.createShare(req, res));
 
-    // Explicitly enforce chronological sort in the logic (v0 returns empty array)
-    const shares: any[] = []; // Explicitly sort by createdAt DESC in future DB query
+// GET /shares - Real chronological feed (Public/Authenticated)
+router.get('/shares', (req, res) => controller.getShares(req, res));
 
-    res.json({
-      success: true,
-      data: shares,
-      message: 'Chronological feed retrieved successfully.'
-    });
-  } catch (error: any) {
-    res.status(400).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
+// PATCH /shares/:id - Edit a share (Authenticated, Author only)
+router.patch('/shares/:id', authenticate, (req, res) => controller.updateShare(req, res));
+
+// DELETE /shares/:id - Delete a share (Authenticated, Author only)
+router.delete('/shares/:id', authenticate, (req, res) => controller.deleteShare(req, res));
 
 export default router;
