@@ -17,3 +17,18 @@ export interface UpdateShareInput {
   content?: string;
   commentsEnabled?: boolean;
 }
+
+export interface SupportDTO {
+  id: string;
+  shareId: string;
+  type: 'WITH_YOU' | 'HOLDING' | 'HEARD' | 'SUPPORT';
+  createdAt: string;
+}
+
+export interface CommentDTO {
+  id: string;
+  shareId: string;
+  authorId: string;
+  content: string;
+  createdAt: string;
+}

@@ -1,24 +1,32 @@
 import { Router } from 'express';
 import { ShareController } from '../controllers/share.controller';
+import { SupportController } from '../controllers/support.controller';
+import { CommentController } from '../controllers/comment.controller';
 import { authenticate } from '../middleware/auth';
 
 const router = Router();
-const controller = new ShareController();
+const shareController = new ShareController();
+const supportController = new SupportController();
+const commentController = new CommentController();
 
 /**
  * Expression Layer Endpoints (Milestone 1)
  */
+router.post('/shares', authenticate, (req, res) => shareController.createShare(req, res));
+router.get('/shares', (req, res) => shareController.getShares(req, res));
+router.patch('/shares/:id', authenticate, (req, res) => shareController.updateShare(req, res));
+router.delete('/shares/:id', authenticate, (req, res) => shareController.deleteShare(req, res));
 
-// POST /shares - Create a new share (Authenticated)
-router.post('/shares', authenticate, (req, res) => controller.createShare(req, res));
+/**
+ * Interaction Layer Endpoints (Milestone 2)
+ */
 
-// GET /shares - Real chronological feed (Public/Authenticated)
-router.get('/shares', (req, res) => controller.getShares(req, res));
+// Support
+router.post('/shares/:id/support', authenticate, (req, res) => supportController.toggleSupport(req, res));
+router.delete('/shares/:id/support', authenticate, (req, res) => supportController.deleteSupport(req, res));
 
-// PATCH /shares/:id - Edit a share (Authenticated, Author only)
-router.patch('/shares/:id', authenticate, (req, res) => controller.updateShare(req, res));
-
-// DELETE /shares/:id - Delete a share (Authenticated, Author only)
-router.delete('/shares/:id', authenticate, (req, res) => controller.deleteShare(req, res));
+// Comments
+router.post('/shares/:id/comments', authenticate, (req, res) => commentController.createComment(req, res));
+router.get('/shares/:id/comments', authenticate, (req, res) => commentController.getComments(req, res));
 
 export default router;
