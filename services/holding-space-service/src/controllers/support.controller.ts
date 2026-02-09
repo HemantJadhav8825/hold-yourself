@@ -1,7 +1,9 @@
 import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth';
 import { SupportModel } from '../models/Support';
+import { ShareModel } from '../models/Share';
 import { serializeSupport } from '../services/support.serializer';
+import { BlockService } from '../services/block.service';
 
 export class SupportController {
   /**
@@ -20,6 +22,18 @@ export class SupportController {
 
       if (!['WITH_YOU', 'HOLDING', 'HEARD', 'SUPPORT'].includes(type)) {
         return res.status(400).json({ error: 'Invalid support type' });
+      }
+
+      // 1. Share check
+      const share = await ShareModel.findById(shareId);
+      if (!share) {
+        return res.status(404).json({ error: 'Share not found' });
+      }
+
+      // 2. Block check: Cannot support if mutual block exists
+      const isBlocked = await BlockService.isBlockedMutual(userId, share.authorId);
+      if (isBlocked) {
+        return res.status(403).json({ error: 'You cannot interact with this content' });
       }
 
       // Upsert logic: If support exists -> update type, else create new

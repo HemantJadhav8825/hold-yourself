@@ -2,9 +2,11 @@ import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth';
 import { ShareModel, IShare } from '../models/Share';
 import { UserPreferenceModel } from '../models/UserPreference';
+import { BlockModel } from '../models/Block';
 import { serializeShare, serializeShares } from '../services/share.serializer';
 import { assertChronologicalOnly } from '../guardrails';
 import { canViewerSeeShare } from '../middleware/visibility';
+import { BlockService } from '../services/block.service';
 
 export class ShareController {
   /**
@@ -136,34 +138,59 @@ export class ShareController {
       // Enforce emotional safety guardrails
       assertChronologicalOnly({ sort: sort as string, order: order as string });
 
-      const query: any = { isShadowLimited: false };
+      const query: any = {};
 
       if (cursor) {
         query.createdAt = { $lt: new Date(cursor as string) };
       }
 
-      // Load viewer preferences for muted tags
+      // Load viewer preferences for muted tags and blocks
       let mutedTags: string[] = [];
+      let blockedByViewer: string[] = [];
+      let blockersOfViewer: string[] = [];
+
       if (viewerId) {
-        const pref = await UserPreferenceModel.findOne({ userId: viewerId });
+        const [pref, blocks, blockers] = await Promise.all([
+          UserPreferenceModel.findOne({ userId: viewerId }),
+          BlockService.getBlockedIds(viewerId),
+          BlockService.getBlockersOfIds(viewerId)
+        ]);
+        
         if (pref) mutedTags = pref.mutedTags;
+        blockedByViewer = blocks;
+        blockersOfViewer = blockers;
       }
 
-      // Fetch potential shares (oversampling slightly to account for visibility filtering)
+      // 1. Initial database filter (shadow-limiting excluded unless viewer is author)
+      // Note: We can't easily do author-check inside query for different authors,
+      // so we fetch both and filter in memory for simplicity/safety.
+      
       const potentialShares = await ShareModel.find(query)
         .sort({ createdAt: -1 })
-        .limit(Number(limit) * 2); // Oversample
+        .limit(Number(limit) * 3); // Higher oversample for shadow/block filtering
 
       const visibleShares: IShare[] = [];
       
       for (const share of potentialShares) {
         if (visibleShares.length >= Number(limit)) break;
 
-        // 1. Visibility Check
+        // 1. Shadow-limiting check: Only author can see shadow-limited content
+        if (share.isShadowLimited && share.authorId !== viewerId) {
+          continue;
+        }
+
+        // 2. Mutual Block check (Silent invisibility)
+        if (viewerId) {
+          if (blockedByViewer.includes(share.authorId) || blockersOfViewer.includes(share.authorId)) {
+            continue;
+          }
+        }
+
+        // 3. Visibility Check (Public vs Followers)
         const isVisible = await canViewerSeeShare(viewerId || '', share);
         if (!isVisible) continue;
 
-        // 2. Personal Topic Filtering (Muted Tags)
+        // 4. Personal Topic Filtering (Muted Tags)
         if (mutedTags.length > 0 && share.sensitivityTags.length > 0) {
           const isMuted = share.sensitivityTags.some(tag => mutedTags.includes(tag));
           if (isMuted) continue;

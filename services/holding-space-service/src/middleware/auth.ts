@@ -46,3 +46,13 @@ export const optionalAuthenticate = (req: AuthRequest, res: Response, next: Next
     next();
   }
 };
+
+/**
+ * Middleware to enforce admin role.
+ */
+export const requireAdmin = (req: AuthRequest, res: Response, next: NextFunction) => {
+  if (req.user?.role !== 'admin') {
+    return res.status(403).json({ error: 'Forbidden: Admin access only' });
+  }
+  next();
+};
