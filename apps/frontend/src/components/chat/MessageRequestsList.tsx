@@ -60,7 +60,7 @@ export const MessageRequestsList: React.FC<MessageRequestsListProps> = ({
 
       <div className="px-4 py-2 border-b border-border/50 space-y-4 pb-4">
         <Text size="xs" muted className="leading-relaxed">
-          Invitations from people you don't follow. They won't know you've seen the message until you accept.
+          Invitations from people you don&apos;t follow. They won&apos;t know you&apos;ve seen the message until you accept.
         </Text>
 
         {/* Suggested/Active people for requests context */}

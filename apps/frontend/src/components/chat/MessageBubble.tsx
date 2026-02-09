@@ -50,8 +50,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                 status === 'failed' && 'bg-destructive text-destructive-foreground'
               )
             : cn(
-                'bg-muted text-foreground',
-                'rounded-2xl rounded-tl-sm',
+                'bg-muted/40 backdrop-blur-sm text-foreground border border-border/40',
+                'rounded-2xl rounded-tl-sm shadow-sm',
                 !isFirstInGroup && 'rounded-tl-2xl',
                 !isLastInGroup && 'rounded-bl-sm'
               )

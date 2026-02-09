@@ -1,7 +1,7 @@
 import React from 'react';
 import { Heading } from '@/components/ui/Heading';
 import { brand } from '@/config/brand';
-import { Heart, MessageCircle, User } from 'lucide-react';
+import { MessageCircle, User } from 'lucide-react';
 import Link from 'next/link';
 
 export const TopBar: React.FC = () => {
@@ -14,9 +14,6 @@ export const TopBar: React.FC = () => {
       </Link>
       
       <div className="flex items-center gap-4">
-        <Link href="/dashboard" className="p-1 hover:text-primary transition-colors">
-          <Heart className="w-6 h-6" />
-        </Link>
         <Link href="/messages" className="p-1 hover:text-primary transition-colors">
           <MessageCircle className="w-6 h-6" />
         </Link>

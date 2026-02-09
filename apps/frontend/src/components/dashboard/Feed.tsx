@@ -48,7 +48,6 @@ export const Feed: React.FC = () => {
               username={user.displayName || user.username || 'User'}
               avatar={user.avatar}
               caption="Sharing a moment of quiet reflection today. 🌿"
-              likes={Math.floor(Math.random() * 100) + 1}
               timeAgo="2h"
             />
           ))

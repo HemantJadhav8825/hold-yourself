@@ -10,7 +10,7 @@ interface DashShellProps {
 
 export const DashShell: React.FC<DashShellProps> = ({ children, fullWidth = false }) => {
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
+    <div className="h-screen bg-background text-foreground flex flex-col overflow-hidden">
       {/* Mobile Top Bar */}
       <TopBar />
 
@@ -19,9 +19,9 @@ export const DashShell: React.FC<DashShellProps> = ({ children, fullWidth = fals
         <SidebarNav />
 
         {/* Main Content Area */}
-        <main className="flex-1 lg:ml-64 min-h-screen pt-14 lg:pt-0 flex flex-col overflow-hidden">
+        <main className="flex-1 lg:ml-64 h-full pt-14 lg:pt-0 flex flex-col overflow-hidden">
           <div className={cn(
-            'flex-1 flex flex-col w-full min-w-0',
+            'flex-1 flex flex-col w-full min-w-0 min-h-0',
             !fullWidth && 'max-w-[600px] mx-auto px-4 sm:px-6'
           )}>
             {children}
