@@ -54,12 +54,12 @@ export const MessageRequestDetail: React.FC<MessageRequestDetailProps> = ({
             Invitation
           </div>
           <Text className="text-sm italic leading-relaxed text-foreground/80">
-            "{intro || "Would like to start a conversation with you."}"
+            &quot;{intro || "Would like to start a conversation with you."}&quot;
           </Text>
         </div>
 
         <Text size="xs" muted className="max-w-xs leading-relaxed">
-          If you accept, {name} will be able to message you and see when you've read messages.
+          If you accept, {name} will be able to message you and see when you&apos;ve read messages.
         </Text>
       </div>
 

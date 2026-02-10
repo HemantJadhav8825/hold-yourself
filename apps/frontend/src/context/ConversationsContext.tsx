@@ -13,6 +13,10 @@ interface ConversationsContextType {
   error: string | null;
   onlineUsers: Set<string>;
   globalSettings: UserSettings | null;
+  setGlobalSettings: (settings: UserSettings | null) => void;
+  activeConversationId: string | null;
+  setActiveConversationId: (id: string | null) => void;
+  markAsRead: (conversationId: string) => Promise<void>;
   refresh: () => Promise<void>;
 }
 
@@ -25,13 +29,9 @@ export const ConversationsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [error, setError] = useState<string | null>(null);
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
   const [globalSettings, setGlobalSettings] = useState<UserSettings | null>(null);
+  const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   
   const { isAuthenticated, isLoading: authLoading, user } = useAuth();
-  const globalSettingsRef = useRef(globalSettings);
-
-  useEffect(() => {
-    globalSettingsRef.current = globalSettings;
-  }, [globalSettings]);
 
   const fetchConversations = useCallback(async () => {
     if (!isAuthenticated) return;
@@ -48,6 +48,22 @@ export const ConversationsProvider: React.FC<{ children: React.ReactNode }> = ({
       setIsLoading(false);
     }
   }, [isAuthenticated, includeArchived]);
+
+  const markAsRead = useCallback(async (conversationId: string) => {
+    if (!isAuthenticated) return;
+
+    // Direct local update for instant UI feedback
+    setConversations(prev => prev.map(conv => 
+      conv.id === conversationId ? { ...conv, unreadCount: 0 } : conv
+    ));
+
+    try {
+      await chatService.markConversationRead(conversationId);
+    } catch (err) {
+      console.error('Failed to mark conversation as read', err);
+      // Optional: rollback on error? Usually not needed for read status
+    }
+  }, [isAuthenticated]);
 
   // Fetch Global Settings
   useEffect(() => {
@@ -92,17 +108,6 @@ export const ConversationsProvider: React.FC<{ children: React.ReactNode }> = ({
       socketService.emit('presence:sync', {});
     };
 
-    const handleConversationRead = ({ conversationId, userId }: { conversationId: string, userId: string }) => {
-      const currentUserId = user.id;
-      if (userId && userId !== currentUserId) return;
-
-      setConversations(prev => prev.map(c => {
-        if (c.id === conversationId) {
-          return { ...c, unreadCount: 0 };
-        }
-        return c;
-      }));
-    };
 
     const handleNewMessage = (message: Message) => {
       const { conversationId, senderId, content } = message;
@@ -126,14 +131,13 @@ export const ConversationsProvider: React.FC<{ children: React.ReactNode }> = ({
           conv.lastMessageSenderId = senderId;
         }
 
-        const currentParticipantSettings = conv.participantSettings?.find(p => p.userId === currentUserId);
-        const isMuted = currentParticipantSettings?.isMuted || false;
-        const isGlobalMute = globalSettingsRef.current?.muteUnreadBadges || false;
-
-        if (senderId && senderId !== currentUserId && !isMuted && !isGlobalMute) { 
-           conv.unreadCount = (conv.unreadCount || 0) + 1;
+        // Increment unread count if:
+        // 1. Message is not from self
+        // 2. This is NOT the active conversation
+        if (senderId !== currentUserId && conversationId !== activeConversationId) {
+          conv.unreadCount = (conv.unreadCount || 0) + 1;
         }
-        
+
         updated.splice(index, 1);
         updated.unshift(conv);
         return updated;
@@ -143,7 +147,6 @@ export const ConversationsProvider: React.FC<{ children: React.ReactNode }> = ({
     socketService.on('presence:initial', handlePresenceInitial);
     socketService.on('presence:update', handlePresenceUpdate);
     socketService.on('reconnected', syncPresence);
-    socketService.on('conversation:read', handleConversationRead);
     socketService.on('message:new', handleNewMessage);
     
     syncPresence();
@@ -152,10 +155,9 @@ export const ConversationsProvider: React.FC<{ children: React.ReactNode }> = ({
       socketService.off('presence:initial', handlePresenceInitial);
       socketService.off('presence:update', handlePresenceUpdate);
       socketService.off('reconnected', syncPresence);
-      socketService.off('conversation:read', handleConversationRead);
       socketService.off('message:new', handleNewMessage);
     };
-  }, [user?.id, fetchConversations]);
+  }, [user?.id, fetchConversations, activeConversationId]);
 
   return (
     <ConversationsContext.Provider value={{
@@ -166,6 +168,10 @@ export const ConversationsProvider: React.FC<{ children: React.ReactNode }> = ({
       error,
       onlineUsers,
       globalSettings,
+      setGlobalSettings,
+      activeConversationId,
+      setActiveConversationId,
+      markAsRead,
       refresh: fetchConversations
     }}>
       {children}

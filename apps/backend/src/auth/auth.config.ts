@@ -13,4 +13,7 @@ export const AUTH_CONFIG = {
 
   // Chat Service URL
   CHAT_SERVICE_URL: process.env.CHAT_SERVICE_URL!,
+
+  // Holding Space Service URL
+  HOLDING_SPACE_SERVICE_URL: process.env.HOLDING_SPACE_SERVICE_URL,
 };

@@ -66,7 +66,7 @@ export const ChatList: React.FC<ChatListProps> = ({
       {/* Header section */}
       <div className="p-4 lg:p-6 pb-2 lg:pb-4 flex flex-col gap-4">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard" className="p-2 -ml-2 hover:bg-muted rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/20">
+          <Link href="/" className="p-2 -ml-2 hover:bg-muted rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/20">
             <ChevronLeft className="w-5 h-5 text-muted-foreground/50" />
           </Link>
           <div className="flex-1">

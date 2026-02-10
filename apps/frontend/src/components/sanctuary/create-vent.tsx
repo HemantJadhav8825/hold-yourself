@@ -79,7 +79,7 @@ export function CreateVent({ onPosted }: CreateVentProps) {
             className="w-full rounded-full bg-background border-border text-xs h-9"
             onClick={() => {
               markSanctuaryInteraction()
-              router.push('/dashboard')
+              router.push('/')
             }}
           >
             Return to We belong

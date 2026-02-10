@@ -14,12 +14,11 @@ export const SidebarNav: React.FC = () => {
   const { logout } = useAuth();
   const { conversations } = useConversations();
 
-  const unreadCount = conversations.reduce((acc, curr) => acc + (curr.unreadCount || 0), 0);
 
   const navItems = [
-    { icon: Home, label: 'Home', href: '/dashboard' },
+    { icon: Home, label: 'Home', href: '/' },
     { icon: MessageCircle, label: 'Messages', href: '/messages' },
-    { icon: User, label: 'Profile', href: '/dashboard/profile' },
+    { icon: User, label: 'Profile', href: '/profile' },
   ];
 
   // Sanctuary is no longer a persistent destination in the sidebar.
@@ -27,7 +26,7 @@ export const SidebarNav: React.FC = () => {
 
   return (
     <aside className="hidden lg:flex flex-col fixed top-0 left-0 h-screen w-64 border-r border-border bg-background px-4 py-8 z-40">
-      <Link href="/dashboard" className="px-4 mb-12">
+      <Link href="/" className="px-4 mb-12">
         <Heading level={4} className="text-primary font-bold tracking-tight">
           {brand.PRODUCT_NAME}
         </Heading>
@@ -48,11 +47,6 @@ export const SidebarNav: React.FC = () => {
               <item.icon className={cn('w-6 h-6 transition-transform group-hover:scale-110', isActive && 'text-primary stroke-[2.5px]')} />
               <div className="flex-1 flex items-center justify-between">
                 <span className="text-sm">{item.label}</span>
-                {item.label === 'Messages' && unreadCount > 0 && (
-                  <span className="bg-primary text-primary-foreground text-[10px] font-bold px-1.5 h-4 min-w-[1rem] flex items-center justify-center rounded-full">
-                    {unreadCount > 99 ? '99+' : unreadCount}
-                  </span>
-                )}
               </div>
             </Link>
           );

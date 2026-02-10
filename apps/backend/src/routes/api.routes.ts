@@ -156,4 +156,54 @@ router.use('/v1/vents', requireAuth, async (req, res, next) => {
   }
 });
 
+// Holding Space Service Proxy
+const HOLDING_SPACE_SERVICE_URL = AUTH_CONFIG.HOLDING_SPACE_SERVICE_URL;
+
+const holdingSpaceRoutes = [
+  '/v1/shares',
+  '/v1/reports',
+  '/v1/block',
+  '/v1/preferences',
+  '/v1/internal/moderation'
+];
+
+// Apply proxy to all Holding Space routes
+holdingSpaceRoutes.forEach(route => {
+  // Use regex to match the route and any sub-paths
+  // e.g., /v1/shares matches /v1/shares, /v1/shares/123, etc.
+  router.use(route, requireAuth, async (req, res) => {
+    try {
+      // Construct the full URL for the microservice
+      // We need to append the sub-path from the original request
+      // req.originalUrl includes the full path (e.g. /v1/shares/123)
+      // We can just use req.originalUrl directly since we are mirroring the path structure
+      const url = `${HOLDING_SPACE_SERVICE_URL}${req.originalUrl}`;
+      
+      console.log(`[Proxy] Forwarding ${req.method} ${req.originalUrl} to ${url}`);
+
+      const response = await axios({
+        method: req.method,
+        url: url,
+        data: req.method !== 'GET' ? req.body : undefined,
+        params: req.query,
+        headers: {
+          // Forward Authorization header
+          Authorization: req.headers.authorization,
+          // Forward Content-Type if present
+          ...(req.headers['content-type'] ? { 'Content-Type': req.headers['content-type'] } : {})
+        }
+      });
+
+      res.status(response.status).json(response.data);
+    } catch (error: any) {
+      // Forward the error from the microservice
+      const status = error.response?.status || 500;
+      const data = error.response?.data || { error: 'Holding Space Service unavailable' };
+      
+      console.error(`[Proxy Error] ${req.method} ${req.originalUrl} failed: ${status}`);
+      res.status(status).json(data);
+    }
+  });
+});
+
 export default router;

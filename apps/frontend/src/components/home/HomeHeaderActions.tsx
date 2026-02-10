@@ -26,7 +26,7 @@ export function HomeHeaderActions() {
 
   if (isAuthenticated) {
     return (
-      <Link href="/dashboard">
+      <Link href="/">
         <Button size="sm" variant="default">
           Go to Dashboard
         </Button>

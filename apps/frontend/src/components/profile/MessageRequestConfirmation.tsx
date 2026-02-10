@@ -52,7 +52,7 @@ export const MessageRequestConfirmation: React.FC<MessageRequestConfirmationProp
 
               <div className="bg-muted/30 p-4 rounded-xl text-left">
                 <Text size="xs" muted className="leading-relaxed">
-                  They will choose whether to reply. You won't be able to send more messages until they accept.
+                  They will choose whether to reply. You won&apos;t be able to send more messages until they accept.
                 </Text>
               </div>
 

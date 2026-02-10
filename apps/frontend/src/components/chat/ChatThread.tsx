@@ -21,6 +21,7 @@ import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { socketService } from '@/api/socket.service';
 
 import { chatService, Conversation } from '@/api/chat.service';
+import { useConversationsContext } from '@/context/ConversationsContext';
 
 interface ChatThreadProps {
   conversation?: Conversation;
@@ -41,6 +42,7 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
     setTyping,
     clearHistory
   } = useChat(conversation?.id || null);
+  const { markAsRead } = useConversationsContext();
   const { users } = useUsers(50);
   const { user: currentUser } = useCurrentUser();
   
@@ -64,10 +66,7 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
 
     const markRead = () => {
       if (document.visibilityState === 'visible') {
-        chatService.markConversationRead(conversation.id).catch(err => {
-          // Silently fail or log
-          console.error('Failed to mark read', err);
-        });
+        markAsRead(conversation.id);
       }
     };
 
@@ -83,7 +82,7 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
       window.removeEventListener('focus', onFocus);
       document.removeEventListener('visibilitychange', onFocus);
     };
-  }, [conversation?.id]);
+  }, [conversation?.id, markAsRead]);
 
   const handleToggleMute = async () => {
     if (!conversation) return;
@@ -173,7 +172,6 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
 
   // Track initial read time to freeze the "New Messages" line location
   const [initialLastReadAt, setInitialLastReadAt] = React.useState<Date | null>(null);
-
   React.useEffect(() => {
     if (conversation?.id && currentUser) {
       const settings = conversation.participantSettings?.find(s => s.userId === currentUser.id);
@@ -183,7 +181,7 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
         return settings?.lastReadAt ? new Date(settings.lastReadAt) : new Date(0);
       });
     }
-  }, [conversation?.id, currentUser]); // Intentionally not depending on conversation changes other than ID
+  }, [conversation?.id, currentUser, conversation?.participantSettings]);
 
   // Calm Utility: Group messages by sender and time (5-min threshold)
   const groupedMessages = messages.reduce((acc: any[], msg, i) => {
@@ -261,9 +259,9 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
   }, []);
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="h-full flex flex-col bg-background min-h-0">
       {/* Header */}
-      <header className="h-16 lg:h-20 border-b border-border flex items-center justify-between px-4 lg:px-6 flex-shrink-0">
+      <header className="h-16 lg:h-20 border-b border-border flex items-center justify-between px-4 lg:px-6 flex-shrink-0 z-10 bg-background">
         <div className="flex items-center gap-3">
           {onBack && (
             <button onClick={onBack} className="lg:hidden p-1 -ml-1">
@@ -363,7 +361,7 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
       </header>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 lg:p-6 no-scrollbar flex flex-col-reverse relative">
+      <div className="flex-1 overflow-y-auto p-4 lg:p-6 no-scrollbar flex flex-col-reverse relative min-h-0">
         {/* Typing Indicators */}
         {otherUser && typingUsers.has(otherUser.id) && (
           <div className="absolute bottom-4 left-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -436,20 +434,22 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
       </div>
 
       {/* Input or Blocked Message */}
-      {isBlocked ? (
-        <div className="p-4 lg:p-6 border-t border-border bg-muted/20">
-          <div className="text-center py-4">
-            <Text size="sm" muted className="italic">
-              You cannot send messages to this user
-            </Text>
+      <div className="flex-shrink-0">
+        {isBlocked ? (
+          <div className="p-4 lg:p-6 border-t border-border bg-muted/20">
+            <div className="text-center py-4">
+              <Text size="sm" muted className="italic">
+                You cannot send messages to this user
+              </Text>
+            </div>
           </div>
-        </div>
-      ) : (
-        <MessageInput 
-          onSend={sendMessage} 
-          onTypingChange={setTyping}
-        />
-      )}
+        ) : (
+          <MessageInput 
+            onSend={sendMessage} 
+            onTypingChange={setTyping}
+          />
+        )}
+      </div>
 
       {/* Report Modal */}
       {otherUser && (
