@@ -66,7 +66,7 @@ export default function AnonymousSetupPage() {
                   </div>
                 </div>
              </div>
-             <p className="font-medium italic text-muted-foreground">"Quiet River", "Brave Oak", "Calm Sky"...</p>
+             <p className="font-medium italic text-muted-foreground">&quot;Quiet River&quot;, &quot;Brave Oak&quot;, &quot;Calm Sky&quot;...</p>
           </div>
 
           <div className="space-y-2 text-sm text-muted-foreground bg-yellow-500/5 p-4 rounded-lg border border-yellow-500/10">

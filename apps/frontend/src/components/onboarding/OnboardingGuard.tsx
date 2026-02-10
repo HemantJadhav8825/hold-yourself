@@ -46,6 +46,7 @@ export const OnboardingGuard: React.FC<{ children: React.ReactNode }> = ({ child
     // So 'in_progress' is effectively barred from re-entry on refresh.
     
     // Safe to render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     setIsAuthorized(true);
 
   }, [user, isLoading, router]);

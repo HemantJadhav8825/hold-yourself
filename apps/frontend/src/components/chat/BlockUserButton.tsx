@@ -73,7 +73,7 @@ export function BlockUserButton({
           Block <strong>{userName}</strong>?
         </p>
         <p className="text-xs text-gray-600 dark:text-gray-400 mb-4">
-          You won't be able to message each other. This action is reversible.
+          You won&apos;t be able to message each other. This action is reversible.
         </p>
         <div className="flex gap-2">
           <button

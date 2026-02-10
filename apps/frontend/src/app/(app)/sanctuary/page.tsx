@@ -12,7 +12,7 @@ import { markSanctuaryInteraction } from "@/lib/sanctuary-suppression"
 export default function SanctuaryPage() {
   const { user, isLoading } = useCurrentUser()
   const router = useRouter()
-  const [checkingIdentity, setCheckingIdentity] = useState(true)
+  const isReady = !isLoading && user && user.anonymousProfile
 
   useEffect(() => {
     if (isLoading) return
@@ -22,14 +22,12 @@ export default function SanctuaryPage() {
       return
     }
 
-    if (user.anonymousProfile) {
-      setCheckingIdentity(false)
-    } else {
+    if (!user.anonymousProfile) {
       router.push('/sanctuary/setup')
     }
   }, [user, isLoading, router])
 
-  if (isLoading || checkingIdentity) {
+  if (!isReady) {
     return (
       <div className="flex h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
