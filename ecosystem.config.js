@@ -46,6 +46,21 @@ module.exports = {
       },
     },
     {
+      name: "hold-yourself-holding-space",
+      cwd: "./services/holding-space-service",
+      script: "dist/index.js",
+      env_file: ".env",
+      watch: false,
+      max_memory_restart: "1G",
+      exec_mode: "fork",
+      instances: 1,
+      autorestart: true,
+      env: {
+        NODE_ENV: "production",
+        PORT: 3005,
+      },
+    },
+    {
       name: "hold-yourself-frontend",
       cwd: "./apps/frontend",
       script: "node_modules/next/dist/bin/next",
