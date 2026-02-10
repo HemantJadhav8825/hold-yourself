@@ -1,7 +1,8 @@
 import React from 'react';
 import { Text } from '@/components/ui/Text';
 import { Button } from '@/components/ui/Button';
-import { chatService } from '@/api/chat.service';
+import { chatService, UserSettings } from '@/api/chat.service';
+import { useConversationsContext } from '@/context/ConversationsContext';
 import { Check, X, Settings2 } from 'lucide-react';
 
 interface GlobalChatSettingsProps {
@@ -9,8 +10,9 @@ interface GlobalChatSettingsProps {
 }
 
 export const GlobalChatSettings: React.FC<GlobalChatSettingsProps> = ({ onClose }) => {
-  const [settings, setSettings] = React.useState<{ showReadReceipts: boolean; muteUnreadBadges: boolean } | null>(null);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const { globalSettings: contextSettings, setGlobalSettings } = useConversationsContext();
+  const [settings, setSettings] = React.useState<UserSettings | null>(contextSettings);
+  const [isLoading, setIsLoading] = React.useState(!contextSettings);
   const [isUpdating, setIsUpdating] = React.useState(false);
 
   React.useEffect(() => {
@@ -27,14 +29,13 @@ export const GlobalChatSettings: React.FC<GlobalChatSettingsProps> = ({ onClose 
     fetchSettings();
   }, []);
 
-  const handleToggleReceipts = async () => {
+  const handleUpdate = async (updates: Partial<UserSettings>) => {
     if (!settings) return;
     try {
       setIsUpdating(true);
-      const updated = await chatService.updateGlobalSettings({ 
-        showReadReceipts: !settings.showReadReceipts 
-      });
+      const updated = await chatService.updateGlobalSettings(updates);
       setSettings(updated);
+      setGlobalSettings(updated); // Sync with context for instant UI updates
     } catch (err) {
       console.error('Failed to update settings', err);
     } finally {
@@ -42,20 +43,17 @@ export const GlobalChatSettings: React.FC<GlobalChatSettingsProps> = ({ onClose 
     }
   };
 
-  const handleToggleMuteBadges = async () => {
+  const handleToggleReceipts = () => {
     if (!settings) return;
-    try {
-      setIsUpdating(true);
-      const updated = await chatService.updateGlobalSettings({ 
-        muteUnreadBadges: !settings.muteUnreadBadges 
-      });
-      setSettings(updated);
-    } catch (err) {
-      console.error('Failed to update settings', err);
-    } finally {
-      setIsUpdating(false);
-    }
+    handleUpdate({ showReadReceipts: !settings.showReadReceipts });
   };
+
+  const handleToggleBadges = () => {
+    if (!settings) return;
+    // muteUnreadBadges: true means hiding them, so toggle means reversing that logic for the user UI
+    handleUpdate({ muteUnreadBadges: !settings.muteUnreadBadges });
+  };
+
 
 
 
@@ -99,23 +97,24 @@ export const GlobalChatSettings: React.FC<GlobalChatSettingsProps> = ({ onClose 
 
           <div className="flex items-center justify-between gap-4">
             <div>
-              <Text weight="semibold">Mute Unread Badges</Text>
+              <Text weight="semibold">Message Counts</Text>
               <Text size="sm" muted className="text-xs mt-0.5">
-                Hide unread counts on all conversations.
+                Display unread message bubbles in your chat list.
               </Text>
             </div>
             <button 
-              onClick={handleToggleMuteBadges}
+              onClick={handleToggleBadges}
               disabled={isUpdating}
               className={`w-12 h-6 rounded-full transition-colors relative flex items-center px-1 ${
-                settings?.muteUnreadBadges ? 'bg-primary' : 'bg-muted-foreground/20'
+                !settings?.muteUnreadBadges ? 'bg-primary' : 'bg-muted-foreground/20'
               }`}
             >
               <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${
-                settings?.muteUnreadBadges ? 'translate-x-6' : 'translate-x-0'
+                !settings?.muteUnreadBadges ? 'translate-x-6' : 'translate-x-0'
               }`} />
             </button>
           </div>
+
 
           <div className="pt-4 border-t border-border/50">
             <Button 

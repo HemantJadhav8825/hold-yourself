@@ -60,15 +60,15 @@ export default function SanctuaryLayout({
         checkAndRefreshToken()
       }
     }
-  }, [isEnabled, user, refreshUser]);
+  }, [isEnabled, user, refreshUser, pathname, router]);
 
   if (!isEnabled) {
     notFound()
   }
 
   return (
-    <AuthGuard>
+    <>
       {children}
-    </AuthGuard>
+    </>
   )
 }

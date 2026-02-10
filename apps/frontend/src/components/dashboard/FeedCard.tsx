@@ -1,7 +1,7 @@
 import React from 'react';
 import { ProfileAvatar } from '@/components/ui/ProfileAvatar';
 import { Text } from '@/components/ui/Text';
-import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface FeedCardProps {
@@ -9,7 +9,6 @@ interface FeedCardProps {
   avatar?: string;
   image?: string;
   caption?: string;
-  likes?: number;
   timeAgo?: string;
 }
 
@@ -18,7 +17,6 @@ export const FeedCard: React.FC<FeedCardProps> = ({
   avatar,
   image,
   caption,
-  likes = 0,
   timeAgo = '2h',
 }) => {
   return (
@@ -52,32 +50,10 @@ export const FeedCard: React.FC<FeedCardProps> = ({
         )}
       </div>
 
-      {/* Action Bar */}
-      <div className="p-3 lg:p-4 space-y-3">
-        <div className="flex justify-between">
-          <div className="flex gap-4">
-            <motion.button whileTap={{ scale: 1.2 }} className="hover:text-red-500 transition-colors">
-              <Heart className="w-6 h-6" />
-            </motion.button>
-            <motion.button whileTap={{ scale: 1.2 }} className="hover:text-primary transition-colors">
-              <MessageCircle className="w-6 h-6" />
-            </motion.button>
-            <motion.button whileTap={{ scale: 1.2 }} className="hover:text-primary transition-colors">
-              <Send className="w-6 h-6" />
-            </motion.button>
-          </div>
-          <motion.button whileTap={{ scale: 1.2 }} className="hover:text-primary transition-colors">
-            <Bookmark className="w-6 h-6" />
-          </motion.button>
-        </div>
+      {/* Caption & Metadata */}
+      <div className="p-3 lg:p-4 pt-0 lg:pt-0 space-y-3">
 
-        {/* Caption & Metadata */}
         <div className="space-y-1">
-          {likes > 0 && (
-            <Text size="sm" weight="semibold">
-              {likes.toLocaleString()} likes
-            </Text>
-          )}
           {caption && (
             <div className="flex gap-1.5">
               <Text weight="semibold" className="text-sm">{username}</Text>
@@ -85,7 +61,7 @@ export const FeedCard: React.FC<FeedCardProps> = ({
             </div>
           )}
           <Text size="xs" muted className="hidden lg:block pt-1 uppercase tracking-wider text-[10px]">
-            {timeAgo} ADO
+            {timeAgo}
           </Text>
         </div>
       </div>

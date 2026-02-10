@@ -13,7 +13,7 @@ export const Header: React.FC = () => {
 
   return (
     <header className="fixed top-0 left-0 w-full z-40 bg-background/80 backdrop-blur-md px-6 py-4 flex items-center justify-between">
-      <Link href="/dashboard">
+      <Link href="/">
         <Heading level={5} className="text-primary font-bold tracking-tight">
           {brand.PRODUCT_NAME}
         </Heading>
@@ -28,7 +28,7 @@ export const Header: React.FC = () => {
         >
           <LogOut className="w-5 h-5" />
         </button>
-        <Link href="/dashboard/profile" className="outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full">
+        <Link href="/profile" className="outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full">
           <ProfileAvatar 
             src={user?.avatar} 
             name={user?.fullName || user?.displayName || user?.username || user?.email || 'User'} 

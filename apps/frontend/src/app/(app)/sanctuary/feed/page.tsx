@@ -8,7 +8,7 @@ import { CreateVent } from "@/components/sanctuary/create-vent"
 import { Button } from "@/components/ui/Button"
 import { Loader2, ArrowLeft } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { markSanctuaryInteraction, hasRecentlyInteracted } from "@/lib/sanctuary-suppression"
+import { markSanctuaryInteraction, hasRecentlyInteracted, getTimeUntilNextRelease } from "@/lib/sanctuary-suppression"
 import { SanctuaryFeedAffordance } from "@/components/sanctuary/feed-affordance"
 
 export default function GlobalFeedPage() {
@@ -18,6 +18,7 @@ export default function GlobalFeedPage() {
   const [vents, setVents] = useState<Vent[]>([])
   const [loading, setLoading] = useState(true)
   const [suppressed, setSuppressed] = useState(true)
+  const [remainingTime, setRemainingTime] = useState(0)
 
   const fetchVents = useCallback(async (signal?: AbortSignal) => {
     try {
@@ -41,6 +42,7 @@ export default function GlobalFeedPage() {
     const controller = new AbortController();
     fetchVents(controller.signal);
     setSuppressed(hasRecentlyInteracted());
+    setRemainingTime(getTimeUntilNextRelease());
 
     return () => {
       controller.abort();
@@ -67,7 +69,7 @@ export default function GlobalFeedPage() {
         </Button>
         <Button variant="link" className="text-muted-foreground hover:text-foreground text-xs" onClick={() => {
             markSanctuaryInteraction();
-            router.push('/dashboard');
+            router.push('/');
         }}>
           Return to We belong
         </Button>
@@ -84,7 +86,7 @@ export default function GlobalFeedPage() {
          The space is open. Thoughts here are not held.
        </div>
 
-       {!suppressed && <SanctuaryFeedAffordance />}
+       <SanctuaryFeedAffordance remainingTime={remainingTime} />
 
       <div className="space-y-6 mb-12">
         {vents.length === 0 ? (
@@ -107,7 +109,7 @@ export default function GlobalFeedPage() {
             <p className="text-sm text-muted-foreground">You&apos;re not alone. This will pass. You still belong.</p>
             <Button variant="outline" className="text-xs" onClick={() => {
                 markSanctuaryInteraction();
-                router.push('/dashboard');
+                router.push('/');
             }}>
                 Close Sanctuary
             </Button>

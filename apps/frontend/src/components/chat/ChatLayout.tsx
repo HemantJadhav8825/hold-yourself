@@ -11,12 +11,14 @@ import { useConversations } from '@/hooks/useConversations';
 import { MessageRequestsList } from './MessageRequestsList';
 import { MessageRequestDetail } from './MessageRequestDetail';
 import { Text } from '@/components/ui/Text';
+import { useConversationsContext } from '@/context/ConversationsContext';
 
 import { chatService } from '@/api/chat.service';
 
 export const ChatLayout: React.FC = () => {
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const { conversations, refresh: refreshConversations } = useConversations();
+  const { setActiveConversationId } = useConversationsContext();
 
   const handleChatSelect = async (id: string, isUserSelection = false) => {
     if (isUserSelection) {
@@ -28,9 +30,11 @@ export const ChatLayout: React.FC = () => {
         
         if (existing) {
           setActiveChatId(existing.id);
+          setActiveConversationId(existing.id);
         } else {
           const newConv = await chatService.createConversation(id);
           setActiveChatId(newConv.id);
+          setActiveConversationId(newConv.id);
           refreshConversations();
         }
       } catch (err) {
@@ -38,6 +42,7 @@ export const ChatLayout: React.FC = () => {
       }
     } else {
       setActiveChatId(id);
+      setActiveConversationId(id);
     }
   };
 
@@ -53,16 +58,19 @@ export const ChatLayout: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 h-full w-full flex overflow-hidden min-w-0">
+    <div className="flex-1 h-full w-full flex overflow-hidden min-w-0 min-h-0">
       {/* List Pane */}
       <div className={cn(
-        'w-full lg:w-96 flex-shrink-0 lg:border-r border-border flex flex-col min-w-0',
+        'w-full lg:w-96 flex-shrink-0 lg:border-r border-border flex flex-col min-w-0 min-h-0',
         activeChatId && 'hidden lg:flex'
       )}>
         {isViewingRequests ? (
           <div className="p-10 text-center opacity-40">
             <Text>Requests coming soon...</Text>
-            <button onClick={() => setActiveChatId(null)} className="mt-4 text-primary underline">Back</button>
+            <button onClick={() => {
+              setActiveChatId(null);
+              setActiveConversationId(null);
+            }} className="mt-4 text-primary underline">Back</button>
           </div>
         ) : (
           <ChatList 
@@ -74,13 +82,16 @@ export const ChatLayout: React.FC = () => {
 
       {/* Thread Pane */}
       <div className={cn(
-        'flex-1 flex flex-col min-w-0',
+        'flex-1 flex flex-col min-w-0 min-h-0',
         !activeChatId && 'hidden lg:flex'
       )}>
         {activeChatId && activeChatId !== 'requests' ? (
           <ChatThread 
             conversation={activeConversation}
-            onBack={() => setActiveChatId(null)}
+            onBack={() => {
+              setActiveChatId(null);
+              setActiveConversationId(null);
+            }}
           />
         ) : (
           <EmptyChatState />

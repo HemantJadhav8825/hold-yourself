@@ -12,6 +12,7 @@ export const SanctuaryCheckIn: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     setMounted(true);
     // Check feature flag first
     if (env.NEXT_PUBLIC_SANCTUARY_ENABLED !== 'true') return;
