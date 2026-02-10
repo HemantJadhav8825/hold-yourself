@@ -57,7 +57,7 @@ module.exports = {
       autorestart: true,
       env: {
         NODE_ENV: "production",
-        PORT: 3005,
+        PORT: 3300,
       },
     },
     {

@@ -4,7 +4,7 @@ import app from './app';
 
 dotenv.config();
 
-const PORT = process.env.PORT || 3005;
+const PORT = process.env.PORT || 3300;
 const DATABASE_URL = process.env.DATABASE_URL;
 
 const start = async () => {
