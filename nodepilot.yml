@@ -36,12 +36,14 @@ steps:
     - TURBO_FORCE=true pnpm build --filter @hold-yourself/backend...
     - TURBO_FORCE=true pnpm build --filter @hold-yourself/auth-service...
     - TURBO_FORCE=true pnpm build --filter @hold-yourself/chat-service...
+    - TURBO_FORCE=true pnpm build --filter @hold-yourself/holding-space-service...
 
     # Build guards (fail fast if something didn't compile)
     - test -d apps/frontend/.next
     - test -f apps/backend/dist/server.js
     - test -f services/auth-service/dist/server.js
     - test -f services/chat-service/dist/server.js
+    - test -f services/holding-space-service/dist/index.js
 
   # ----------------------------
   # DEPLOY
@@ -54,7 +56,8 @@ steps:
     # Services
     - pm2 delete hold-yourself-auth || true
     - pm2 delete hold-yourself-chat || true
-    - pm2 start ecosystem.config.js --only hold-yourself-auth,hold-yourself-chat
+    - pm2 delete hold-yourself-holding-space || true
+    - pm2 start ecosystem.config.js --only hold-yourself-auth,hold-yourself-chat,hold-yourself-holding-space
 
     # Frontend (Next.js)
     - pm2 delete hold-yourself-frontend || true
