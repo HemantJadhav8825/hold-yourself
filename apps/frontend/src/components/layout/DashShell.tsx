@@ -27,7 +27,7 @@ export const DashShell: React.FC<DashShellProps> = ({ children, fullWidth = fals
         <main className="flex-1 lg:ml-64 h-full pt-14 lg:pt-0 flex flex-col overflow-hidden">
           <div className={cn(
             'flex-1 flex flex-col w-full min-w-0 min-h-0 overflow-y-auto',
-            !shouldBeFullWidth && 'max-w-[600px] mx-auto px-4 sm:px-6'
+            !shouldBeFullWidth && 'w-full max-w-app-content mx-auto px-4 sm:px-6'
           )}>
             {children}
           </div>

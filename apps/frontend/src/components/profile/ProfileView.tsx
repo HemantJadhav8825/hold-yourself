@@ -39,7 +39,7 @@ export const ProfileView: React.FC = () => {
   }
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-8">
       {/* Identity Header */}
       <div className="flex flex-col items-center text-center gap-6">
         <div className="relative">
@@ -49,7 +49,7 @@ export const ProfileView: React.FC = () => {
                src={user?.avatar} 
                name={user?.fullName || user?.displayName || user?.username || user?.email || 'User'} 
                size="xl" 
-               className="border-4 border-white/20 shadow-xl"
+               className="border-4 border-white/20 shadow-md"
              />
           </div>
         </div>

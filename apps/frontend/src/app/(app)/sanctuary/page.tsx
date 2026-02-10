@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card"
 import { Loader2, MessageCircle } from "lucide-react"
 import { markSanctuaryInteraction } from "@/lib/sanctuary-suppression"
+import { PageContainer } from "@/components/layout/PageContainer"
 
 export default function SanctuaryPage() {
   const { user, isLoading } = useCurrentUser()
@@ -36,7 +37,7 @@ export default function SanctuaryPage() {
   }
 
   return (
-    <div className="container py-12 max-w-2xl">
+    <PageContainer>
       <div className="mb-12 text-center">
         <h1 className="text-3xl font-semibold tracking-tight mb-4">
           A moment of quiet.
@@ -79,6 +80,6 @@ export default function SanctuaryPage() {
               Return to We belong
           </Button>
       </div>
-    </div>
+    </PageContainer>
   )
 }
