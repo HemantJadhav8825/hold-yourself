@@ -39,7 +39,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     >
       <div 
         className={cn(
-          'max-w-[70%] lg:max-w-[65%] w-fit px-4 py-2 text-sm leading-relaxed transition-all duration-200 relative min-w-0',
+          'max-w-[75%] lg:max-w-[65%] w-fit px-5 py-3 text-[15px] leading-relaxed transition-all duration-200 relative min-w-0 shadow-sm',
           // Adaptive Radius Logic
           isSelf 
             ? cn(
@@ -58,8 +58,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         )}
       >
         <Text size="sm" className={cn(
-          'block break-words [word-break:break-word] min-w-0',
-          isSelf ? 'text-primary-foreground' : 'text-foreground'
+          'block break-words [word-break:break-word] min-w-0 font-heading tracking-wide',
+          isSelf ? 'text-primary-foreground' : 'text-foreground/90'
         )}>
           {content}
         </Text>

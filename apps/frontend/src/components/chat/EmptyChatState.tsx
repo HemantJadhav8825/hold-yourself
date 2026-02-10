@@ -14,11 +14,11 @@ export const EmptyChatState: React.FC = () => {
         </div>
       </div>
       
-      <div className="max-w-xs space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-        <Heading level={4} className="font-heading text-foreground/40 text-lg font-medium">Safe space.</Heading>
-        <Text muted className="text-xs leading-relaxed opacity-60 tracking-tight">
-          Sharing is an invitation to be seen. <br />
-          Speak only when you feel the call.
+      <div className="max-w-xs space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+        <Heading level={2} className="font-heading text-foreground/30 text-2xl font-normal italic">Quiet Space.</Heading>
+        <Text muted className="text-sm font-heading leading-loose opacity-50 tracking-wide">
+          Waiting for words to arrive, <br />
+          when the time is right.
         </Text>
       </div>
     </div>

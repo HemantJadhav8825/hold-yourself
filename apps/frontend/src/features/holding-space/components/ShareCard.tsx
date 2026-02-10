@@ -153,7 +153,7 @@ export const ShareCard: React.FC<ShareCardProps> = ({ share, onUpdate, onDelete 
 
     return (
       <SensitivityBlurWrapper tags={share.sensitivityTags}>
-        <p className="text-sm leading-relaxed whitespace-pre-wrap">
+        <p className="text-base leading-loose whitespace-pre-wrap font-heading text-foreground/90 mt-4">
           {share.content}
         </p>
       </SensitivityBlurWrapper>
@@ -196,8 +196,8 @@ export const ShareCard: React.FC<ShareCardProps> = ({ share, onUpdate, onDelete 
   }
 
   return (
-    <Card className="mb-4 overflow-hidden border-border/50 hover:border-border transition-colors group">
-      <CardHeader className="flex flex-row items-start justify-between p-4 pb-2 space-y-0">
+    <Card className="mb-8 overflow-hidden border-border/40 hover:border-border/60 transition-colors group shadow-sm rounded-2xl">
+      <CardHeader className="flex flex-row items-start justify-between p-6 pb-2 space-y-0">
         <div className="flex flex-row items-center gap-3">
           {isAnonymous ? (
               <AnonymousAvatar seed={avatarSeed || '#333:?'} size="sm" />
