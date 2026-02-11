@@ -14,6 +14,9 @@ module.exports = {
       },
     },
     extend: {
+      maxWidth: {
+        "app-content": "680px",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -55,8 +58,8 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        heading: ["Lora", "serif"],
-        body: ["Raleway", "sans-serif"],
+        heading: ["var(--font-heading)", "serif"],
+        body: ["var(--font-body)", "sans-serif"],
       },
     },
   },

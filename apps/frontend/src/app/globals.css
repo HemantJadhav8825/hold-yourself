@@ -1,71 +1,70 @@
-@import url("https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    /* WARM PAPER THEME (IVORY) */
+    --background: 40 20% 97%;
     --foreground: 222.2 84% 4.9%;
 
-    --card: 0 0% 100%;
+    --card: 40 20% 99%;
     --card-foreground: 222.2 84% 4.9%;
 
-    --popover: 0 0% 100%;
+    --popover: 40 20% 99%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 10 80% 65%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 10 70% 55%; /* Slightly earthy primary */
+    --primary-foreground: 40 20% 98%;
 
-    --secondary: 210 40% 96.1%;
+    --secondary: 40 10% 92%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 40 10% 92%; /* Warm muted grey */
+    --muted-foreground: 25 10% 45%;
 
-    --accent: 210 40% 96.1%;
+    --accent: 40 15% 94%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 10 80% 65%;
+    --border: 40 10% 88%;
+    --input: 40 10% 88%;
+    --ring: 10 70% 55%;
 
     --radius: 0.5rem;
     --illustration-secondary: 30 40% 95%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 240 5% 6%; /* Deep charcoal/black, slightly cool */
+    --foreground: 40 10% 96%; /* Ivory white text */
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 240 4% 9%;
+    --card-foreground: 40 10% 96%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 240 4% 9%;
+    --popover-foreground: 40 10% 96%;
 
-    --primary: 10 80% 65%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 10 70% 65%;
+    --primary-foreground: 40 10% 96%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 240 4% 14%;
+    --secondary-foreground: 40 10% 96%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 240 4% 14%;
+    --muted-foreground: 240 5% 60%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 240 4% 14%;
+    --accent-foreground: 40 10% 96%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 40 10% 96%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 10 80% 65%;
+    --border: 240 4% 14%;
+    --input: 240 4% 14%;
+    --ring: 10 70% 65%;
     --illustration-secondary: 222.2 84% 10%;
   }
 }

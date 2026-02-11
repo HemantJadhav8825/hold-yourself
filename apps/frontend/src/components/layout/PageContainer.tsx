@@ -1,25 +1,27 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Header } from './Header';
 
-interface PageContainerProps {
+interface PageContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
-  className?: string;
-  hideHeader?: boolean;
+  variant?: 'default' | 'narrow';
 }
 
 export const PageContainer: React.FC<PageContainerProps> = ({ 
   children, 
-  className, 
-  hideHeader = false 
+  className,
+  variant = 'default',
+  ...props 
 }) => {
   return (
-    <div className="min-h-screen bg-background flex flex-col pt-20 pb-12">
-      {!hideHeader && <Header />}
-      
-      <main className={cn('flex-1 w-full max-w-2xl mx-auto px-6', className)}>
-        {children}
-      </main>
+    <div 
+      className={cn(
+        "w-full mx-auto px-4 sm:px-6",
+        "max-w-app-content", // 680px
+        className
+      )} 
+      {...props}
+    >
+      {children}
     </div>
   );
 };

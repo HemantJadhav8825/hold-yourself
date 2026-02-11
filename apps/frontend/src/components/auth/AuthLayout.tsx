@@ -22,7 +22,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
       </div>
 
       {/* LEFT PANEL: Brand Visuals (Desktop only) */}
-      <div className="hidden lg:flex lg:w-[60%] relative flex-col items-center justify-center p-12 overflow-hidden border-r border-border bg-muted/30 dark:bg-[#0a0a0a] transition-colors duration-300">
+      <div className="hidden lg:flex lg:w-[60%] relative flex-col items-center justify-center p-12 overflow-hidden border-r border-border bg-muted/30 dark:bg-background transition-colors duration-300">
         {/* Animated Background Gradients (Theme aware) */}
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px] animate-pulse" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[100px]" />
@@ -75,7 +75,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
           </div>
 
           {/* Render Auth Form */}
-          <div className="bg-card lg:bg-transparent border border-border lg:border-none p-6 md:p-8 rounded-[2rem] lg:p-0 shadow-2xl lg:shadow-none backdrop-blur-xl lg:backdrop-blur-none transition-all">
+          <div className="bg-card lg:bg-transparent border border-border lg:border-none p-6 md:p-8 rounded-[2rem] lg:p-0 shadow-lg lg:shadow-none backdrop-blur-xl lg:backdrop-blur-none transition-all">
             {children}
           </div>
 

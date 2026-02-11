@@ -136,15 +136,15 @@ export const ShareComposer = ({
   const canPost = content.trim().length > 0;
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-4 bg-card rounded-lg border shadow-sm transition-all duration-300">
+    <div className="w-full max-w-2xl mx-auto p-6 md:p-8 bg-background/50 border border-border/20 rounded-xl shadow-[0_2px_20px_-12px_rgba(0,0,0,0.05)] transition-all duration-500 hover:shadow-md hover:border-border/40 mb-12 group">
       <div className="relative">
         <Textarea
-          placeholder="Share something (if it feels right)"
+          placeholder="What is heavy on your heart today? (This is anonymous)"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           onFocus={handleFocus}
           disabled={isSubmitting}
-          className={`resize-none min-h-[40px] transition-all duration-300 ${isExpanded ? 'min-h-[120px]' : ''}`}
+          className={`resize-none min-h-[60px] text-lg font-heading placeholder:font-heading placeholder:italic placeholder:opacity-40 transition-all duration-500 border-none bg-transparent focus-visible:ring-0 px-0 shadow-none leading-loose ${isExpanded ? 'min-h-[160px]' : ''}`}
         />
       </div>
 
