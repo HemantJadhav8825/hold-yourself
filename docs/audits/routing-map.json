@@ -1,0 +1,43 @@
+{
+    "frontend": {
+        "public": [
+            "/",
+            "/about",
+            "/contact",
+            "/privacy",
+            "/terms",
+            "/onboarding",
+            "/emotions",
+            "/belong",
+            "/feeling-alone",
+            "/i-feel-[emotion]"
+        ],
+        "protected": [
+            "/messages",
+            "/sanctuary",
+            "/profile"
+        ],
+        "api": [
+            "/api/og"
+        ]
+    },
+    "backend": {
+        "public": [
+            "/health"
+        ],
+        "protected": [
+            "/v1/users/profile",
+            "/v1/users/anonymous",
+            "/v1/circles",
+            "/v1/vents",
+            "/v1/shares",
+            "/v1/reports",
+            "/v1/block",
+            "/v1/preferences"
+        ],
+        "admin": [
+            "/v1/admin/stats",
+            "/v1/internal/moderation"
+        ]
+    }
+}

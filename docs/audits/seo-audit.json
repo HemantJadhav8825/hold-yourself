@@ -1,0 +1,18 @@
+{
+    "metadata_strategy": {
+        "utility": "src/components/seo/metadata.ts (constructMetadata)",
+        "usage": "Detected in (emotions)/[slug]/page.tsx using generateMetadata",
+        "global_metadata": "src/app/layout.tsx (confirmed constructMetadata usage)"
+    },
+    "files": {
+        "sitemap.ts": true,
+        "robots.ts": true,
+        "metadata.ts": true
+    },
+    "structured_data": {
+        "usage": "Not explicitly detected in components/seo, but constructMetadata handles OG and Twitter tags."
+    },
+    "programmatic_seo": {
+        "emotions_routes": "src/app/(emotions)/[slug]/page.tsx"
+    }
+}

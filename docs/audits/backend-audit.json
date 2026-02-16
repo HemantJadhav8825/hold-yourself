@@ -1,0 +1,34 @@
+{
+    "gateway": {
+        "path": "apps/backend",
+        "core_routes": "src/routes/api.routes.ts",
+        "proxied_services": [
+            "auth-service",
+            "chat-service",
+            "holding-space-service"
+        ]
+    },
+    "modules": {
+        "holding_space": {
+            "path": "services/holding-space-service",
+            "models": [
+                "src/models/Share.ts",
+                "src/models/Comment.ts",
+                "src/models/Support.ts",
+                "src/models/Report.ts",
+                "src/models/Block.ts",
+                "src/models/UserPreference.ts"
+            ],
+            "controllers": "src/controllers/",
+            "routes": "src/routes/index.ts"
+        },
+        "sanctuary": {
+            "path": "services/chat-service/src/modules/vents",
+            "models": [
+                "services/chat-service/src/models/vent.model.ts"
+            ],
+            "controller": "vent.controller.ts",
+            "routes": "vent.routes.ts"
+        }
+    }
+}

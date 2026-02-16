@@ -1,0 +1,75 @@
+{
+    "nextjs": {
+        "version": "16.0.0-canary.0",
+        "appRouter": true
+    },
+    "react": {
+        "version": "19.0.0"
+    },
+    "routes": {
+        "(app)": {
+            "purpose": "Main user application",
+            "paths": [
+                "messages",
+                "sanctuary",
+                "profile",
+                "AppLayoutClient.tsx",
+                "layout.tsx"
+            ]
+        },
+        "(marketing)": {
+            "purpose": "Public marketing and landing pages",
+            "paths": [
+                "belong",
+                "feeling-alone"
+            ]
+        },
+        "(emotions)": {
+            "purpose": "Programmatic SEO for emotion slugs",
+            "paths": [
+                "[slug]"
+            ]
+        },
+        "(auth)": {
+            "purpose": "Authentication flows",
+            "paths": [
+                "login",
+                "signup",
+                "layout.tsx"
+            ]
+        },
+        "public": {
+            "paths": [
+                "about",
+                "contact",
+                "privacy",
+                "terms",
+                "onboarding",
+                "emotions",
+                "page.tsx"
+            ]
+        },
+        "api": {
+            "paths": [
+                "og/route.tsx"
+            ]
+        }
+    },
+    "specific_domains": {
+        "holding_space": {
+            "frontend_entry": "src/app/page.tsx (HomeFeed)",
+            "module": "src/features/holding-space"
+        },
+        "sanctuary": {
+            "frontend_entry": "src/app/(app)/sanctuary",
+            "components": "src/components/sanctuary"
+        },
+        "dashboard": "src/app/page.tsx",
+        "auth": "src/app/(auth)"
+    },
+    "composer_components": {
+        "PostComposer": "src/components/dashboard/CreatePost.tsx",
+        "VentComposer": "src/components/sanctuary/create-vent.tsx",
+        "HoldingSpaceComposer": "Detected via CreatePost.tsx (Primary Dashboard Entry)"
+    }
+}
