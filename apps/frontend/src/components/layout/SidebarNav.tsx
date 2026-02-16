@@ -27,7 +27,7 @@ export const SidebarNav: React.FC = () => {
   return (
     <aside className="hidden lg:flex flex-col fixed top-0 left-0 h-screen w-64 border-r border-border bg-[#F3F0EA] px-4 py-8 z-40">
       <Link href="/" className="px-4 mb-12">
-        <Heading level={4} className="text-primary font-bold tracking-tight">
+        <Heading level={4} className="text-primary font-bold tracking-tight font-serif">
           {brand.PRODUCT_NAME}
         </Heading>
       </Link>

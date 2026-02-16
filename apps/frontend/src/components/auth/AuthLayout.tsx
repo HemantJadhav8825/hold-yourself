@@ -26,7 +26,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
 
         <div className="relative z-10 max-w-lg text-center space-y-8">
           <div className="space-y-4">
-            <h1 className="text-6xl font-bold font-heading tracking-tight leading-[1.15] bg-gradient-to-br from-foreground via-foreground to-foreground/50 bg-clip-text text-transparent italic pb-2">
+            <h1 className="text-6xl font-bold font-serif tracking-tight leading-[1.15] bg-gradient-to-br from-foreground via-foreground to-foreground/50 bg-clip-text text-transparent italic pb-2">
               {brand.TAGLINE}
             </h1>
             <p className="text-xl text-foreground/60 font-medium leading-relaxed">
@@ -55,7 +55,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
           {/* Logo & Heading */}
           <div className="text-center space-y-3">
             <Link href="/" className="inline-block hover:opacity-80 transition-opacity">
-              <h2 className="text-3xl font-bold font-heading tracking-tighter text-foreground">
+              <h2 className="text-3xl font-bold font-serif tracking-tighter text-foreground">
                 {brand.PRODUCT_NAME}
               </h2>
             </Link>

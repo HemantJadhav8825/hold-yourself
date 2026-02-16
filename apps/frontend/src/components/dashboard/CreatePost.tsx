@@ -139,7 +139,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ isOpen, onClose, onPost 
                 onBlur={() => setIsFocused(false)}
                 placeholder="You can drop something here safely…"
                 className={cn(
-                  "w-full bg-transparent p-2 text-lg font-body focus:outline-none transition-all duration-500 resize-none",
+                  "w-full bg-transparent p-2 text-base font-sans leading-[1.6] focus:outline-none transition-all duration-500 resize-none",
                   isFocused ? "min-h-[120px]" : "min-h-[60px]"
                 )}
               />
