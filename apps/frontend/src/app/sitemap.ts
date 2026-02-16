@@ -80,6 +80,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.9,
     },
-
+    {
+      url: `${BASE_URL}/emotion-sitemap.xml`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.5,
+    },
   ]
 }
