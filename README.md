@@ -46,11 +46,21 @@ The project is organized as a monorepo:
 - **[@hold-yourself/utils](./packages/utils)**: Common helper functions and logic.
 - **[@hold-yourself/types](./packages/types)**: Shared TypeScript definitions and Zod schemas.
 
-### ⚙️ Infrastructure (`infra/`)
+### ⚙️ Infrastructure
 
-- Docker configurations
-- Terraform scripts
-- Environment management
+- Network & Environment management (consolidated in docs)
+
+---
+
+## 📚 Documentation
+
+Detailed system documentation is located in the **[`/docs`](./docs)** directory.
+
+- **[Architecture](./docs/architecture.md)**: System overview and principles.
+- **[Onboarding](./docs/onboarding.md)**: User arrival experience.
+- **[Infrastructure](./docs/infra.md)**: Ports and environment variables.
+- **[Runbook](./docs/runbook.md)**: Operations and emergency procedures.
+- **[Index](./docs/README.md)**: Full documentation map.
 
 ---
 
