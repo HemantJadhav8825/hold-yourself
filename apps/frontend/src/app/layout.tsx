@@ -13,7 +13,7 @@ const lora = Lora({ subsets: ["latin"], variable: "--font-heading" });
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://webelong.world'
 
 export const metadata: Metadata = {
-  metadataBase: new URL(BASE_URL),
+  metadataBase: new URL('https://webelong.world'),
   title: {
     default: 'Webelong — You belong. Even here.',
     template: '%s — Webelong',
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     siteName: 'Webelong',
     images: [
       {
-        url: '/og',
+        url: '/og.png',
         width: 1200,
         height: 630,
       },
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     title: 'Webelong — You belong. Even here.',
     description:
       'A belonging-first social platform for emotional safety and human connection.',
-    images: ['/og'],
+    images: ['/og.png'],
   },
   icons: {
     icon: '/icon',
