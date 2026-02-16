@@ -10,6 +10,13 @@ export interface ShareDTO {
   updatedAt: string;
 }
 
+export interface PublicShareDTO {
+  id: string;
+  content: string;
+  sensitivityTags: string[];
+  createdAt: string;
+}
+
 export interface CreateShareInput {
   content: string;
   visibility?: 'public' | 'followers';

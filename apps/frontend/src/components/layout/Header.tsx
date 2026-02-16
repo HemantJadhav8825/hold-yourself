@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { ProfileAvatar } from '@/components/ui/ProfileAvatar';
-import { ThemeToggle } from '@/components/theme-toggle';
+
 import { brand } from '@/config/brand';
 
 export const Header: React.FC = () => {
@@ -18,10 +18,10 @@ export const Header: React.FC = () => {
           {brand.PRODUCT_NAME}
         </Heading>
       </Link>
-      
+
       <div className="flex items-center gap-3">
-        <ThemeToggle />
-        <button 
+
+        <button
           onClick={logout}
           className="p-2 rounded-full bg-red-500/10 text-red-400 hover:bg-red-500/20 active:scale-95 transition-all outline-none focus-visible:ring-2 focus-visible:ring-red-400"
           title="Logout"
@@ -29,9 +29,9 @@ export const Header: React.FC = () => {
           <LogOut className="w-5 h-5" />
         </button>
         <Link href="/profile" className="outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full">
-          <ProfileAvatar 
-            src={user?.avatar} 
-            name={user?.fullName || user?.displayName || user?.username || user?.email || 'User'} 
+          <ProfileAvatar
+            src={user?.avatar}
+            name={user?.fullName || user?.displayName || user?.username || user?.email || 'User'}
             size="md"
           />
         </Link>

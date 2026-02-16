@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import Script from 'next/script';
-import { Inter, Lora } from "next/font/google";
+import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { UsersProvider } from "@/context/UsersContext";
 import { ConversationsProvider } from "@/context/ConversationsContext";
-import { ThemeProvider } from "@/components/providers/theme-provider";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
-const lora = Lora({ subsets: ["latin"], variable: "--font-heading" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans", weight: ["400", "500", "600"] });
+const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-serif", weight: ["300", "400", "500", "600"] });
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://webelong.world'
 
@@ -71,19 +70,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${lora.variable} font-body`}>
+    <html lang="en">
+      <body className={`${inter.variable} ${fraunces.variable} font-sans bg-[#F7F5F2] text-webelong-text antialiased`}>
         <AuthProvider>
           <UsersProvider>
             <ConversationsProvider>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-              >
-                {children}
-              </ThemeProvider>
+              {children}
             </ConversationsProvider>
           </UsersProvider>
         </AuthProvider>

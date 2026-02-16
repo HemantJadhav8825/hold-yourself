@@ -3,7 +3,7 @@ import { AuthRequest } from '../middleware/auth';
 import { ShareModel, IShare } from '../models/Share';
 import { UserPreferenceModel } from '../models/UserPreference';
 import { BlockModel } from '../models/Block';
-import { serializeShare, serializeShares } from '../services/share.serializer';
+import { serializeShare, serializeShares, serializePublicShare } from '../services/share.serializer';
 import { assertChronologicalOnly } from '../guardrails';
 import { canViewerSeeShare } from '../middleware/visibility';
 import { BlockService } from '../services/block.service';
@@ -34,7 +34,7 @@ export class ShareController {
       // Milestone 3 optional inputs
       const safeVisibility = (visibility === 'followers') ? 'followers' : 'public';
       const isAnonymous = !!anonymous;
-      
+
       let safeTags: string[] = [];
       if (Array.isArray(sensitivityTags)) {
         safeTags = [...new Set(
@@ -155,7 +155,7 @@ export class ShareController {
           BlockService.getBlockedIds(viewerId),
           BlockService.getBlockersOfIds(viewerId)
         ]);
-        
+
         if (pref) mutedTags = pref.mutedTags;
         blockedByViewer = blocks;
         blockersOfViewer = blockers;
@@ -164,13 +164,13 @@ export class ShareController {
       // 1. Initial database filter (shadow-limiting excluded unless viewer is author)
       // Note: We can't easily do author-check inside query for different authors,
       // so we fetch both and filter in memory for simplicity/safety.
-      
+
       const potentialShares = await ShareModel.find(query)
         .sort({ createdAt: -1 })
         .limit(Number(limit) * 3); // Higher oversample for shadow/block filtering
 
       const visibleShares: IShare[] = [];
-      
+
       for (const share of potentialShares) {
         if (visibleShares.length >= Number(limit)) break;
 
@@ -203,6 +203,49 @@ export class ShareController {
       res.json(serializeShares(visibleShares));
     } catch (error: any) {
       res.status(400).json({ error: error.message });
+    }
+  }
+
+  /**
+   * GET /shares/:id
+   * Fetches a single share by ID. Publicly accessible if share is public.
+   */
+  async getShareById(req: AuthRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const share = await ShareModel.findById(id);
+
+      if (!share) {
+        return res.status(404).json({ error: 'Share not found' });
+      }
+
+      // 1. Shadow-limiting check
+      if (share.isShadowLimited && share.authorId !== req.user?.sub) {
+        return res.status(404).json({ error: 'Share not found' });
+      }
+
+      // 2. Visibility Check
+      // For SEO/Marketing, we only allow public shares to be viewed without auth
+      if (share.visibility !== 'public' && !req.user) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+
+      if (req.user) {
+        const isVisible = await canViewerSeeShare(req.user.sub, share);
+        if (!isVisible) {
+          return res.status(403).json({ error: 'Forbidden: You cannot view this share' });
+        }
+      }
+
+      // 3. Serialization
+      // If no user (public request), use restricted public serializer
+      if (!req.user) {
+        return res.json(serializePublicShare(share));
+      }
+
+      res.json(serializeShare(share));
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
     }
   }
 }

@@ -7,10 +7,33 @@ import { APP_CONFIG } from '../config/app.config';
 
 const router = Router();
 const AUTH_SERVICE_URL = AUTH_CONFIG.SERVICE_URL;
+const HOLDING_SPACE_SERVICE_URL = AUTH_CONFIG.HOLDING_SPACE_SERVICE_URL;
 
 // Public health check
 router.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'backend-gateway' });
+});
+
+// Public Permalink Exception (Marketing/SEO)
+router.get('/v1/shares/:id', async (req, res) => {
+  const HOLDING_SPACE_SERVICE_URL = AUTH_CONFIG.HOLDING_SPACE_SERVICE_URL;
+
+  // Only handle 24-char hex IDs
+  if (!/^[a-f\d]{24}$/i.test(req.params.id)) {
+    return res.status(404).json({ error: 'Invalid share ID' });
+  }
+
+  try {
+    const url = `${HOLDING_SPACE_SERVICE_URL}${req.originalUrl}`;
+    const response = await axios.get(url, {
+      params: req.query
+    });
+    res.status(response.status).json(response.data);
+  } catch (error: any) {
+    const status = error.response?.status || 500;
+    const data = error.response?.data || { error: 'Holding Space Service unavailable' };
+    res.status(status).json(data);
+  }
 });
 
 // GET /v1/users (list)
@@ -39,7 +62,7 @@ router.get('/v1/users/profile', requireAuth, async (req, res) => {
     // and return private fields like anonymousProfile
     const url = `${AUTH_SERVICE_URL}/v1/users/profile`;
     console.log(`[Proxy] Fetching profile from: ${url}`);
-    
+
     const response = await axios.get(url, {
       headers: {
         Authorization: req.headers.authorization
@@ -156,54 +179,35 @@ router.use('/v1/vents', requireAuth, async (req, res, next) => {
   }
 });
 
-// Holding Space Service Proxy
-const HOLDING_SPACE_SERVICE_URL = AUTH_CONFIG.HOLDING_SPACE_SERVICE_URL;
 
 const holdingSpaceRoutes = [
-  '/v1/shares',
   '/v1/reports',
   '/v1/block',
   '/v1/preferences',
   '/v1/internal/moderation'
 ];
 
-// Apply proxy to all Holding Space routes
-holdingSpaceRoutes.forEach(route => {
-  // Use regex to match the route and any sub-paths
-  // e.g., /v1/shares matches /v1/shares, /v1/shares/123, etc.
-  router.use(route, requireAuth, async (req, res) => {
-    try {
-      // Construct the full URL for the microservice
-      // We need to append the sub-path from the original request
-      // req.originalUrl includes the full path (e.g. /v1/shares/123)
-      // We can just use req.originalUrl directly since we are mirroring the path structure
-      const url = `${HOLDING_SPACE_SERVICE_URL}${req.originalUrl}`;
-      
-      console.log(`[Proxy] Forwarding ${req.method} ${req.originalUrl} to ${url}`);
+// Manual Shares Proxy (Protected Feed)
+router.use('/v1/shares', requireAuth, async (req, res) => {
+  try {
+    const url = `${HOLDING_SPACE_SERVICE_URL}${req.originalUrl}`;
+    const response = await axios({
+      method: req.method,
+      url: url,
+      data: req.method !== 'GET' ? req.body : undefined,
+      params: req.query,
+      headers: {
+        Authorization: req.headers.authorization,
+        ...(req.headers['content-type'] ? { 'Content-Type': req.headers['content-type'] } : {})
+      }
+    });
 
-      const response = await axios({
-        method: req.method,
-        url: url,
-        data: req.method !== 'GET' ? req.body : undefined,
-        params: req.query,
-        headers: {
-          // Forward Authorization header
-          Authorization: req.headers.authorization,
-          // Forward Content-Type if present
-          ...(req.headers['content-type'] ? { 'Content-Type': req.headers['content-type'] } : {})
-        }
-      });
-
-      res.status(response.status).json(response.data);
-    } catch (error: any) {
-      // Forward the error from the microservice
-      const status = error.response?.status || 500;
-      const data = error.response?.data || { error: 'Holding Space Service unavailable' };
-      
-      console.error(`[Proxy Error] ${req.method} ${req.originalUrl} failed: ${status}`);
-      res.status(status).json(data);
-    }
-  });
+    res.status(response.status).json(response.data);
+  } catch (error: any) {
+    const status = error.response?.status || 500;
+    const data = error.response?.data || { error: 'Holding Space Service unavailable' };
+    res.status(status).json(data);
+  }
 });
 
 export default router;

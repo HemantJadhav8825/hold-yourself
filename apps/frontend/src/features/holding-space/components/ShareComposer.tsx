@@ -63,7 +63,7 @@ export const ShareComposer = ({
 
     setErrorVibe(null);
     setIsSubmitting(true);
-    
+
     // 1. Generate temp ID
     const tempId = `temp-${Date.now()}`;
     const now = new Date().toISOString();
@@ -79,7 +79,7 @@ export const ShareComposer = ({
       // For optimistic update, we construct what we expect.
       content,
       // @ts-ignore - Assuming visibility is part of DTO or handled by backend
-      visibility, 
+      visibility,
       // @ts-ignore
       isAnonymous,
       // @ts-ignore
@@ -136,7 +136,7 @@ export const ShareComposer = ({
   const canPost = content.trim().length > 0;
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-6 md:p-8 bg-background/50 border border-border/20 rounded-xl shadow-[0_2px_20px_-12px_rgba(0,0,0,0.05)] transition-all duration-500 hover:shadow-md hover:border-border/40 mb-12 group">
+    <div className="w-full max-w-2xl mx-auto p-6 md:p-8 bg-webelong-card border border-webelong-border rounded-xl shadow-sm transition-all duration-500 mb-12 group">
       <div className="relative">
         <Textarea
           placeholder="What is heavy on your heart today? (This is anonymous)"

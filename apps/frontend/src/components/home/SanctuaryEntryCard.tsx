@@ -9,7 +9,7 @@ export function SanctuaryEntryCard() {
 
   return (
     <section className="mb-16">
-      <Card className="max-w-md mx-auto bg-muted/30 border-none shadow-sm hover:shadow-md transition-shadow duration-500">
+      <Card className="max-w-md mx-auto bg-webelong-card border border-webelong-border shadow-sm hover:shadow-md transition-shadow duration-500">
         <CardContent className="p-8 text-center space-y-8">
           <div className="space-y-2">
             <h2 className="font-serif text-2xl text-foreground/80">
@@ -19,20 +19,20 @@ export function SanctuaryEntryCard() {
               Anonymous. No pressure.
             </p>
           </div>
-          
+
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="w-full sm:w-auto font-normal rounded-full px-8"
               onClick={() => router.push('/sanctuary')}
               data-testid="sanctuary-release-btn"
             >
               Enter, if you want
             </Button>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               className="w-full sm:w-auto font-normal rounded-full text-muted-foreground hover:text-foreground"
-              onClick={() => {}}
+              onClick={() => { }}
               data-testid="sanctuary-read-btn"
             >
               Just be here

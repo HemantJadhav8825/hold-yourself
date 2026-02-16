@@ -44,15 +44,15 @@ export const HomeFeed: React.FC = () => {
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center gap-8">
         <div className="relative">
           <Aura color="#60A5FA" size={280} className="mb-4" />
-          <motion.div 
+          <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.8 }}
             className="absolute inset-0 flex items-center justify-center"
           >
-             <div className="w-32 h-32 rounded-full glass flex items-center justify-center">
-                <PlusCircle className="w-12 h-12 text-primary/40" />
-             </div>
+            <div className="w-32 h-32 rounded-full glass flex items-center justify-center">
+              <PlusCircle className="w-12 h-12 text-primary/40" />
+            </div>
           </motion.div>
         </div>
 
@@ -63,8 +63,8 @@ export const HomeFeed: React.FC = () => {
           </Text>
         </div>
 
-        <Button 
-          size="lg" 
+        <Button
+          size="lg"
           className="px-10 group"
           onClick={() => setIsModalOpen(true)}
         >
@@ -72,17 +72,18 @@ export const HomeFeed: React.FC = () => {
           Share a Reflection
         </Button>
 
-        <CreatePost 
-          isOpen={isModalOpen} 
-          onClose={() => setIsModalOpen(false)} 
-          onPost={(content, visibility, isAnonymous) => {
+        <CreatePost
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onPost={(content, visibility, isAnonymous, tags) => {
             const newPost = {
               id: Date.now().toString(),
               content,
               author: isAnonymous ? 'Anonymous Soul' : 'You',
               timestamp: 'Just now',
               visibility,
-              reactions: []
+              reactions: [],
+              sensitivityTags: tags
             };
             setPosts([newPost, ...posts]);
             setIsModalOpen(false);
@@ -94,8 +95,8 @@ export const HomeFeed: React.FC = () => {
 
   return (
     <div className="space-y-8 py-8 relative">
-       {/* Header Action */}
-       <div className="flex justify-between items-center mb-6">
+      {/* Header Action */}
+      <div className="flex justify-between items-center mb-6">
         <Heading level={4}>Community Reflections</Heading>
         <Button size="sm" variant="ghost" onClick={() => setIsModalOpen(true)}>
           <PlusCircle className="w-5 h-5" />
@@ -103,7 +104,7 @@ export const HomeFeed: React.FC = () => {
       </div>
 
       {posts.map(post => (
-        <motion.div 
+        <motion.div
           key={post.id}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -131,10 +132,10 @@ export const HomeFeed: React.FC = () => {
                 {post.reactions.length > 0 ? (
                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/5">
                     <div className="flex -space-x-1">
-                        {/* Aura Dots representing resonance without numbers */}
-                        {[...Array(Math.min(3, post.reactions.length))].map((_, i) => (
-                          <div key={i} className="w-2 h-2 rounded-full bg-primary/40 animate-pulse" style={{ animationDelay: `${i * 0.2}s` }} />
-                        ))}
+                      {/* Aura Dots representing resonance without numbers */}
+                      {[...Array(Math.min(3, post.reactions.length))].map((_, i) => (
+                        <div key={i} className="w-2 h-2 rounded-full bg-primary/40 animate-pulse" style={{ animationDelay: `${i * 0.2}s` }} />
+                      ))}
                     </div>
                     <Text size="xs" weight="medium" className="text-primary/60">
                       Community is holding space
@@ -146,16 +147,16 @@ export const HomeFeed: React.FC = () => {
               </div>
 
               <div className="relative flex gap-2">
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   className={cn("rounded-full px-3", activeTrayId === post.id && "bg-primary/10")}
                   onClick={() => setActiveTrayId(activeTrayId === post.id ? null : post.id)}
                 >
                   <HeartHandshake className="w-5 h-5 text-text/40" />
                 </Button>
-                
-                <ResonanceTray 
+
+                <ResonanceTray
                   isOpen={activeTrayId === post.id}
                   onClose={() => setActiveTrayId(null)}
                   onSelect={(type) => handleReaction(post.id, type)}
@@ -165,79 +166,80 @@ export const HomeFeed: React.FC = () => {
 
             {/* Comments Section */}
             <div className="space-y-4">
-               {/* Top Level Input */}
-               <CommentInput 
-                 onSubmit={(content: string) => {
-                   setPosts(current => current.map(p => {
-                     if (p.id === post.id) {
-                       return {
-                         ...p,
-                         comments: [
-                           ...(p.comments || []),
-                           {
-                             id: Date.now().toString(),
-                             author: 'You',
-                             content: content,
-                             timestamp: 'Just now',
-                             isAuthor: true,
-                             replies: []
-                           }
-                         ]
-                       };
-                     }
-                     return p;
-                   }));
-                 }} 
-               />
-               
-               {/* Thread */}
-               {(post.comments && post.comments.length > 0) && (
-                 <CommentThread 
-                   comments={post.comments} 
-                   onReply={(parentId: string, content: string) => {
-                      setPosts(current => current.map(p => {
-                        if (p.id === post.id) {
-                          // Find parent and add reply (simplified for depth 1)
-                          const updatedComments = p.comments.map((c: any) => {
-                             if (c.id === parentId) {
-                               return {
-                                 ...c,
-                                 replies: [
-                                   ...(c.replies || []),
-                                   {
-                                     id: Date.now().toString(),
-                                     author: 'You',
-                                     content: content,
-                                     timestamp: 'Just now'
-                                   }
-                                 ]
-                               };
-                             }
-                             return c;
-                          });
-                          return { ...p, comments: updatedComments };
-                        }
-                        return p;
-                      }));
-                   }}
-                 />
-               )}
+              {/* Top Level Input */}
+              <CommentInput
+                onSubmit={(content: string) => {
+                  setPosts(current => current.map(p => {
+                    if (p.id === post.id) {
+                      return {
+                        ...p,
+                        comments: [
+                          ...(p.comments || []),
+                          {
+                            id: Date.now().toString(),
+                            author: 'You',
+                            content: content,
+                            timestamp: 'Just now',
+                            isAuthor: true,
+                            replies: []
+                          }
+                        ]
+                      };
+                    }
+                    return p;
+                  }));
+                }}
+              />
+
+              {/* Thread */}
+              {(post.comments && post.comments.length > 0) && (
+                <CommentThread
+                  comments={post.comments}
+                  onReply={(parentId: string, content: string) => {
+                    setPosts(current => current.map(p => {
+                      if (p.id === post.id) {
+                        // Find parent and add reply (simplified for depth 1)
+                        const updatedComments = p.comments.map((c: any) => {
+                          if (c.id === parentId) {
+                            return {
+                              ...c,
+                              replies: [
+                                ...(c.replies || []),
+                                {
+                                  id: Date.now().toString(),
+                                  author: 'You',
+                                  content: content,
+                                  timestamp: 'Just now'
+                                }
+                              ]
+                            };
+                          }
+                          return c;
+                        });
+                        return { ...p, comments: updatedComments };
+                      }
+                      return p;
+                    }));
+                  }}
+                />
+              )}
             </div>
           </div>
         </motion.div>
       ))}
 
-      <CreatePost 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        onPost={(content, visibility, isAnonymous) => {
+      <CreatePost
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onPost={(content, visibility, isAnonymous, tags) => {
           const newPost = {
             id: Date.now().toString(),
             content,
             author: isAnonymous ? 'Anonymous Soul' : 'You',
             timestamp: 'Just now',
             visibility,
-            reactions: []
+            reactions: [],
+            sensitivityTags: tags
           };
           setPosts([newPost, ...posts]);
           setIsModalOpen(false);

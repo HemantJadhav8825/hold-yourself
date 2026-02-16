@@ -1,0 +1,167 @@
+{
+    "apps": {
+        "admin-panel": {
+            "package.json": true
+        },
+        "frontend": {
+            "src": {
+                "app": {
+                    "(app)": {
+                        "messages": {
+                            "page.tsx": true
+                        },
+                        "sanctuary": {
+                            "feed": {},
+                            "setup": {},
+                            "layout.tsx": true,
+                            "page.tsx": true
+                        },
+                        "profile": {
+                            "page.tsx": true
+                        },
+                        "AppLayoutClient.tsx": true,
+                        "layout.tsx": true
+                    },
+                    "(marketing)": {
+                        "belong": {
+                            "page.tsx": true
+                        },
+                        "feeling-alone": {
+                            "page.tsx": true
+                        }
+                    },
+                    "(emotions)": {
+                        "[slug]": {
+                            "page.tsx": true
+                        }
+                    },
+                    "(auth)": {
+                        "login": {
+                            "page.tsx": true
+                        },
+                        "signup": {
+                            "page.tsx": true
+                        },
+                        "layout.tsx": true
+                    },
+                    "og": {
+                        "route.tsx": true
+                    },
+                    "layout.tsx": true,
+                    "page.tsx": true,
+                    "sitemap.ts": true,
+                    "robots.ts": true,
+                    "icon.tsx": true,
+                    "apple-icon.tsx": true
+                },
+                "components": {
+                    "dashboard": {
+                        "CreatePost.tsx": true,
+                        "HomeFeed.tsx": true
+                    },
+                    "sanctuary": {
+                        "create-vent.tsx": true,
+                        "vent-card.tsx": true
+                    },
+                    "ui": {},
+                    "auth": {},
+                    "layout": {}
+                },
+                "lib": {},
+                "api": {}
+            },
+            "next.config.js": true,
+            "package.json": true,
+            "tsconfig.json": true,
+            "tailwind.config.js": true
+        },
+        "backend": {
+            "src": {
+                "routes": {
+                    "api.routes.ts": true,
+                    "auth.routes.ts": true
+                },
+                "auth": {
+                    "auth.proxy.ts": true
+                },
+                "app.ts": true,
+                "server.ts": true
+            },
+            "package.json": true,
+            "tsconfig.json": true
+        }
+    },
+    "packages": {
+        "types": {
+            "src": {
+                "index.ts": true
+            },
+            "package.json": true
+        },
+        "utils": {
+            "src": {
+                "index.ts": true
+            },
+            "package.json": true
+        },
+        "ui": {
+            "package.json": true
+        },
+        "events": {
+            "package.json": true
+        },
+        "auth-internal": {
+            "package.json": true
+        },
+        "internal-clients": {
+            "package.json": true
+        }
+    },
+    "services": {
+        "auth-service": {
+            "src": {
+                "modules": {
+                    "auth": {},
+                    "users": {}
+                },
+                "server.ts": true,
+                "app.ts": true
+            },
+            "package.json": true
+        },
+        "holding-space-service": {
+            "src": {
+                "controllers": {},
+                "models": {
+                    "Comment.ts": true,
+                    "Support.ts": true
+                },
+                "routes": {
+                    "index.ts": true
+                },
+                "index.ts": true
+            },
+            "package.json": true
+        },
+        "chat-service": {
+            "package.json": true
+        },
+        "notification-service": {
+            "package.json": true
+        },
+        "payment-service": {
+            "package.json": true
+        }
+    },
+    "infra": {
+        "environment": {}
+    },
+    "scripts": {
+        "audit-ports.ts": true
+    },
+    "package.json": true,
+    "turbo.json": true,
+    "pnpm-workspace.yaml": true,
+    "ecosystem.config.js": true,
+    "nodepilot.yml": true
+}

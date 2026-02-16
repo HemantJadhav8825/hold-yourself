@@ -61,8 +61,8 @@ export const GlobalChatSettings: React.FC<GlobalChatSettingsProps> = ({ onClose 
 
   return (
     <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-[100] p-6 animate-in fade-in duration-300">
-      <div className="max-w-md mx-auto bg-background border border-border rounded-2xl shadow-2xl p-6 relative">
-        <button 
+      <div className="max-w-md mx-auto bg-webelong-card border border-border rounded-2xl shadow-2xl p-6 relative">
+        <button
           onClick={onClose}
           className="absolute top-4 right-4 p-2 hover:bg-muted rounded-full transition-colors"
         >
@@ -82,16 +82,14 @@ export const GlobalChatSettings: React.FC<GlobalChatSettingsProps> = ({ onClose 
                 Let others know when you&apos;ve read their messages.
               </Text>
             </div>
-            <button 
+            <button
               onClick={handleToggleReceipts}
               disabled={isUpdating}
-              className={`w-12 h-6 rounded-full transition-colors relative flex items-center px-1 ${
-                settings?.showReadReceipts ? 'bg-primary' : 'bg-muted-foreground/20'
-              }`}
+              className={`w-12 h-6 rounded-full transition-colors relative flex items-center px-1 ${settings?.showReadReceipts ? 'bg-primary' : 'bg-muted-foreground/20'
+                }`}
             >
-              <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${
-                settings?.showReadReceipts ? 'translate-x-6' : 'translate-x-0'
-              }`} />
+              <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${settings?.showReadReceipts ? 'translate-x-6' : 'translate-x-0'
+                }`} />
             </button>
           </div>
 
@@ -102,26 +100,24 @@ export const GlobalChatSettings: React.FC<GlobalChatSettingsProps> = ({ onClose 
                 Display unread message bubbles in your chat list.
               </Text>
             </div>
-            <button 
+            <button
               onClick={handleToggleBadges}
               disabled={isUpdating}
-              className={`w-12 h-6 rounded-full transition-colors relative flex items-center px-1 ${
-                !settings?.muteUnreadBadges ? 'bg-primary' : 'bg-muted-foreground/20'
-              }`}
+              className={`w-12 h-6 rounded-full transition-colors relative flex items-center px-1 ${!settings?.muteUnreadBadges ? 'bg-primary' : 'bg-muted-foreground/20'
+                }`}
             >
-              <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${
-                !settings?.muteUnreadBadges ? 'translate-x-6' : 'translate-x-0'
-              }`} />
+              <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${!settings?.muteUnreadBadges ? 'translate-x-6' : 'translate-x-0'
+                }`} />
             </button>
           </div>
 
 
           <div className="pt-4 border-t border-border/50">
-            <Button 
-                variant="outline" 
-                fullWidth 
-                onClick={onClose}
-                className="rounded-xl border-border/40"
+            <Button
+              variant="outline"
+              fullWidth
+              onClick={onClose}
+              className="rounded-xl border-border/40"
             >
               Done
             </Button>
