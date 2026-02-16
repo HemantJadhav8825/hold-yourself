@@ -10,9 +10,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const now = new Date()
 
-  const emotionRoutes: MetadataRoute.Sitemap = emotions.map((emotion) => ({
-    url: `${BASE_URL}/i-feel-${emotion}`,
-    lastModified: now,
+  const emotionRoutes: MetadataRoute.Sitemap = emotions.map((e) => ({
+    url: `${BASE_URL}/i-feel-${e.emotion}`,
+    lastModified: new Date(e.lastReviewed),
     changeFrequency: 'monthly',
     priority: 0.8,
   }))

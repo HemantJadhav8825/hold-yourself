@@ -28,17 +28,17 @@ export default function EmotionsHubPage() {
                     </section>
 
                     <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {emotions.map((emotion) => (
+                        {emotions.map((e) => (
                             <Link
-                                key={emotion}
-                                href={`/i-feel-${emotion}`}
+                                key={e.emotion}
+                                href={`/i-feel-${e.emotion}`}
                                 className="group p-6 rounded-2xl border border-primary/10 bg-primary/5 transition-all hover:bg-primary/10 hover:border-primary/20 hover:scale-[1.02]"
                             >
                                 <h2 className="text-xl font-medium capitalize group-hover:text-primary transition-colors">
-                                    I feel {emotion}
+                                    I feel {e.emotion}
                                 </h2>
                                 <p className="text-sm text-muted-foreground mt-2">
-                                    A safe space for when you feel {emotion}.
+                                    A safe space for when you feel {e.emotion}.
                                 </p>
                             </Link>
                         ))}

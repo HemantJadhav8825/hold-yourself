@@ -10,15 +10,16 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-    return emotions.map((emotion) => ({
-        emotion,
+    return emotions.map((e) => ({
+        emotion: e.emotion,
     }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { emotion } = await params
+    const emotionData = emotions.find(e => e.emotion === emotion)
 
-    if (!emotions.includes(emotion as Emotion)) {
+    if (!emotionData) {
         return {}
     }
 
@@ -49,8 +50,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function EmotionPage({ params }: Props) {
     const { emotion } = await params
+    const emotionData = emotions.find(e => e.emotion === emotion)
 
-    if (!emotions.includes(emotion as Emotion)) {
+    if (!emotionData) {
         notFound()
     }
 
@@ -62,12 +64,19 @@ export default async function EmotionPage({ params }: Props) {
         "name": `I feel ${emotion}`,
         "url": `https://webelong.world/i-feel-${emotion}`,
         "description": `If you feel ${emotion}, Webelong is a safe place to exist and express.`,
+        "dateModified": emotionData.lastReviewed,
         "isPartOf": {
             "@type": "WebSite",
             "name": "Webelong",
             "url": "https://webelong.world"
         }
     }
+
+    const lastReviewedFormatted = new Date(emotionData.lastReviewed).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    })
 
     return (
         <div className="flex min-h-screen flex-col bg-background">
@@ -129,6 +138,10 @@ export default async function EmotionPage({ params }: Props) {
                                     Enter Webelong
                                 </Link>
                             </section>
+
+                            <footer className="pt-12 text-xs text-muted-foreground/50">
+                                Last reviewed: {lastReviewedFormatted}
+                            </footer>
                         </div>
                     </article>
                 </Container>

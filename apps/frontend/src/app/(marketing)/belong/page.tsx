@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Container } from '@/components/ui/Container'
 import { QuietFooter } from '@/components/home/QuietFooter'
+import { emotions } from '@/lib/emotions'
 
 export const metadata: Metadata = {
     title: 'You Deserve to Belong | Webelong',
@@ -95,24 +96,13 @@ export default function BelongPage() {
                         <div className="pt-8">
                             <h2 className="text-2xl font-semibold mb-6">Explore how you feel</h2>
                             <div className="flex flex-wrap gap-3">
-                                {[
-                                    'alone',
-                                    'empty',
-                                    'lost',
-                                    'broken',
-                                    'numb',
-                                    'anxious',
-                                    'worthless',
-                                    'disconnected',
-                                    'invisible',
-                                    'overwhelmed',
-                                ].map((emotion) => (
+                                {emotions.map((e) => (
                                     <Link
-                                        key={emotion}
-                                        href={`/i-feel-${emotion}`}
+                                        key={e.emotion}
+                                        href={`/i-feel-${e.emotion}`}
                                         className="inline-flex items-center px-4 py-2 rounded-full border border-primary/10 bg-primary/5 text-sm font-medium hover:bg-primary/10 transition-colors"
                                     >
-                                        I feel {emotion}
+                                        I feel {e.emotion}
                                     </Link>
                                 ))}
                             </div>
