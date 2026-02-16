@@ -30,7 +30,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
               {brand.TAGLINE}
             </h1>
             <p className="text-xl text-foreground/60 font-medium leading-relaxed">
-              Discover a space where your presence is valued and your voice truly matters.
+              Nothing else is required.
             </p>
           </div>
 

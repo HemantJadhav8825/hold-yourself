@@ -36,7 +36,7 @@ function LoginContent() {
         .catch(() => {
           // Error handled by context
         });
-      
+
       const newUrl = new URL(window.location.href);
       newUrl.searchParams.delete('code');
       window.history.replaceState({}, '', newUrl.toString());
@@ -57,11 +57,11 @@ function LoginContent() {
   };
 
   return (
-    <AuthLayout 
-      title="Welcome Back" 
-      subtitle="You've been missed. Sign in to continue."
+    <AuthLayout
+      title="Enter, if you want."
+      subtitle="No pressure. Just presence."
     >
-      <LoginForm 
+      <LoginForm
         formData={formData}
         isLoading={isLoading}
         error={error}

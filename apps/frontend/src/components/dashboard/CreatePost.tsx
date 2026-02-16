@@ -98,7 +98,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({ isOpen, onClose, onPost 
               </div>
               <div>
                 <Heading level={6}>Share a Reflection</Heading>
-                <Text size="xs" muted>Speak your truth at your own pace.</Text>
               </div>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-text/5 rounded-full transition-colors">
@@ -123,11 +122,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ isOpen, onClose, onPost 
                   </span>
                 </button>
               </div>
-              <Text size="xs" muted className="px-1">
-                {isAnonymous
-                  ? "Your post will be shared without your profile details. Safety first."
-                  : "Your name and profile will be visible with this reflection."}
-              </Text>
+
             </div>
 
             <div

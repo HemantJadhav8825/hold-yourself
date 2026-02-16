@@ -25,7 +25,7 @@ export const SidebarNav: React.FC = () => {
   // Milestone 1 requires removal from persistent navigation.
 
   return (
-    <aside className="hidden lg:flex flex-col fixed top-0 left-0 h-screen w-64 border-r border-border bg-background px-4 py-8 z-40">
+    <aside className="hidden lg:flex flex-col fixed top-0 left-0 h-screen w-64 border-r border-border bg-[#F3F0EA] px-4 py-8 z-40">
       <Link href="/" className="px-4 mb-12">
         <Heading level={4} className="text-primary font-bold tracking-tight">
           {brand.PRODUCT_NAME}
@@ -36,7 +36,7 @@ export const SidebarNav: React.FC = () => {
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
-            <Link 
+            <Link
               key={item.label}
               href={item.href}
               className={cn(
@@ -54,7 +54,7 @@ export const SidebarNav: React.FC = () => {
       </nav>
 
       <div className="mt-auto space-y-2">
-        <button 
+        <button
           onClick={logout}
           className="w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all hover:bg-red-500/10 text-red-500/60 hover:text-red-500 group"
         >

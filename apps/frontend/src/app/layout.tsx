@@ -71,7 +71,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${lora.variable} font-body bg-webelong-background text-webelong-text`}>
+      <body className={`${inter.variable} ${lora.variable} font-body bg-[#F7F5F2] text-webelong-text`}>
         <AuthProvider>
           <UsersProvider>
             <ConversationsProvider>

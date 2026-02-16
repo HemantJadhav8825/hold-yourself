@@ -58,8 +58,8 @@ export const CommentInput: React.FC<CommentInputProps> = ({ onSubmit, isSubmitti
       </AnimatePresence>
 
       <div className={cn(
-        "relative flex items-center gap-2 bg-white/5 border border-white/10 rounded-2xl p-2 transition-all duration-300",
-        isFocused && "bg-white/10 border-primary/30 ring-1 ring-primary/20"
+        "relative flex items-center gap-2 bg-primary/5 border border-primary/10 rounded-2xl p-2 transition-all duration-300",
+        isFocused && "bg-white border-[#E5E1DA] ring-1 ring-[#D6D1C7]"
       )}>
         <input
           type="text"
@@ -71,7 +71,7 @@ export const CommentInput: React.FC<CommentInputProps> = ({ onSubmit, isSubmitti
           className="flex-1 bg-transparent border-none outline-none text-sm px-2 text-text placeholder:text-text/30"
           disabled={isSubmitting}
         />
-        
+
         <Button
           type="submit"
           size="sm"

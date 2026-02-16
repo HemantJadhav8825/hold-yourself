@@ -80,14 +80,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full h-12 bg-primary hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed text-white font-extrabold rounded-2xl shadow-xl shadow-primary/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98] text-sm uppercase tracking-wider"
+          className="w-full h-12 bg-[#2C2C2E] hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed text-white font-extrabold rounded-2xl shadow-xl shadow-primary/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98] text-sm uppercase tracking-wider"
         >
           {isLoading ? (
             <Loader2 className="w-5 h-5 animate-spin" />
           ) : (
             <>
               <LogIn className="w-4 h-4" />
-              Log In
+              Enter
             </>
           )}
         </button>

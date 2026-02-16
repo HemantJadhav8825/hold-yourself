@@ -27,7 +27,7 @@ export const GoogleButton: React.FC = () => {
     <button
       onClick={handleGoogleLogin}
       type="button"
-      className="w-full h-12 bg-white hover:bg-white/90 text-black font-semibold rounded-xl shadow-lg border border-white/10 flex items-center justify-center gap-3 transition-all active:scale-[0.98]"
+      className="w-full h-12 bg-white hover:bg-white/90 text-black font-semibold rounded-xl shadow-lg border border-webelong-border flex items-center justify-center gap-3 transition-all active:scale-[0.98]"
     >
       <div className="w-5 h-5 flex items-center justify-center">
         <svg width="18" height="18" viewBox="0 0 18 18">
@@ -49,7 +49,7 @@ export const GoogleButton: React.FC = () => {
           />
         </svg>
       </div>
-      <span className="text-sm md:text-base">Continue with Google</span>
+      <span className="text-sm md:text-base">Enter with Google</span>
     </button>
   );
 };
