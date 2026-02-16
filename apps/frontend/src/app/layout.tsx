@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Script from 'next/script';
 import { Inter, Lora } from "next/font/google";
 import "./globals.css";
-import { constructMetadata } from "@/components/seo/metadata";
 import { AuthProvider } from "@/context/AuthContext";
 import { UsersProvider } from "@/context/UsersContext";
 import { ConversationsProvider } from "@/context/ConversationsContext";
@@ -11,7 +10,47 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
 const lora = Lora({ subsets: ["latin"], variable: "--font-heading" });
 
-export const metadata: Metadata = constructMetadata();
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://webelong.world'
+
+export const metadata: Metadata = {
+  metadataBase: new URL(BASE_URL),
+  title: {
+    default: 'Webelong — You belong. Even here.',
+    template: '%s — Webelong',
+  },
+  description:
+    'Webelong is a belonging-first social platform designed for emotional safety, honest expression, and human connection.',
+  keywords: [
+    'mental health',
+    'belonging',
+    'emotional support',
+    'safe social platform',
+    'anonymous support',
+    'human connection',
+  ],
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'Webelong — You belong. Even here.',
+    description:
+      'A belonging-first social platform for emotional safety and real human connection.',
+    url: BASE_URL,
+    siteName: 'Webelong',
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Webelong — You belong. Even here.',
+    description:
+      'A belonging-first social platform for emotional safety and human connection.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
 
 export default function RootLayout({
   children,
