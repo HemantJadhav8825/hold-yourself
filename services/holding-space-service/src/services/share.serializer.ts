@@ -1,5 +1,5 @@
 import { IShare } from '../models/Share';
-import { ShareDTO } from '@hold-yourself/types';
+import { ShareDTO, PublicShareDTO } from '@hold-yourself/types';
 
 /**
  * Strict serializer for Share documents.
@@ -21,4 +21,17 @@ export const serializeShare = (share: IShare): ShareDTO => {
 
 export const serializeShares = (shares: IShare[]): ShareDTO[] => {
   return shares.map(serializeShare);
+};
+
+/**
+ * Strict public serializer for Share documents.
+ * Returns only content, tags and time. Strictly no authorId.
+ */
+export const serializePublicShare = (share: IShare): PublicShareDTO => {
+  return {
+    id: share._id.toString(),
+    content: share.content,
+    sensitivityTags: share.sensitivityTags,
+    createdAt: share.createdAt.toISOString(),
+  };
 };

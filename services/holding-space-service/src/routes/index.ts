@@ -23,6 +23,7 @@ const moderationController = new ModerationController();
 router.post('/shares', authenticate, (req, res) => shareController.createShare(req, res));
 // Feed uses optionalAuthenticate for viewer visibility and muting checks
 router.get('/shares', optionalAuthenticate, (req, res) => shareController.getShares(req as any, res));
+router.get('/shares/:id', optionalAuthenticate, (req, res) => shareController.getShareById(req as any, res));
 router.patch('/shares/:id', authenticate, (req, res) => shareController.updateShare(req, res));
 router.delete('/shares/:id', authenticate, (req, res) => shareController.deleteShare(req, res));
 
