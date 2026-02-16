@@ -64,7 +64,7 @@ export default function BelongPage() {
                         </p>
                     </section>
 
-                    <section className="space-y-8 prose dark:prose-invert max-w-none">
+                    <section className="space-y-8 prose max-w-none">
                         <div>
                             <h2 className="text-2xl font-semibold mb-4">What is Webelong?</h2>
                             <p className="text-lg text-muted-foreground">

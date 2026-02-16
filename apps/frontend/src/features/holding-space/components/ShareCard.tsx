@@ -38,9 +38,9 @@ export const ShareCard: React.FC<ShareCardProps> = ({ share, onUpdate, onDelete 
   // Author check
   const isAuthor = !!share.isOwner;
   const isAnonymous = share.authorId === 'anonymous' || share.anonymous;
-  
+
   const displayName = isAnonymous ? 'Anonymous' : 'Community Member';
-  
+
   // Create a seed for anonymous avatar if needed
   const avatarSeed = isAnonymous ? `#${share.id.slice(0, 6)}:?` : undefined;
 
@@ -57,7 +57,7 @@ export const ShareCard: React.FC<ShareCardProps> = ({ share, onUpdate, onDelete 
 
   const handleSave = async () => {
     if (!editedContent.trim() || !onUpdate) return;
-    
+
     setIsSaving(true);
     try {
       await onUpdate(share.id, editedContent);
@@ -88,10 +88,10 @@ export const ShareCard: React.FC<ShareCardProps> = ({ share, onUpdate, onDelete 
 
     return (
       <div className="relative transform translate-x-2" ref={menuRef}>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="h-8 w-8 p-0 rounded-full" 
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 w-8 p-0 rounded-full"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           <MoreVertical size={16} className="text-muted-foreground" />
@@ -99,13 +99,13 @@ export const ShareCard: React.FC<ShareCardProps> = ({ share, onUpdate, onDelete 
 
         {isMenuOpen && (
           <div className="absolute right-0 mt-1 w-32 bg-card border shadow-md rounded-md z-20 py-1 overflow-hidden animate-in fade-in zoom-in-95 duration-100">
-            <button 
+            <button
               className="w-full text-left px-3 py-2 text-sm hover:bg-secondary flex items-center gap-2"
               onClick={() => { setIsEditing(true); setIsMenuOpen(false); }}
             >
               <Edit2 size={14} /> Edit
             </button>
-            <button 
+            <button
               className="w-full text-left px-3 py-2 text-sm hover:bg-destructive/10 text-destructive flex items-center gap-2"
               onClick={() => { setShowDeleteConfirm(true); setIsMenuOpen(false); }}
             >
@@ -121,7 +121,7 @@ export const ShareCard: React.FC<ShareCardProps> = ({ share, onUpdate, onDelete 
     if (isEditing) {
       return (
         <div className="space-y-3 animate-in fade-in duration-200">
-          <Textarea 
+          <Textarea
             value={editedContent}
             onChange={(e) => setEditedContent(e.target.value)}
             className="min-h-[120px] resize-none"
@@ -129,18 +129,18 @@ export const ShareCard: React.FC<ShareCardProps> = ({ share, onUpdate, onDelete 
             autoFocus
           />
           <div className="flex gap-2 justify-end">
-            <Button 
-              size="sm" 
-              variant="outline" 
+            <Button
+              size="sm"
+              variant="outline"
               onClick={() => { setIsEditing(false); setEditedContent(share.content); }}
               disabled={isSaving}
             >
               <X size={14} className="mr-1" />
               Cancel
             </Button>
-            <Button 
-              size="sm" 
-              onClick={handleSave} 
+            <Button
+              size="sm"
+              onClick={handleSave}
               disabled={isSaving || !editedContent.trim()}
             >
               {isSaving ? <Loader2 size={14} className="animate-spin mr-1" /> : <Check size={14} className="mr-1" />}
@@ -164,45 +164,45 @@ export const ShareCard: React.FC<ShareCardProps> = ({ share, onUpdate, onDelete 
     return (
       <Card className="mb-4 overflow-hidden border-destructive/30 bg-destructive/5 transition-all">
         <CardContent className="p-6 flex flex-col items-center text-center space-y-4">
-            <div className="h-10 w-10 rounded-full bg-destructive/10 flex items-center justify-center text-destructive">
-                <AlertTriangle size={20} />
-            </div>
-            <div className="space-y-1">
-                <h3 className="font-medium">Delete this share?</h3>
-                <p className="text-sm text-muted-foreground">This action cannot be undone.</p>
-            </div>
-            <div className="flex gap-3 w-full justify-center pt-2">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowDeleteConfirm(false)}
-                  disabled={isDeleting}
-                  className="flex-1 max-w-[120px]"
-                >
-                    Cancel
-                </Button>
-                <Button 
-                  variant="destructive" 
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                  className="flex-1 max-w-[120px]"
-                >
-                    {isDeleting ? <Loader2 size={14} className="animate-spin mr-1" /> : null}
-                    Delete
-                </Button>
-            </div>
+          <div className="h-10 w-10 rounded-full bg-destructive/10 flex items-center justify-center text-destructive">
+            <AlertTriangle size={20} />
+          </div>
+          <div className="space-y-1">
+            <h3 className="font-medium">Delete this share?</h3>
+            <p className="text-sm text-muted-foreground">This action cannot be undone.</p>
+          </div>
+          <div className="flex gap-3 w-full justify-center pt-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteConfirm(false)}
+              disabled={isDeleting}
+              className="flex-1 max-w-[120px]"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="flex-1 max-w-[120px]"
+            >
+              {isDeleting ? <Loader2 size={14} className="animate-spin mr-1" /> : null}
+              Delete
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="mb-8 overflow-hidden border-border/40 hover:border-border/60 transition-colors group shadow-sm rounded-2xl">
+    <Card className="mb-8 overflow-hidden border-webelong-border hover:border-webelong-muted/50 transition-colors group shadow-sm rounded-2xl">
       <CardHeader className="flex flex-row items-start justify-between p-6 pb-2 space-y-0">
         <div className="flex flex-row items-center gap-3">
           {isAnonymous ? (
-              <AnonymousAvatar seed={avatarSeed || '#333:?'} size="sm" />
+            <AnonymousAvatar seed={avatarSeed || '#333:?'} size="sm" />
           ) : (
-              <ProfileAvatar size="sm" name={displayName} />
+            <ProfileAvatar size="sm" name={displayName} />
           )}
           <div className="flex flex-col">
             <span className="text-sm font-medium leading-none">
@@ -213,12 +213,12 @@ export const ShareCard: React.FC<ShareCardProps> = ({ share, onUpdate, onDelete 
             </span>
           </div>
         </div>
-        
+
         {/* Menu */}
         {!isEditing && renderMenu()}
 
       </CardHeader>
-      
+
       <CardContent className="p-4 pt-2">
         {renderContent()}
       </CardContent>

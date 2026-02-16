@@ -32,20 +32,20 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
   conversation,
   onBack,
 }) => {
-  const { 
-    messages, 
-    sendMessage, 
-    isLoading, 
-    isSending, 
-    typingUsers, 
-    onlineStatus, 
+  const {
+    messages,
+    sendMessage,
+    isLoading,
+    isSending,
+    typingUsers,
+    onlineStatus,
     setTyping,
     clearHistory
   } = useChat(conversation?.id || null);
   const { markAsRead } = useConversationsContext();
   const { users } = useUsers(50);
   const { user: currentUser } = useCurrentUser();
-  
+
   const [showSettings, setShowSettings] = React.useState(false);
   const [isMuted, setIsMuted] = React.useState(false);
   const [isArchived, setIsArchived] = React.useState(false);
@@ -113,7 +113,7 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
       const currentId = currentUser.id || (currentUser as any)._id;
       return pId !== currentId;
     });
-    
+
     if (!other) return null;
     if (typeof other !== 'string') return other as any;
 
@@ -187,22 +187,22 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
   const groupedMessages = messages.reduce((acc: any[], msg, i) => {
     const prevMsg = messages[i + 1]; // We are in flex-col-reverse
     const nextMsg = messages[i - 1];
-    
+
     const currDate = new Date(msg.createdAt);
     const prevDate = prevMsg ? new Date(prevMsg.createdAt) : null;
-    
+
     // Day Separator Check
     const isNewDay = !prevDate || currDate.toDateString() !== prevDate.toDateString();
     const isLargeGap = prevDate && (currDate.getTime() - prevDate.getTime() > 30 * 60 * 1000);
-    
+
     // Grouping Check
     const isSameSender = prevMsg && prevMsg.senderId === msg.senderId;
     const isWithinThreshold = prevDate && (currDate.getTime() - prevDate.getTime() < 5 * 60 * 1000);
     const isFirstInGroup = isNewDay || isLargeGap || !isSameSender || !isWithinThreshold;
-    
-    const isLastInGroup = !nextMsg || nextMsg.senderId !== msg.senderId || 
-                         (new Date(nextMsg.createdAt).getTime() - currDate.getTime() > 5 * 60 * 1000) ||
-                         (new Date(nextMsg.createdAt).getTime() - currDate.getTime() > 30 * 60 * 1000);
+
+    const isLastInGroup = !nextMsg || nextMsg.senderId !== msg.senderId ||
+      (new Date(nextMsg.createdAt).getTime() - currDate.getTime() > 5 * 60 * 1000) ||
+      (new Date(nextMsg.createdAt).getTime() - currDate.getTime() > 30 * 60 * 1000);
 
     if (isNewDay) {
       acc.push({ type: 'day', date: currDate.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' }) });
@@ -222,10 +222,10 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
     //    If so, acc.push appends to the list.
     //    If the render is flex-col-reverse, then the first item in array is at the BOTTOM.
     //    So array[0] is indeed the newest message and should be at the START of the visual list (bottom).
-    
+
     //    Let's check useChat. Typically it fits standard chat: array is chronological, but UI reverses?
     //    Or array is reverse chronological?
-    
+
     //    If "prevMsg = messages[i+1]" is chronologically BEFORE "msg", then messages[i] is NEWER than messages[i+1].
     //    So messages[0] is the NEWEST.
     //    
@@ -233,14 +233,14 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
     //    
     //    Divider should appear AFTER the last "New" message we encounter?
     //    Or rather, between the Oldest New Message and the Newest Old Message.
-    
+
     //    Let's stick to: "Is this message unread?" -> msg.createdAt > initialLastReadAt.
     //    "Is the NEXT processed message (i.e. prevMsg, older) READ?" -> prevMsg.createdAt <= initialLastReadAt.
     //    If so, insert Divider AFTER pushing this message (which means visually ABOVE it in column-reverse).
-    
+
     const isUnread = initialLastReadAt && currDate > initialLastReadAt && msg.senderId !== currentUser?.id;
     const isPrevRead = !prevMsg || (initialLastReadAt && new Date(prevMsg.createdAt) <= initialLastReadAt) || prevMsg.senderId === currentUser?.id; // count own messages as "read" for divider purposes
-    
+
     // Actually, if I sent the last message, I shouldn't see "New Messages" under my own message.
     // "New Messages" line marks where *other people's* messages started accumulating.
 
@@ -252,7 +252,7 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
     });
 
     if (isUnread && isPrevRead && initialLastReadAt && initialLastReadAt.getTime() > 0) {
-       acc.push({ type: 'new-messages-divider' });
+      acc.push({ type: 'new-messages-divider' });
     }
 
     return acc;
@@ -290,9 +290,9 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
             </Text>
           </div>
         </div>
-        
+
         <div className="relative">
-          <button 
+          <button
             onClick={() => setShowSettings(!showSettings)}
             className="p-2 hover:bg-muted rounded-full transition-colors"
           >
@@ -301,14 +301,14 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
 
           {showSettings && (
             <div className="absolute right-0 top-full mt-2 w-48 bg-background border border-border rounded-xl shadow-xl z-50 p-1 animate-in fade-in zoom-in-95 duration-200">
-              <button 
+              <button
                 onClick={handleToggleMute}
                 className="w-full text-left px-3 py-2 hover:bg-muted rounded-lg flex items-center gap-3 transition-colors"
               >
                 {isMuted ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
                 <Text size="sm">{isMuted ? 'Unmute' : 'Mute'}</Text>
               </button>
-              <button 
+              <button
                 onClick={handleToggleArchive}
                 className="w-full text-left px-3 py-2 hover:bg-muted rounded-lg flex items-center gap-3 transition-colors"
               >
@@ -316,7 +316,7 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
                 <Text size="sm">{isArchived ? 'Unarchive' : 'Archive'}</Text>
               </button>
               <div className="h-px bg-border my-1" />
-              <button 
+              <button
                 onClick={() => {
                   if (confirm('Clear local history? This only affects this device.')) {
                     clearHistory();
@@ -343,15 +343,15 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
                       }}
                     />
                   </div>
-                  <button 
+                  <button
                     onClick={() => {
                       setShowReportModal(true);
                       setShowSettings(false);
                     }}
-                    className="w-full text-left px-3 py-2 hover:bg-orange-500/10 text-orange-600 dark:text-orange-400 rounded-lg flex items-center gap-3 transition-colors"
+                    className="w-full text-left px-3 py-2 hover:bg-orange-500/10 text-orange-600 rounded-lg flex items-center gap-3 transition-colors"
                   >
                     <Flag className="w-4 h-4" />
-                    <Text size="sm" className="text-orange-600 dark:text-orange-400">Report Conversation</Text>
+                    <Text size="sm" className="text-orange-600">Report Conversation</Text>
                   </button>
                 </>
               )}
@@ -365,16 +365,16 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
         {/* Typing Indicators */}
         {otherUser && typingUsers.has(otherUser.id) && (
           <div className="absolute bottom-4 left-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-             <div className="bg-muted/30 px-3 py-1.5 rounded-2xl rounded-bl-none flex items-center gap-1.5">
-                <div className="flex gap-1">
-                  <span className="w-1 h-1 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.3s]" />
-                  <span className="w-1 h-1 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                  <span className="w-1 h-1 bg-primary/40 rounded-full animate-bounce" />
-                </div>
-                <Text className="text-[10px] text-muted-foreground font-medium italic opacity-60">
-                  {chatName} is thinking...
-                </Text>
-             </div>
+            <div className="bg-muted/30 px-3 py-1.5 rounded-2xl rounded-bl-none flex items-center gap-1.5">
+              <div className="flex gap-1">
+                <span className="w-1 h-1 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                <span className="w-1 h-1 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                <span className="w-1 h-1 bg-primary/40 rounded-full animate-bounce" />
+              </div>
+              <Text className="text-[10px] text-muted-foreground font-medium italic opacity-60">
+                {chatName} is thinking...
+              </Text>
+            </div>
           </div>
         )}
 
@@ -403,7 +403,7 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
                 <div className="h-px bg-red-500/20 flex-1" />
               </div>
             ) : (
-              <MessageBubble 
+              <MessageBubble
                 key={item.id}
                 content={item.content}
                 isSelf={item.senderId === currentUser?.id}
@@ -444,8 +444,8 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
             </div>
           </div>
         ) : (
-          <MessageInput 
-            onSend={sendMessage} 
+          <MessageInput
+            onSend={sendMessage}
             onTypingChange={setTyping}
           />
         )}

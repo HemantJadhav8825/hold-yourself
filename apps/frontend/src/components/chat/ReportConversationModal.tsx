@@ -59,20 +59,20 @@ export function ReportConversationModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+      <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
         <h2 className="text-xl font-semibold mb-4">Report Conversation</h2>
 
         {success ? (
           <div className="text-center py-8">
             <div className="text-green-500 text-5xl mb-4">✓</div>
             <p className="text-lg font-medium">Report submitted successfully</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+            <p className="text-sm text-gray-600 mt-2">
               Thank you for helping keep our community safe.
             </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            <p className="text-sm text-gray-600 mb-4">
               You are reporting <strong>{reportedUserName}</strong>
             </p>
 
@@ -84,7 +84,7 @@ export function ReportConversationModal({
                 id="reason"
                 value={reason}
                 onChange={(e) => setReason(e.target.value as ReportData['reason'])}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 required
               >
                 <option value="harassment">Harassment</option>
@@ -104,7 +104,7 @@ export function ReportConversationModal({
                 onChange={(e) => setAdditionalDetails(e.target.value)}
                 maxLength={1000}
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 resize-none"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 resize-none"
                 placeholder="Provide more context about this report..."
               />
               <p className="text-xs text-gray-500 mt-1">
@@ -113,7 +113,7 @@ export function ReportConversationModal({
             </div>
 
             {error && (
-              <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg text-sm">
+              <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
                 {error}
               </div>
             )}
@@ -123,7 +123,7 @@ export function ReportConversationModal({
                 type="button"
                 onClick={onClose}
                 disabled={isSubmitting}
-                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
               >
                 Cancel
               </button>

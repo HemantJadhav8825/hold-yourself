@@ -5,7 +5,6 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { UsersProvider } from "@/context/UsersContext";
 import { ConversationsProvider } from "@/context/ConversationsContext";
-import { ThemeProvider } from "@/components/providers/theme-provider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
 const lora = Lora({ subsets: ["latin"], variable: "--font-heading" });
@@ -71,19 +70,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${lora.variable} font-body`}>
+    <html lang="en">
+      <body className={`${inter.variable} ${lora.variable} font-body bg-webelong-background text-webelong-text`}>
         <AuthProvider>
           <UsersProvider>
             <ConversationsProvider>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-              >
-                {children}
-              </ThemeProvider>
+              {children}
             </ConversationsProvider>
           </UsersProvider>
         </AuthProvider>

@@ -24,7 +24,7 @@ export default function PrivacyPage() {
             <div className="space-y-12">
                 <section>
                     <h2 className="text-2xl font-semibold mb-4">Human-First Summary</h2>
-                    <div className="prose prose-lg dark:prose-invert">
+                    <div className="prose prose-lg">
                         <ul className="list-disc pl-5 space-y-2">
                             <li>We do <strong>not</strong> sell your data. Ever.</li>
                             <li>We minimize what we collect. If we don&apos;t need it, we don&apos;t want it.</li>
@@ -36,7 +36,7 @@ export default function PrivacyPage() {
 
                 <section>
                     <h2 className="text-2xl font-semibold mb-4">1. Data Minimization</h2>
-                    <div className="prose prose-lg dark:prose-invert">
+                    <div className="prose prose-lg">
                         <p>
                             We practice aggressive data minimization. We only collect the absolute minimum required to create your account and enable the features you use. We do not track your activity across other websites.
                         </p>
@@ -45,7 +45,7 @@ export default function PrivacyPage() {
 
                 <section>
                     <h2 className="text-2xl font-semibold mb-4">2. Emotional Data Protection</h2>
-                    <div className="prose prose-lg dark:prose-invert">
+                    <div className="prose prose-lg">
                         <p>
                             The thoughts and feelings you share on Webelong are sensitive. We treat them as such. They are stored securely and are never used for advertising profiling. Your vulnerability is safe here.
                         </p>
@@ -54,7 +54,7 @@ export default function PrivacyPage() {
 
                 <section>
                     <h2 className="text-2xl font-semibold mb-4">3. Deletion Rights</h2>
-                    <div className="prose prose-lg dark:prose-invert">
+                    <div className="prose prose-lg">
                         <p>
                             You have the absolute right to be forgotten. If you choose to leave Webelong, you can permanently delete your account and all associated data. We do not hold onto &quot;shadow copies&quot; of your information.
                         </p>

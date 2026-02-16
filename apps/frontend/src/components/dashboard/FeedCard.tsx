@@ -32,7 +32,7 @@ export const FeedCard: React.FC<FeedCardProps> = ({
 
   return (
     <Link href={`/holding-space/post/${id}`} className="block">
-      <article className="bg-background border-b border-border lg:border lg:rounded-xl lg:mb-6 overflow-hidden hover:bg-muted/30 transition-colors">
+      <article className="bg-webelong-card border-b border-webelong-border lg:border lg:rounded-xl lg:mb-6 overflow-hidden hover:bg-webelong-hover transition-colors">
         {/* Header */}
         <div className="flex items-center justify-between p-3 lg:p-4">
           <div className="flex items-center gap-3">

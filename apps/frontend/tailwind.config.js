@@ -1,5 +1,4 @@
 module.exports = {
-  darkMode: ["class"],
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -18,38 +17,51 @@ module.exports = {
         "app-content": "680px",
       },
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        // Enforced Emotional Safety Theme
+        border: "#E7E3DC",
+        input: "#E5E1DA", // Input border
+        ring: "#D6D1C7", // Focus border
+        background: "#F7F5F2",
+        foreground: "#2C2C2E",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "#2C2C2E",
+          foreground: "#F7F5F2",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: "#E7E3DC",
+          foreground: "#2C2C2E",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: "#F2EFEA", // Hover background
+          foreground: "#6E6E73", // Secondary text
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "#F2EFEA",
+          foreground: "#2C2C2E",
         },
         popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+          DEFAULT: "#FFFFFF",
+          foreground: "#2C2C2E",
         },
         card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          DEFAULT: "#FFFFFF",
+          foreground: "#2C2C2E",
+        },
+        // Custom Webelong Palette
+        webelong: {
+          background: "#F7F5F2",
+          card: "#FFFFFF",
+          border: "#E7E3DC",
+          text: "#2C2C2E",
+          muted: "#6E6E73",
+          focus: "#D6D1C7",
+          hover: "#F2EFEA",
+          input: "#FFFFFF",
+          inputBorder: "#E5E1DA",
         },
       },
       borderRadius: {
