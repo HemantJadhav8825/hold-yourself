@@ -53,6 +53,13 @@ export default function Home() {
         <Container className="max-w-2xl">
           <ArrivalHeader />
           <SanctuaryEntryCard />
+
+          {/* SEO Discovery Hub */}
+          <div className="mt-12 text-center opacity-0 hover:opacity-100 transition-opacity">
+            <Link href="/emotions" className="text-xs text-muted-foreground/20 hover:text-muted-foreground underline underline-offset-4">
+              Explore emotional states hub
+            </Link>
+          </div>
         </Container>
       </main>
 

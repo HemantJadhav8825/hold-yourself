@@ -27,6 +27,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     ...emotionRoutes,
     {
+      url: `${BASE_URL}/emotions`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
       url: `${BASE_URL}/about`,
       lastModified: now,
       changeFrequency: 'monthly',
