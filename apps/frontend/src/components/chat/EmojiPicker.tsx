@@ -1,6 +1,5 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
-import { useTheme } from 'next-themes';
 import { Theme } from 'emoji-picker-react';
 import type { EmojiClickData } from 'emoji-picker-react';
 
@@ -14,15 +13,11 @@ interface EmojiPickerProps {
 }
 
 export const EmojiPicker: React.FC<EmojiPickerProps> = ({ onEmojiClick }) => {
-  const { resolvedTheme } = useTheme();
-  
-  const theme = resolvedTheme === 'dark' ? Theme.DARK : Theme.LIGHT;
-
   return (
     <div className="absolute bottom-full mb-2 left-0 shadow-xl rounded-xl border border-border overflow-hidden z-50">
       <Picker
         onEmojiClick={onEmojiClick}
-        theme={theme}
+        theme={Theme.LIGHT}
         lazyLoadEmojis={true}
         height={400}
         width={320}
