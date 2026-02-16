@@ -1,5 +1,7 @@
 import type { MetadataRoute } from 'next'
 
+import { emotions } from '@/lib/emotions'
+
 const BASE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ||
   'https://webelong.world'
@@ -7,6 +9,13 @@ const BASE_URL =
 export default function sitemap(): MetadataRoute.Sitemap {
 
   const now = new Date()
+
+  const emotionRoutes: MetadataRoute.Sitemap = emotions.map((emotion) => ({
+    url: `${BASE_URL}/i-feel-${emotion}`,
+    lastModified: now,
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }))
 
   return [
 
@@ -16,7 +25,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'daily',
       priority: 1,
     },
-
+    ...emotionRoutes,
     {
       url: `${BASE_URL}/about`,
       lastModified: now,

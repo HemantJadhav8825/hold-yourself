@@ -91,6 +91,32 @@ export default function BelongPage() {
                                 By sharing anonymously, you release the weight of your unspoken words. By reading others, you realize you are part of a larger human experience. We carry each other.
                             </p>
                         </div>
+
+                        <div className="pt-8">
+                            <h2 className="text-2xl font-semibold mb-6">Explore how you feel</h2>
+                            <div className="flex flex-wrap gap-3">
+                                {[
+                                    'alone',
+                                    'empty',
+                                    'lost',
+                                    'broken',
+                                    'numb',
+                                    'anxious',
+                                    'worthless',
+                                    'disconnected',
+                                    'invisible',
+                                    'overwhelmed',
+                                ].map((emotion) => (
+                                    <Link
+                                        key={emotion}
+                                        href={`/i-feel-${emotion}`}
+                                        className="inline-flex items-center px-4 py-2 rounded-full border border-primary/10 bg-primary/5 text-sm font-medium hover:bg-primary/10 transition-colors"
+                                    >
+                                        I feel {emotion}
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
                     </section>
 
                     <div className="flex justify-center pt-8">

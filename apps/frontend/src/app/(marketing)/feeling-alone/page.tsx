@@ -37,14 +37,14 @@ export default function FeelingAlonePage() {
                         <div>
                             <h2 className="text-2xl font-semibold mb-4">You are not weak</h2>
                             <p className="text-lg text-muted-foreground">
-                                Admitting you feel alone takes courage. It is the first step towards connection. Strength isn't about never needing anyone; it's about being brave enough to reach out.
+                                Admitting you feel alone takes courage. It is the first step towards connection. Strength isn&apos;t about never needing anyone; it&apos;s about being brave enough to reach out.
                             </p>
                         </div>
 
                         <div>
                             <h2 className="text-2xl font-semibold mb-4">A safe space exists</h2>
                             <p className="text-lg text-muted-foreground">
-                                Webelong is built to be that safe harbor. A place where you can be yourself without fear of judgment. Here, you don't have to perform or pretend. You just have to be.
+                                Webelong is built to be that safe harbor. A place where you can be yourself without fear of judgment. Here, you don&apos;t have to perform or pretend. You just have to be.
                             </p>
                         </div>
 
