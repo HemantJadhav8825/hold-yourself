@@ -1,19 +1,19 @@
-'use client';
 
-import React from 'react';
-import { AuthGuard } from '@/components/auth/AuthGuard';
-import { DashShell } from '@/components/layout/DashShell';
+import type { Metadata } from 'next'
+import AppLayoutClient from './AppLayoutClient'
+
+export const metadata: Metadata = {
+    robots: {
+        index: false,
+        follow: false,
+        nocache: true,
+    },
+}
 
 export default function AppLayout({
-  children,
+    children,
 }: {
-  children: React.ReactNode;
+    children: React.ReactNode
 }) {
-  return (
-    <AuthGuard>
-      <DashShell>
-        {children}
-      </DashShell>
-    </AuthGuard>
-  );
+    return <AppLayoutClient>{children}</AppLayoutClient>
 }

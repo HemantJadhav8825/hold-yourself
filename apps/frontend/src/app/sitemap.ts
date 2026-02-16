@@ -1,13 +1,90 @@
-import { MetadataRoute } from "next";
-import { env } from "@/config/env";
+import type { MetadataRoute } from 'next'
+
+import { emotions } from '@/lib/emotions'
+
+const BASE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  'https://webelong.world'
 
 export default function sitemap(): MetadataRoute.Sitemap {
+
+  const now = new Date()
+
+  const emotionRoutes: MetadataRoute.Sitemap = emotions.map((e) => ({
+    url: `${BASE_URL}/i-feel-${e.emotion}`,
+    lastModified: new Date(e.lastReviewed),
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }))
+
   return [
+
     {
-      url: env.NEXT_PUBLIC_SITE_URL,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
+      url: BASE_URL,
+      lastModified: now,
+      changeFrequency: 'daily',
       priority: 1,
     },
-  ];
+    ...emotionRoutes,
+    {
+      url: `${BASE_URL}/emotions`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/about`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+
+    {
+      url: `${BASE_URL}/guidelines`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+
+    {
+      url: `${BASE_URL}/privacy`,
+      lastModified: now,
+      changeFrequency: 'yearly',
+      priority: 0.4,
+    },
+
+    {
+      url: `${BASE_URL}/sanctuary`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+
+    {
+      url: `${BASE_URL}/holding-space`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+
+    {
+      url: `${BASE_URL}/belong`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+
+    {
+      url: `${BASE_URL}/feeling-alone`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    {
+      url: `${BASE_URL}/emotion-sitemap.xml`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.5,
+    },
+  ]
 }
