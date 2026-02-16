@@ -63,7 +63,7 @@ export const ShareComposer = ({
 
     setErrorVibe(null);
     setIsSubmitting(true);
-    
+
     // 1. Generate temp ID
     const tempId = `temp-${Date.now()}`;
     const now = new Date().toISOString();
@@ -79,7 +79,7 @@ export const ShareComposer = ({
       // For optimistic update, we construct what we expect.
       content,
       // @ts-ignore - Assuming visibility is part of DTO or handled by backend
-      visibility, 
+      visibility,
       // @ts-ignore
       isAnonymous,
       // @ts-ignore
