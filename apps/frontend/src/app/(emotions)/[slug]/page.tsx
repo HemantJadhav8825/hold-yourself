@@ -3,23 +3,24 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Container } from '@/components/ui/Container'
 import { QuietFooter } from '@/components/home/QuietFooter'
-import { emotions, Emotion } from '@/lib/emotions'
+import { emotions } from '@/lib/emotions'
 
 interface Props {
-    params: Promise<{ emotion: string }>
+    params: Promise<{ slug: string }>
 }
 
 export async function generateStaticParams() {
-    return emotions.map((e) => ({
-        emotion: e.emotion,
+    return emotions.map((emotion) => ({
+        slug: `i-feel-${emotion.emotion}`,
     }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const { emotion } = await params
+    const { slug } = await params
+    const emotion = slug.replace("i-feel-", "")
     const emotionData = emotions.find(e => e.emotion === emotion)
 
-    if (!emotionData) {
+    if (!emotionData || !slug.startsWith("i-feel-")) {
         return {}
     }
 
@@ -30,9 +31,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title,
         description,
         alternates: {
-            canonical: `/i-feel-${emotion}`,
+            canonical: `/${slug}`,
             languages: {
-                "en": `/i-feel-${emotion}`,
+                "en": `/${slug}`,
             }
         },
         openGraph: {
@@ -48,21 +49,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 }
 
-export default async function EmotionPage({ params }: Props) {
-    const { emotion } = await params
+export default async function Page({ params }: Props) {
+    const { slug } = await params
+
+    if (!slug.startsWith("i-feel-")) {
+        notFound()
+    }
+
+    const emotion = slug.replace("i-feel-", "")
     const emotionData = emotions.find(e => e.emotion === emotion)
 
     if (!emotionData) {
         notFound()
     }
 
-    const emotionFormatted = emotion.charAt(0).toUpperCase() + emotion.slice(1)
-
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "WebPage",
         "name": `I feel ${emotion}`,
-        "url": `https://webelong.world/i-feel-${emotion}`,
+        "url": `https://webelong.world/${slug}`,
         "description": `If you feel ${emotion}, Webelong is a safe place to exist and express.`,
         "dateModified": emotionData.lastReviewed,
         "isPartOf": {
@@ -95,14 +100,12 @@ export default async function EmotionPage({ params }: Props) {
                         </header>
 
                         <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
-                            {/* SECTION A — Emotional validation */}
                             <section className="space-y-4">
                                 <p className="text-xl text-muted-foreground leading-relaxed">
                                     Feeling {emotion} can be a deeply isolating experience. It is a weight that often feels like it belongs only to you, creating a quiet distance between your inner world and the bustling life outside. In these moments, the world can feel far away, and the simple act of existing can feel like an immense effort. It is okay to be in this space. It is okay to name this feeling.
                                 </p>
                             </section>
 
-                            {/* SECTION B — Normalization */}
                             <section className="space-y-4">
                                 <h2 className="text-2xl font-semibold">You are not alone in this feeling.</h2>
                                 <p className="text-lg text-muted-foreground leading-relaxed">
@@ -110,7 +113,6 @@ export default async function EmotionPage({ params }: Props) {
                                 </p>
                             </section>
 
-                            {/* SECTION C — Silent presence */}
                             <section className="space-y-4">
                                 <h2 className="text-2xl font-semibold">A place without the need to perform.</h2>
                                 <p className="text-lg text-muted-foreground leading-relaxed">
@@ -118,7 +120,6 @@ export default async function EmotionPage({ params }: Props) {
                                 </p>
                             </section>
 
-                            {/* SECTION D — Introduce Webelong */}
                             <section className="p-8 rounded-3xl border border-primary/10 bg-primary/5 backdrop-blur-sm space-y-6">
                                 <h2 className="text-2xl font-semibold">Why Webelong exists.</h2>
                                 <p className="text-lg text-muted-foreground leading-relaxed text-left">
@@ -126,7 +127,6 @@ export default async function EmotionPage({ params }: Props) {
                                 </p>
                             </section>
 
-                            {/* SECTION E — Invitation */}
                             <section className="flex flex-col items-center space-y-6 pt-8">
                                 <p className="text-lg text-muted-foreground italic">
                                     We carry each other through the quiet.
