@@ -54,6 +54,11 @@ export const metadata: Metadata = {
       'A belonging-first social platform for emotional safety and human connection.',
     images: ['/og'],
   },
+  icons: {
+    icon: '/icon',
+    apple: '/apple-icon',
+  },
+  manifest: '/site.webmanifest',
   robots: {
     index: true,
     follow: true,
