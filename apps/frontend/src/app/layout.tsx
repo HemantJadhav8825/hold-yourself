@@ -37,6 +37,13 @@ export const metadata: Metadata = {
       'A belonging-first social platform for emotional safety and real human connection.',
     url: BASE_URL,
     siteName: 'Webelong',
+    images: [
+      {
+        url: '/og',
+        width: 1200,
+        height: 630,
+      },
+    ],
     locale: 'en_US',
     type: 'website',
   },
@@ -45,6 +52,7 @@ export const metadata: Metadata = {
     title: 'Webelong — You belong. Even here.',
     description:
       'A belonging-first social platform for emotional safety and human connection.',
+    images: ['/og'],
   },
   robots: {
     index: true,
