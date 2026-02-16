@@ -13,13 +13,13 @@ const lora = Lora({ subsets: ["latin"], variable: "--font-heading" });
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://webelong.world'
 
 export const metadata: Metadata = {
-  metadataBase: new URL(BASE_URL),
+  metadataBase: new URL('https://webelong.world'),
   title: {
-    default: 'Webelong — You belong. Even here.',
+    default: 'Webelong',
     template: '%s — Webelong',
   },
   description:
-    'Webelong is a belonging-first social platform designed for emotional safety, honest expression, and human connection.',
+    'You belong, even here!',
   keywords: [
     'mental health',
     'belonging',
@@ -32,14 +32,14 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'Webelong — You belong. Even here.',
+    title: 'Webelong',
     description:
-      'A belonging-first social platform for emotional safety and real human connection.',
+      'You belong, even here!',
     url: BASE_URL,
     siteName: 'Webelong',
     images: [
       {
-        url: '/og',
+        url: '/og.png',
         width: 1200,
         height: 630,
       },
@@ -49,10 +49,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Webelong — You belong. Even here.',
+    title: 'Webelong',
     description:
-      'A belonging-first social platform for emotional safety and human connection.',
-    images: ['/og'],
+      'You belong, even here!',
+    images: ['/og.png'],
   },
   icons: {
     icon: '/icon',
