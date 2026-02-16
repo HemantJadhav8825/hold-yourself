@@ -38,5 +38,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.4,
     },
 
+    {
+      url: `${BASE_URL}/sanctuary`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+
+    {
+      url: `${BASE_URL}/holding-space`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+
   ]
 }

@@ -106,6 +106,19 @@ export default function RootLayout({
             </Script>
           </>
         )}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "Webelong",
+              "url": "https://webelong.world",
+              "logo": "https://webelong.world/icon",
+              "sameAs": []
+            })
+          }}
+        />
       </body>
     </html>
   );

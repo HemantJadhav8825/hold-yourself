@@ -13,12 +13,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
 
-        allow: [
-          '/',
-          '/about',
-          '/guidelines',
-          '/privacy',
-        ],
+        allow: '/',
 
         disallow: [
 
@@ -28,8 +23,6 @@ export default function robots(): MetadataRoute.Robots {
           '/login',
           '/signup',
 
-          '/sanctuary',
-          '/holding-space',
           '/circles',
 
           '/chat',
