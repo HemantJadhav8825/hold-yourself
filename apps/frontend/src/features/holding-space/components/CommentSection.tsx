@@ -59,11 +59,9 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ shareId }) => {
         setContent('');
 
         try {
-            // API Call - Update createComment to accept anonymous flag if needed
-            // Currently createComment.ts only takes (shareId, content)
+            // API Call
             // We need to update it to take anonymous flag.
-            // Assuming backend controller supports it (it does).
-            const realComment = await createComment(shareId, optimisticComment.content);
+            const realComment = await createComment(shareId, optimisticComment.content, anonymous);
 
             setComments(prev => prev.map(c => c.id === tempId ? realComment : c));
         } catch (error) {
@@ -122,6 +120,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ shareId }) => {
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                         placeholder="Write a gentle reply..."
+                        maxLength={500}
                         className="min-h-[40px] h-[40px] py-2 resize-none text-sm bg-background border-transparent focus:border-border transition-all"
                     />
                     <div className="flex items-center justify-between mt-2">
