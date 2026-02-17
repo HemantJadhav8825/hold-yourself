@@ -1,16 +1,19 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ShareDTO } from '../types';
+import Link from 'next/link';
+import { ShareDTO, SupportType } from '../types';
 import { formatDistanceToNow } from 'date-fns';
 import { SensitivityBlurWrapper } from './SensitivityBlurWrapper';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { AnonymousAvatar } from '@/components/ui/anonymous-avatar';
 import { ProfileAvatar } from '@/components/ui/ProfileAvatar';
 import { useAuth } from '@/context/AuthContext';
-import { MoreVertical, Edit2, Trash2, X, Check, Loader2, AlertTriangle } from 'lucide-react';
+import { MoreVertical, Edit2, Trash2, X, Check, Loader2, AlertTriangle, Heart, MessageCircle, Share } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Textarea } from '@/components/ui/Textarea';
+import { toggleSupport } from '../api/toggleSupport';
+import { CommentSection } from './CommentSection';
 
 /**
  * HOLDING SPACE RULE:
@@ -33,6 +36,9 @@ export const ShareCard: React.FC<ShareCardProps> = ({ share, onUpdate, onDelete 
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [hasResonated, setHasResonated] = useState(false); // In a real app, this should be prop-driven from `share.userSupport`
+  const [showComments, setShowComments] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Author check
@@ -80,6 +86,41 @@ export const ShareCard: React.FC<ShareCardProps> = ({ share, onUpdate, onDelete 
       console.error('Failed to delete share', error);
       setIsDeleting(false);
       setShowDeleteConfirm(false);
+    }
+  };
+
+  const handleResonate = async () => {
+    // Optimistic toggle
+    setHasResonated(!hasResonated);
+    try {
+      await toggleSupport(share.id, SupportType.HEARD);
+    } catch (error) {
+      setHasResonated(!hasResonated); // Rollback
+    }
+  };
+
+  const handleShare = async () => {
+    const url = `${window.location.origin}/holding-space/post/${share.id}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Shared from Holding Space',
+          text: 'Someone shared a thought in the holding space.',
+          url,
+        });
+        return;
+      } catch (err) {
+        // Fallback to clipboard if share text failed/cancelled
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy', err);
     }
   };
 
@@ -208,9 +249,12 @@ export const ShareCard: React.FC<ShareCardProps> = ({ share, onUpdate, onDelete 
             <span className="text-sm font-medium leading-none">
               {displayName}
             </span>
-            <span className="text-xs text-muted-foreground">
+            <Link
+              href={`/holding-space/post/${share.id}`}
+              className="text-xs text-muted-foreground hover:text-foreground hover:underline transition-colors"
+            >
               {formatDistanceToNow(new Date(share.createdAt), { addSuffix: true })}
-            </span>
+            </Link>
           </div>
         </div>
 
@@ -221,7 +265,45 @@ export const ShareCard: React.FC<ShareCardProps> = ({ share, onUpdate, onDelete 
 
       <CardContent className="p-4 pt-2">
         {renderContent()}
+
+        {/* Interaction Bar */}
+        <div className="flex items-center gap-4 mt-4 pt-4 border-t border-border/40">
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`text-xs gap-2 ${hasResonated ? 'text-rose-500 hover:text-rose-600' : 'text-muted-foreground hover:text-foreground'}`}
+            onClick={handleResonate}
+          >
+            <Heart size={16} className={hasResonated ? "fill-current" : ""} />
+            {hasResonated ? 'Resonating' : 'Resonate'}
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-xs gap-2 text-muted-foreground hover:text-foreground"
+            onClick={() => setShowComments(!showComments)}
+          >
+            <MessageCircle size={16} />
+            Reply
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-xs gap-2 text-muted-foreground hover:text-foreground"
+            onClick={handleShare}
+          >
+            {isCopied ? <Check size={16} /> : <Share size={16} />}
+            {isCopied ? 'Copied' : 'Share'}
+          </Button>
+        </div>
       </CardContent>
+
+      {/* Comments */}
+      {showComments && (
+        <CommentSection shareId={share.id} />
+      )}
     </Card>
   );
 };

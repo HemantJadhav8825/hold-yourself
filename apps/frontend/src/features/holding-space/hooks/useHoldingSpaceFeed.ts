@@ -3,7 +3,7 @@ import { ShareDTO } from '../types';
 import { getShares } from '../api/getShares';
 import { useAuth } from '@/context/AuthContext';
 
-export const useHoldingSpaceFeed = () => {
+export const useHoldingSpaceFeed = (tag?: string) => {
   const { user } = useAuth();
   const [shares, setShares] = useState<ShareDTO[]>([]);
   const [loading, setLoading] = useState(true); // Initial load
@@ -13,8 +13,8 @@ export const useHoldingSpaceFeed = () => {
 
   const fetchShares = useCallback(async (currentCursor?: string) => {
     try {
-      const newShares = await getShares(currentCursor);
-      
+      const newShares = await getShares(currentCursor, tag);
+
       if (newShares.length === 0) {
         setHasMore(false);
       } else {
@@ -31,7 +31,7 @@ export const useHoldingSpaceFeed = () => {
           // Sort only on fetch
           return uniqueShares.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         });
-        
+
         // Assuming the backend supports cursor pagination via the last item's ID or createdAt.
         // Since I don't have the full backend response structure (metadata), I'll assume standard cursor logic
         // where I use the last item's ID as the next cursor.
