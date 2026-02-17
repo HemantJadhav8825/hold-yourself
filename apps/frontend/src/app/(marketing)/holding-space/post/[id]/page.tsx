@@ -4,6 +4,10 @@ import { FeedCard } from '@/components/dashboard/FeedCard';
 import { constructMetadata } from '@/components/seo/metadata';
 import { env } from '@/config/env';
 import { notFound } from 'next/navigation';
+import { RelatedShares } from '@/features/holding-space/components/RelatedShares';
+
+import { ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 interface PostPageProps {
     params: Promise<{ id: string }>;
@@ -52,6 +56,13 @@ export default async function PostPermalinkPage({ params }: PostPageProps) {
 
     return (
         <div className="max-w-2xl mx-auto py-10 px-4">
+            <Link
+                href="/holding-space"
+                className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors group"
+            >
+                <ArrowLeft size={16} className="mr-2 group-hover:-translate-x-1 transition-transform" />
+                Back to Holding Space
+            </Link>
             <FeedCard
                 id={post.id}
                 username="Someone in Holding Space"
@@ -60,6 +71,12 @@ export default async function PostPermalinkPage({ params }: PostPageProps) {
                 sensitivityTags={post.sensitivityTags}
                 hideIdentity={true}
             />
+
+            <div className="mt-12">
+                {post.sensitivityTags && post.sensitivityTags.length > 0 && (
+                    <RelatedShares tag={post.sensitivityTags[0]} currentShareId={post.id} />
+                )}
+            </div>
         </div>
     );
 }

@@ -132,13 +132,21 @@ export class ShareController {
    */
   async getShares(req: AuthRequest, res: Response) {
     try {
-      const { sort, order, cursor, limit = 20 } = req.query;
+      const { sort, order, cursor, limit = 20, tag } = req.query;
       const viewerId = req.user?.sub;
 
       // Enforce emotional safety guardrails
       assertChronologicalOnly({ sort: sort as string, order: order as string });
 
       const query: any = {};
+
+      // Tag filtering (New for V2)
+      if (tag && typeof tag === 'string') {
+        const cleanTag = tag.toLowerCase().trim();
+        if (cleanTag) {
+          query.sensitivityTags = cleanTag;
+        }
+      }
 
       if (cursor) {
         query.createdAt = { $lt: new Date(cursor as string) };

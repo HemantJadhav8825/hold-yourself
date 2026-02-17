@@ -210,4 +210,27 @@ router.use('/v1/shares', requireAuth, async (req, res) => {
   }
 });
 
+// Comments Proxy (Interaction Layer)
+router.use('/v1/shares/:id/comments', requireAuth, async (req, res) => {
+  try {
+    const url = `${HOLDING_SPACE_SERVICE_URL}${req.originalUrl}`;
+    const response = await axios({
+      method: req.method,
+      url: url,
+      data: req.method !== 'GET' ? req.body : undefined,
+      params: req.query,
+      headers: {
+        Authorization: req.headers.authorization,
+        ...(req.headers['content-type'] ? { 'Content-Type': req.headers['content-type'] } : {})
+      }
+    });
+
+    res.status(response.status).json(response.data);
+  } catch (error: any) {
+    const status = error.response?.status || 500;
+    const data = error.response?.data || { error: 'Holding Space Service unavailable' };
+    res.status(status).json(data);
+  }
+});
+
 export default router;
