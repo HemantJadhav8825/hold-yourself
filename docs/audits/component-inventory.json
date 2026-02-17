@@ -1,0 +1,73 @@
+{
+    "holding_space": [
+        {
+            "name": "CreatePost",
+            "path": "src/components/dashboard/CreatePost.tsx",
+            "importance": "critical"
+        },
+        {
+            "name": "HomeFeed",
+            "path": "src/components/dashboard/HomeFeed.tsx",
+            "importance": "critical"
+        },
+        {
+            "name": "Feed",
+            "path": "src/components/dashboard/Feed.tsx",
+            "importance": "critical"
+        },
+        {
+            "name": "FeedCard",
+            "path": "src/components/dashboard/FeedCard.tsx",
+            "importance": "important"
+        },
+        {
+            "name": "CommentThread",
+            "path": "src/components/dashboard/CommentThread.tsx",
+            "importance": "important"
+        },
+        {
+            "name": "CommentInput",
+            "path": "src/components/dashboard/CommentInput.tsx",
+            "importance": "important"
+        }
+    ],
+    "sanctuary": [
+        {
+            "name": "create-vent",
+            "path": "src/components/sanctuary/create-vent.tsx",
+            "importance": "critical"
+        },
+        {
+            "name": "vent-card",
+            "path": "src/components/sanctuary/vent-card.tsx",
+            "importance": "critical"
+        },
+        {
+            "name": "SanctuaryCheckIn",
+            "path": "src/components/dashboard/SanctuaryCheckIn.tsx",
+            "importance": "important"
+        },
+        {
+            "name": "feed-affordance",
+            "path": "src/components/sanctuary/feed-affordance.tsx",
+            "importance": "supporting"
+        }
+    ],
+    "supporting_features": [
+        {
+            "name": "ResonanceTray",
+            "path": "src/components/dashboard/ResonanceTray.tsx",
+            "importance": "important"
+        },
+        {
+            "name": "StoriesRow",
+            "path": "src/components/dashboard/StoriesRow.tsx",
+            "importance": "supporting"
+        },
+        {
+            "name": "MoodCheckIn",
+            "path": "src/components/dashboard/MoodCheckIn.tsx",
+            "importance": "supporting"
+        }
+    ]
+}

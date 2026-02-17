@@ -35,7 +35,7 @@ export const Feed: React.FC = () => {
   return (
     <div className="pb-10">
       <StoriesRow />
-      
+
       <div className="px-4 lg:px-0">
         <SanctuaryCheckIn />
       </div>
@@ -43,8 +43,9 @@ export const Feed: React.FC = () => {
       <div className="flex flex-col">
         {!isEmpty ? (
           users.map((user) => (
-            <FeedCard 
+            <FeedCard
               key={user.id}
+              id={user.id}
               username={user.displayName || user.username || 'User'}
               avatar={user.avatar}
               caption="Sharing a moment of quiet reflection today. 🌿"

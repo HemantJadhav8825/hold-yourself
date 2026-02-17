@@ -1,0 +1,15 @@
+{
+    "core": {
+        "nextjs": "16.0.0-canary.0",
+        "react": "19.0.0",
+        "node": "v18+ (verified via README)",
+        "typescript": "5.0.0 - latest"
+    },
+    "database": {
+        "mongodb_driver": "7.0.0",
+        "mongoose": "9.1.5"
+    },
+    "realtime": {
+        "socket.io-client": "4.8.3"
+    }
+}

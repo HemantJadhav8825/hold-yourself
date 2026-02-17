@@ -6,7 +6,7 @@ const BASE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ||
   'https://webelong.world'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const now = new Date()
 
@@ -17,8 +17,27 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }))
 
-  return [
+  let shareRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/v1/shares?limit=100`, {
+      cache: 'no-store'
+    });
+    if (res.ok) {
+      const shares = await res.json();
+      shareRoutes = shares
+        .filter((s: any) => s.visibility === 'public')
+        .map((s: any) => ({
+          url: `${BASE_URL}/holding-space/post/${s.id}`,
+          lastModified: new Date(s.createdAt),
+          changeFrequency: 'weekly',
+          priority: 0.6,
+        }));
+    }
+  } catch (error) {
+    console.error('Sitemap share fetch error:', error);
+  }
 
+  return [
     {
       url: BASE_URL,
       lastModified: now,
@@ -26,6 +45,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     ...emotionRoutes,
+    ...shareRoutes,
     {
       url: `${BASE_URL}/emotions`,
       lastModified: now,

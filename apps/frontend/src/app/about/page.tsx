@@ -24,7 +24,7 @@ export default function AboutPage() {
             <div className="space-y-16">
                 <section>
                     <h2 className="text-2xl font-semibold mb-4 text-foreground/90">The Problem</h2>
-                    <div className="prose prose-lg dark:prose-invert">
+                    <div className="prose prose-lg">
                         <p>
                             Somewhere along the way, the internet became a stage. Every post became a performance. Every feeling became content. The metric for human connection became &quot;engagement,&quot; and in the process, we lost the safety to just be.
                         </p>
@@ -36,7 +36,7 @@ export default function AboutPage() {
 
                 <section>
                     <h2 className="text-2xl font-semibold mb-4 text-foreground/90">Our Philosophy</h2>
-                    <div className="prose prose-lg dark:prose-invert">
+                    <div className="prose prose-lg">
                         <p>
                             <strong>Belonging before performing.</strong><br />
                             We don&apos;t have public like counts. We don&apos;t have algorithmic feeds designed to addict you. We measure success by how safe you feel, not how long you stay.
@@ -54,7 +54,7 @@ export default function AboutPage() {
 
                 <section className="bg-muted/30 p-8 rounded-xl border border-border/50">
                     <h2 className="text-2xl font-semibold mb-4">Our Promise</h2>
-                    <div className="prose prose-lg dark:prose-invert">
+                    <div className="prose prose-lg">
                         <p>
                             We will protect your data. We will protect your peace. We will never sell your emotional life to the highest bidder.
                         </p>

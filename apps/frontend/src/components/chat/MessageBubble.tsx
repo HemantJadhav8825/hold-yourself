@@ -29,7 +29,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   onRetry,
 }) => {
   return (
-    <div 
+    <div
       className={cn(
         'flex w-full group relative transition-all duration-300',
         isSelf ? 'justify-end' : 'justify-start',
@@ -37,24 +37,24 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         status === 'sending' && 'opacity-70'
       )}
     >
-      <div 
+      <div
         className={cn(
           'max-w-[75%] lg:max-w-[65%] w-fit px-5 py-3 text-[15px] leading-relaxed transition-all duration-200 relative min-w-0 shadow-sm',
           // Adaptive Radius Logic
-          isSelf 
+          isSelf
             ? cn(
-                'bg-primary text-primary-foreground',
-                'rounded-2xl rounded-tr-sm',
-                !isFirstInGroup && 'rounded-tr-2xl',
-                !isLastInGroup && 'rounded-br-sm',
-                status === 'failed' && 'bg-destructive text-destructive-foreground'
-              )
+              'bg-primary text-primary-foreground',
+              'rounded-2xl rounded-tr-sm',
+              !isFirstInGroup && 'rounded-tr-2xl',
+              !isLastInGroup && 'rounded-br-sm',
+              status === 'failed' && 'bg-destructive text-destructive-foreground'
+            )
             : cn(
-                'bg-muted/40 backdrop-blur-sm text-foreground border border-border/40',
-                'rounded-2xl rounded-tl-sm shadow-sm',
-                !isFirstInGroup && 'rounded-tl-2xl',
-                !isLastInGroup && 'rounded-bl-sm'
-              )
+              'bg-muted/40 backdrop-blur-sm text-foreground border border-border/40',
+              'rounded-2xl rounded-tl-sm shadow-sm',
+              !isFirstInGroup && 'rounded-tl-2xl',
+              !isLastInGroup && 'rounded-bl-sm'
+            )
         )}
       >
         <Text size="sm" className={cn(
@@ -63,20 +63,20 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         )}>
           {content}
         </Text>
-        
+
         {status === 'failed' && isSelf && (
-          <div className="mt-2 flex items-center gap-2 pt-1 border-t border-white/20">
+          <div className="mt-2 flex items-center gap-2 pt-1 border-t border-primary/20">
             <AlertCircle className="w-3 h-3" />
             <Text size="xs" className="text-[10px] flex-1">
               {error || 'Failed to send'}
             </Text>
             {onRetry && (
-              <button 
+              <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onRetry();
                 }}
-                className="p-1 hover:bg-white/10 rounded-full transition-colors flex items-center gap-1"
+                className="p-1 hover:bg-primary/10 rounded-full transition-colors flex items-center gap-1"
               >
                 <RotateCcw className="w-3 h-3" />
                 <span className="text-[10px] font-bold uppercase tracking-tighter">Retry</span>
@@ -96,10 +96,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             )}
           </div>
         )}
-        
+
         {status === 'sending' && isSelf && (
           <div className="absolute -left-6 top-1/2 -translate-y-1/2">
-             <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+            <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
           </div>
         )}
 

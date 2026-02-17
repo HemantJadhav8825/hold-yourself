@@ -208,7 +208,7 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({
 
             {/* Friction Warning */}
             {frictionWarning && (
-              <div className="mx-4 mb-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-md flex items-center gap-2 text-amber-600 dark:text-amber-400 text-sm animate-in fade-in slide-in-from-bottom-2">
+              <div className="mx-4 mb-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-md flex items-center gap-2 text-amber-600 text-sm animate-in fade-in slide-in-from-bottom-2">
                 <AlertCircle size={16} />
                 <span>Let&apos;s pause before responding again.</span>
                 <button

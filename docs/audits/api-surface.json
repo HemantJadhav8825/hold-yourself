@@ -1,0 +1,14 @@
+{
+    "holding_space": {
+        "create_post": "POST /v1/shares",
+        "get_posts": "GET /v1/shares",
+        "create_comment": "POST /v1/shares/:id/comments",
+        "get_comments": "GET /v1/shares/:id/comments",
+        "toggle_support": "POST /v1/shares/:id/support"
+    },
+    "sanctuary": {
+        "create_vent": "POST /v1/vents",
+        "get_vents": "GET /v1/vents",
+        "react_to_vent": "POST /v1/vents/:id/react"
+    }
+}

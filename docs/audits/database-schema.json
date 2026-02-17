@@ -1,0 +1,107 @@
+{
+    "holding_space_post": {
+        "model": "Share",
+        "file": "services/holding-space-service/src/models/Share.ts",
+        "fields": {
+            "authorId": {
+                "type": "String",
+                "required": true
+            },
+            "content": {
+                "type": "String",
+                "required": true,
+                "maxlength": 2000
+            },
+            "visibility": {
+                "type": "String",
+                "enum": [
+                    "public",
+                    "followers"
+                ],
+                "default": "public"
+            },
+            "anonymous": {
+                "type": "Boolean",
+                "default": false
+            },
+            "commentsEnabled": {
+                "type": "Boolean",
+                "default": true
+            },
+            "sensitivityTags": {
+                "type": "[String]",
+                "default": []
+            },
+            "isShadowLimited": {
+                "type": "Boolean",
+                "default": false
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            }
+        },
+        "constraints": "Emotional safety enforced: No engagement metrics (likes, views, counts) allowed."
+    },
+    "sanctuary_vent": {
+        "model": "Vent",
+        "file": "services/chat-service/src/models/vent.model.ts",
+        "fields": {
+            "author": {
+                "type": "Object",
+                "fields": {
+                    "id": {
+                        "type": "String",
+                        "required": true
+                    },
+                    "pseudonym": {
+                        "type": "String",
+                        "required": true
+                    },
+                    "color": {
+                        "type": "String",
+                        "required": true
+                    }
+                }
+            },
+            "content": {
+                "type": "String",
+                "required": true,
+                "maxlength": 280
+            },
+            "mood": {
+                "type": "String",
+                "required": false
+            },
+            "expiresAt": {
+                "type": "Date",
+                "required": true
+            },
+            "reactions": {
+                "type": "Array",
+                "item": {
+                    "userId": {
+                        "type": "String",
+                        "required": true
+                    },
+                    "type": {
+                        "type": "String",
+                        "enum": [
+                            "SUPPORT",
+                            "HUG",
+                            "SAME",
+                            "LISTEN"
+                        ],
+                        "required": true
+                    }
+                }
+            },
+            "createdAt": {
+                "type": "Date"
+            }
+        },
+        "ttl": "Documents expire and auto-delete based on expiresAt index."
+    }
+}

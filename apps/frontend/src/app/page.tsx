@@ -5,7 +5,7 @@ import { ArrivalHeader } from "@/components/home/ArrivalHeader"
 import { SanctuaryEntryCard } from "@/components/home/SanctuaryEntryCard"
 import { QuietFooter } from "@/components/home/QuietFooter"
 import { Container } from "@/components/ui/Container"
-import { ThemeToggle } from "@/components/theme-toggle"
+
 import { HomeHeaderActions } from "@/components/home/HomeHeaderActions"
 import { brand } from "@/config/brand"
 import { useAuth } from "@/context/AuthContext"
@@ -43,7 +43,6 @@ export default function Home() {
             {brand.PRODUCT_NAME}
           </div>
           <div className="flex items-center gap-4">
-            <ThemeToggle />
             <HomeHeaderActions />
           </div>
         </Container>
