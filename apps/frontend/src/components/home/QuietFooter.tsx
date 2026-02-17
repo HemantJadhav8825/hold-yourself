@@ -9,8 +9,11 @@ export function QuietFooter({ className }: { className?: string }) {
         <Link href="/belong" className="hover:text-foreground transition-colors">
           Belonging
         </Link>
-        <Link href="/feeling-alone" className="hover:text-foreground transition-colors">
+        <Link href="/i-feel-alone" className="hover:text-foreground transition-colors">
           Feeling Alone?
+        </Link>
+        <Link href="/emotions" className="hover:text-foreground transition-colors">
+          Explore Feelings
         </Link>
       </div>
       <blockquote className="font-serif italic text-muted-foreground text-sm">

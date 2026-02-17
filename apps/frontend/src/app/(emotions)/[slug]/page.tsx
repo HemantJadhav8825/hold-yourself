@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { Container } from '@/components/ui/Container'
 import { QuietFooter } from '@/components/home/QuietFooter'
 import { emotions } from '@/lib/emotions'
+import { EmotionFeed } from '@/features/holding-space/components/EmotionFeed'
 
 interface Props {
     params: Promise<{ slug: string }>
@@ -127,16 +128,24 @@ export default async function Page({ params }: Props) {
                                 </p>
                             </section>
 
-                            <section className="flex flex-col items-center space-y-6 pt-8">
-                                <p className="text-lg text-muted-foreground italic">
+                            <section className="flex flex-col items-center space-y-6 pt-8 w-full max-w-xl mx-auto">
+                                <p className="text-lg text-muted-foreground italic mb-8">
                                     We carry each other through the quiet.
                                 </p>
-                                <Link
-                                    href="/"
-                                    className="inline-flex h-14 items-center justify-center rounded-full bg-primary px-12 text-base font-medium text-primary-foreground shadow-lg transition-all hover:scale-105 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:scale-95"
-                                >
-                                    Enter Webelong
-                                </Link>
+
+                                <div className="w-full text-left">
+                                    <h3 className="text-xl font-semibold mb-6">Voices of {emotion}</h3>
+                                    <EmotionFeed tag={emotion} />
+                                </div>
+
+                                <div className="pt-8">
+                                    <Link
+                                        href="/"
+                                        className="inline-flex h-12 items-center justify-center rounded-full bg-primary px-8 text-sm font-medium text-primary-foreground shadow-lg transition-all hover:scale-105 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:scale-95"
+                                    >
+                                        Share your own story
+                                    </Link>
+                                </div>
                             </section>
 
                             <footer className="pt-12 text-xs text-muted-foreground/50">

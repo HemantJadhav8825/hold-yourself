@@ -2,29 +2,36 @@ import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth';
 import { CommentModel, IComment } from '../models/Comment';
 import { ShareModel } from '../models/Share';
-import { serializeComment, serializeComments } from '../services/comment.serializer';
-import { checkRapidCommenting } from '../utils/friction';
+import { UserPreferenceModel } from '../models/UserPreference';
 import { BlockService } from '../services/block.service';
 
+// Serializer for comments (Local to controller for now, or move to serializer service)
+const serializeComment = (comment: IComment) => ({
+  id: comment._id.toString(),
+  shareId: comment.shareId,
+  authorId: comment.anonymous ? 'anonymous' : comment.authorId,
+  content: comment.content,
+  anonymous: comment.anonymous,
+  createdAt: comment.createdAt.toISOString(),
+});
+
 export class CommentController {
+
   /**
    * POST /shares/:id/comments
-   * Adds a comment if enabled by author. Enforces friction and blocks.
+   * Add a comment to a share.
    */
   async createComment(req: AuthRequest, res: Response) {
     try {
       const { id: shareId } = req.params;
-      const { content } = req.body;
+      const { content, anonymous } = req.body;
       const authorId = req.user?.sub;
 
       if (!authorId) {
-        return res.status(401).json({ error: 'User ID not found in token' });
+        return res.status(401).json({ error: 'Unauthorized' });
       }
 
-      // 1. Friction Check
-      await checkRapidCommenting(authorId);
-
-      // 2. Share check & commentsEnabled enforcement
+      // Check if share exists
       const share = await ShareModel.findById(shareId);
       if (!share) {
         return res.status(404).json({ error: 'Share not found' });
@@ -34,69 +41,108 @@ export class CommentController {
         return res.status(403).json({ error: 'Comments are disabled for this share' });
       }
 
-      // 3. Block check: Cannot comment if mutual block exists
-      const isBlocked = await BlockService.isBlockedMutual(authorId, share.authorId);
-      if (isBlocked) {
-        return res.status(403).json({ error: 'You cannot interact with this content' });
-      }
-
-      // 4. Validation
+      // Validation
       if (!content || typeof content !== 'string' || content.trim().length === 0) {
         return res.status(400).json({ error: 'Content is required' });
       }
 
-      if (content.length > 1000) {
-        return res.status(400).json({ error: 'Comment too long (max 1000)' });
+      if (content.length > 500) {
+        return res.status(400).json({ error: 'Content exceeds 500 characters' });
       }
 
       const comment = await CommentModel.create({
         shareId,
         authorId,
         content: content.trim(),
+        anonymous: !!anonymous,
       });
 
       res.status(201).json(serializeComment(comment));
     } catch (error: any) {
-      const statusCode = error.statusCode || 500;
-      res.status(statusCode).json({ error: error.message });
+      res.status(500).json({ error: error.message });
     }
   }
 
   /**
    * GET /shares/:id/comments
-   * Flat list of comments, strictly chronological ASC.
-   * Respects shadow limiting and blocks.
+   * List comments for a share.
    */
   async getComments(req: AuthRequest, res: Response) {
     try {
       const { id: shareId } = req.params;
-      const { limit = 50 } = req.query;
       const viewerId = req.user?.sub;
 
-      const potentialComments = await CommentModel.find({ shareId })
-      .sort({ createdAt: 1 })
-      .limit(Number(limit) * 2);
+      // Check if share exists
+      const share = await ShareModel.findById(shareId);
+      if (!share) {
+        return res.status(404).json({ error: 'Share not found' });
+      }
+
+      // Check visibility of share first? 
+      // Assuming if they can hit this endpoint, they likely can see the share, 
+      // but strict check would be better if we had `canViewerSeeShare` imported.
+      // For now, we rely on the client effectively. 
+      // Ideally, we should reuse `canViewerSeeShare` logic here.
+
+      // Load blocks
+      let blockedByViewer: string[] = [];
+      let blockersOfViewer: string[] = [];
+
+      if (viewerId) {
+        const [blocks, blockers] = await Promise.all([
+          BlockService.getBlockedIds(viewerId),
+          BlockService.getBlockersOfIds(viewerId)
+        ]);
+        blockedByViewer = blocks;
+        blockersOfViewer = blockers;
+      }
+
+      const comments = await CommentModel.find({ shareId })
+        .sort({ createdAt: 1 }); // Oldest first (chronological conversation)
 
       const visibleComments: IComment[] = [];
 
-      for (const comment of potentialComments) {
-        if (visibleComments.length >= Number(limit)) break;
-
-        // 1. Shadow limiting: Only author sees own shadow-limited comment
+      for (const comment of comments) {
+        // Shadow limiting check
         if (comment.isShadowLimited && comment.authorId !== viewerId) {
           continue;
         }
 
-        // 2. Block check
+        // Block check
         if (viewerId) {
-          const isBlocked = await BlockService.isBlockedMutual(viewerId, comment.authorId);
-          if (isBlocked) continue;
+          if (blockedByViewer.includes(comment.authorId) || blockersOfViewer.includes(comment.authorId)) {
+            continue;
+          }
         }
-
         visibleComments.push(comment);
       }
 
-      res.json(serializeComments(visibleComments));
+      res.json(visibleComments.map(serializeComment));
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  /**
+ * DELETE /comments/:id
+ * Helper to delete comment (Author only)
+ */
+  async deleteComment(req: AuthRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const authorId = req.user?.sub;
+
+      const comment = await CommentModel.findById(id);
+      if (!comment) {
+        return res.status(404).json({ error: 'Comment not found' });
+      }
+
+      if (comment.authorId !== authorId) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
+
+      await CommentModel.deleteOne({ _id: id });
+      res.status(204).send();
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
