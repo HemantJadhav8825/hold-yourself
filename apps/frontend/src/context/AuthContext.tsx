@@ -6,6 +6,7 @@ import { userService } from '../api/user.service';
 import { socketService } from '../api/socket.service';
 import { subscribeToUnauthorized } from '../api/client';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { getSafeRedirect } from '@/utils/security';
 
 interface AuthContextType {
   user: User | null;
@@ -91,7 +92,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Fetch full profile
       await fetchProfile();
 
-      const redirect = searchParams?.get('redirect') || '/';
+      const rawRedirect = searchParams?.get('redirect');
+      const redirect = getSafeRedirect(rawRedirect);
       router.push(redirect);
     } catch (err: any) {
       setError(err.response?.data?.error || 'Login failed');
@@ -113,7 +115,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Fetch full profile
       await fetchProfile();
 
-      const redirect = searchParams?.get('redirect') || '/';
+      const rawRedirect = searchParams?.get('redirect');
+      const redirect = getSafeRedirect(rawRedirect);
       router.push(redirect);
     } catch (err: any) {
       setError(err.response?.data?.error || 'Google login failed');
@@ -141,7 +144,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     socketService.disconnect();
     await authService.logout();
     setUser(null);
-    router.push('/login');
+    router.push('/');
   }, [router]);
 
   // Global logout listener for 401s that fail refresh

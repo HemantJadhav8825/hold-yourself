@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { getSafeRedirect } from '@/utils/security';
 
 /**
  * Hook to enforce authentication for specific actions.
@@ -22,7 +23,8 @@ export function useRequireAuth() {
 
     const requireAuth = useCallback((customRedirectPath?: string) => {
         if (!user) {
-            const target = customRedirectPath || pathname;
+            const rawTarget = customRedirectPath || pathname;
+            const target = getSafeRedirect(rawTarget);
             const redirectUrl = `/login?redirect=${encodeURIComponent(target)}`;
             router.push(redirectUrl);
             return false;

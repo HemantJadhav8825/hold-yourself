@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { getSafeRedirect } from '@/utils/security';
 
 interface GuestGuardProps {
   children: React.ReactNode;
@@ -15,7 +16,8 @@ export const GuestGuard: React.FC<GuestGuardProps> = ({ children }) => {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      const redirect = searchParams?.get('redirect') || '/';
+      const rawRedirect = searchParams?.get('redirect');
+      const redirect = getSafeRedirect(rawRedirect);
       router.push(redirect);
     }
   }, [isLoading, isAuthenticated, router, searchParams]);
