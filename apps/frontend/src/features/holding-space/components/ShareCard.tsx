@@ -95,7 +95,6 @@ export const ShareCard: React.FC<ShareCardProps> = ({ share, onUpdate, onDelete 
 
   const handleResonate = async () => {
     if (!requireAuth()) return;
-
     // Optimistic toggle
     setHasResonated(!hasResonated);
     try {
@@ -109,7 +108,6 @@ export const ShareCard: React.FC<ShareCardProps> = ({ share, onUpdate, onDelete 
     if (!requireAuth()) return;
     setShowComments(!showComments);
   };
-
   const handleShare = async () => {
     const url = `${window.location.origin}/holding-space/post/${share.id}`;
 

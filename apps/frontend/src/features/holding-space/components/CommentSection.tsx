@@ -12,7 +12,6 @@ import { formatDistanceToNow } from 'date-fns';
 import { AnonymousAvatar } from '@/components/ui/anonymous-avatar';
 
 import { useRequireAuth } from '@/hooks/useRequireAuth';
-
 interface CommentSectionProps {
     shareId: string;
 }
@@ -54,6 +53,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ shareId }) => {
             isMounted = false;
         };
     }, [shareId]);
+
     const handleSubmit = async () => {
         if (!requireAuth()) return;
         if (!content.trim() || isSubmitting) return;

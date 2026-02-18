@@ -16,6 +16,8 @@ const serializeComment = (comment: IComment) => ({
   createdAt: comment.createdAt.toISOString(),
 });
 
+
+
 export class CommentController {
 
   /**
@@ -34,7 +36,6 @@ export class CommentController {
 
       // 1. Friction Check
       await checkRapidCommenting(authorId);
-
       // Check if share exists
       const share = await ShareModel.findById(shareId);
       if (!share) {
@@ -50,7 +51,6 @@ export class CommentController {
       if (isBlocked) {
         return res.status(403).json({ error: 'You cannot interact with this content' });
       }
-
       // Validation
       if (!content || typeof content !== 'string' || content.trim().length === 0) {
         return res.status(400).json({ error: 'Content is required' });
