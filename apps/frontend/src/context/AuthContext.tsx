@@ -5,7 +5,7 @@ import { authService, User } from '../api/auth.service';
 import { userService } from '../api/user.service';
 import { socketService } from '../api/socket.service';
 import { subscribeToUnauthorized } from '../api/client';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface AuthContextType {
   user: User | null;
@@ -26,6 +26,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -49,13 +50,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           // 2. Real verification: Get fresh access token
           await authService.refresh();
-          
+
           // 3. Connect WebSocket
           socketService.connect();
-          
+
           // 4. Fetch fresh user profile
           await fetchProfile();
-          
+
         } catch (e) {
           console.error('Session restoration failed:', e);
           // If refresh fails, clear everything
@@ -82,22 +83,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Store basic user first
       setUser(data.user);
       localStorage.setItem('user_hint', JSON.stringify(data.user));
-      
+
       // Store tokens handled by authService
-      
+
       socketService.connect();
-      
+
       // Fetch full profile
       await fetchProfile();
-      
-      router.push('/');
+
+      const redirect = searchParams?.get('redirect') || '/';
+      router.push(redirect);
     } catch (err: any) {
       setError(err.response?.data?.error || 'Login failed');
       throw err;
     } finally {
       setIsLoading(false);
     }
-  }, [router, fetchProfile]);
+  }, [router, fetchProfile, searchParams]);
 
   const googleLogin = useCallback(async (code: string, redirectUri?: string) => {
     setIsLoading(true);
@@ -107,18 +109,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(data.user);
       localStorage.setItem('user_hint', JSON.stringify(data.user));
       socketService.connect();
-      
+
       // Fetch full profile
       await fetchProfile();
-      
-      router.push('/');
+
+      const redirect = searchParams?.get('redirect') || '/';
+      router.push(redirect);
     } catch (err: any) {
       setError(err.response?.data?.error || 'Google login failed');
       throw err;
     } finally {
       setIsLoading(false);
     }
-  }, [router, fetchProfile]);
+  }, [router, fetchProfile, searchParams]);
 
   const signup = useCallback(async (data: any) => {
     setIsLoading(true);

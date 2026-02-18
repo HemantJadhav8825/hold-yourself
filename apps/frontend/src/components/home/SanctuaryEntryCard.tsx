@@ -2,10 +2,11 @@
 
 import { Card, CardContent } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
-import { useRouter } from "next/navigation"
+import { useRequireAuth } from "@/hooks/useRequireAuth"
 
 export function SanctuaryEntryCard() {
-  const router = useRouter()
+
+  const { requireAuth } = useRequireAuth()
 
   return (
     <section className="mb-16">
@@ -24,7 +25,7 @@ export function SanctuaryEntryCard() {
             <Button
               size="lg"
               className="w-full sm:w-auto font-normal rounded-full px-8"
-              onClick={() => router.push('/login')}
+              onClick={() => requireAuth('/')}
               data-testid="sanctuary-release-btn"
             >
               Enter, if you want

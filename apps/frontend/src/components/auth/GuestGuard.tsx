@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface GuestGuardProps {
   children: React.ReactNode;
@@ -11,12 +11,14 @@ interface GuestGuardProps {
 export const GuestGuard: React.FC<GuestGuardProps> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      router.push('/');
+      const redirect = searchParams?.get('redirect') || '/';
+      router.push(redirect);
     }
-  }, [isLoading, isAuthenticated, router]);
+  }, [isLoading, isAuthenticated, router, searchParams]);
 
   if (isLoading) {
     return (

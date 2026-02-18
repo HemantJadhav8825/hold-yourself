@@ -11,36 +11,22 @@ import { Loader2, Send } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { AnonymousAvatar } from '@/components/ui/anonymous-avatar';
 
+import { useRequireAuth } from '@/hooks/useRequireAuth';
+
 interface CommentSectionProps {
     shareId: string;
 }
 
 export const CommentSection: React.FC<CommentSectionProps> = ({ shareId }) => {
     const { user } = useAuth();
+    const { requireAuth } = useRequireAuth();
     const [comments, setComments] = useState<CommentDTO[]>([]);
     const [loading, setLoading] = useState(true);
     const [content, setContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [anonymous, setAnonymous] = useState(false);
-
-    useEffect(() => {
-        let mounted = true;
-        getComments(shareId)
-            .then(data => {
-                if (mounted) {
-                    setComments(data);
-                    setLoading(false);
-                }
-            })
-            .catch(err => {
-                console.error('Failed to load comments', err);
-                if (mounted) setLoading(false);
-            });
-
-        return () => { mounted = false; };
-    }, [shareId]);
-
     const handleSubmit = async () => {
+        if (!requireAuth()) return;
         if (!content.trim() || isSubmitting) return;
 
         setIsSubmitting(true);
