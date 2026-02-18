@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react"
 import { useCurrentUser } from "@/hooks/useCurrentUser"
+import { useRequireAuth } from "@/hooks/useRequireAuth"
 import client from "@/api/client"
 import { VentCard, Vent } from "@/components/sanctuary/vent-card"
 import { CreateVent } from "@/components/sanctuary/create-vent"
@@ -14,6 +15,7 @@ import { SanctuaryFeedAffordance } from "@/components/sanctuary/feed-affordance"
 export default function GlobalFeedPage() {
   const router = useRouter()
   const { user, isLoading: isAuthLoading } = useCurrentUser()
+  const { requireAuth } = useRequireAuth()
 
   const [vents, setVents] = useState<Vent[]>([])
   const [loading, setLoading] = useState(true)
@@ -50,10 +52,7 @@ export default function GlobalFeedPage() {
   }, [fetchVents, isAuthLoading])
 
   const handleReact = async (ventId: string, emoji: string) => {
-    if (!user) {
-      router.push('/login');
-      return;
-    }
+    if (!requireAuth()) return;
     try {
       const chatApiUrl = process.env.NEXT_PUBLIC_CHAT_API_URL || 'http://localhost:3200'
       await client.post(`${chatApiUrl}/v1/vents/${ventId}/react`, { emoji, userId: user?.id })
