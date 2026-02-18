@@ -85,9 +85,7 @@ router.get('/v1/users/profile', requireAuth, async (req, res) => {
     // Forward the request to the dedicated profile endpoint in Auth Service
     // We MUST forward the Authorization header so Auth Service can identify the user
     // and return private fields like anonymousProfile
-    // Forward the request to the dedicated profile endpoint in Auth Service
-    // We MUST forward the Authorization header so Auth Service can identify the user
-    // and return private fields like anonymousProfile
+
     const url = `${AUTH_SERVICE_URL}/v1/users/profile`;
     console.log(`[Proxy] Fetching profile from: ${url}`);
 
@@ -250,10 +248,6 @@ const holdingSpaceRoutes = [
   '/v1/internal/moderation'
 ];
 
-// Manual Shares Proxy (Protected Feed)
-// Manual Shares Proxy (Public Feed / Emotion Feed)
-
-
 // Manual Shares Proxy (Protected - Create, etc)
 router.use('/v1/shares', requireAuth, async (req, res) => {
   try {
@@ -300,27 +294,6 @@ router.use('/v1/shares/:id/comments', requireAuth, async (req, res) => {
   }
 });
 
-// Comments Proxy (Interaction Layer)
-router.use('/v1/shares/:id/comments', requireAuth, async (req, res) => {
-  try {
-    const url = `${HOLDING_SPACE_SERVICE_URL}${req.originalUrl}`;
-    const response = await axios({
-      method: req.method,
-      url: url,
-      data: req.method !== 'GET' ? req.body : undefined,
-      params: req.query,
-      headers: {
-        Authorization: req.headers.authorization,
-        ...(req.headers['content-type'] ? { 'Content-Type': req.headers['content-type'] } : {})
-      }
-    });
 
-    res.status(response.status).json(response.data);
-  } catch (error: any) {
-    const status = error.response?.status || 500;
-    const data = error.response?.data || { error: 'Holding Space Service unavailable' };
-    res.status(status).json(data);
-  }
-});
 
 export default router;
