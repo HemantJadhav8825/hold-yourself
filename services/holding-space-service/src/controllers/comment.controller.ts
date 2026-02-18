@@ -4,6 +4,7 @@ import { CommentModel, IComment } from '../models/Comment';
 import { ShareModel } from '../models/Share';
 import { UserPreferenceModel } from '../models/UserPreference';
 import { BlockService } from '../services/block.service';
+import { checkRapidCommenting } from '../utils/friction';
 
 // Serializer for comments (Local to controller for now, or move to serializer service)
 const serializeComment = (comment: IComment) => ({
@@ -14,6 +15,8 @@ const serializeComment = (comment: IComment) => ({
   anonymous: comment.anonymous,
   createdAt: comment.createdAt.toISOString(),
 });
+
+
 
 export class CommentController {
 
@@ -31,6 +34,8 @@ export class CommentController {
         return res.status(401).json({ error: 'Unauthorized' });
       }
 
+      // 1. Friction Check
+      await checkRapidCommenting(authorId);
       // Check if share exists
       const share = await ShareModel.findById(shareId);
       if (!share) {
@@ -41,6 +46,11 @@ export class CommentController {
         return res.status(403).json({ error: 'Comments are disabled for this share' });
       }
 
+      // 3. Block check: Cannot comment if mutual block exists
+      const isBlocked = await BlockService.isBlockedMutual(authorId, share.authorId);
+      if (isBlocked) {
+        return res.status(403).json({ error: 'You cannot interact with this content' });
+      }
       // Validation
       if (!content || typeof content !== 'string' || content.trim().length === 0) {
         return res.status(400).json({ error: 'Content is required' });
