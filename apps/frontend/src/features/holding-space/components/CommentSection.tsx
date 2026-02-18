@@ -25,6 +25,35 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ shareId }) => {
     const [content, setContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [anonymous, setAnonymous] = useState(false);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const loadComments = async () => {
+            try {
+                const data = await getComments(shareId);
+                if (isMounted) {
+                    setComments(data);
+                }
+            } catch (error) {
+                console.error('Failed to load comments:', error);
+            } finally {
+                if (isMounted) {
+                    setLoading(false);
+                }
+            }
+        };
+
+        if (shareId) {
+            loadComments();
+        } else {
+            setLoading(false);
+        }
+
+        return () => {
+            isMounted = false;
+        };
+    }, [shareId]);
     const handleSubmit = async () => {
         if (!requireAuth()) return;
         if (!content.trim() || isSubmitting) return;
