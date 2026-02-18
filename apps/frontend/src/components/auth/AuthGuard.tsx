@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { getSafeOnboardingState } from '@/lib/onboarding/state';
 
 interface AuthGuardProps {
@@ -12,13 +12,14 @@ interface AuthGuardProps {
 export const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const { isAuthenticated, isLoading, user } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
 
   useEffect(() => {
     if (isLoading) return;
 
     if (!isAuthenticated) {
-      router.push('/login');
+      router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
       return;
     }
 
@@ -29,7 +30,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
     const onboardingStatus = getSafeOnboardingState(user);
 
     if (onboardingStatus === 'not_started' || onboardingStatus === 'in_progress') {
-       router.push('/onboarding');
+      router.push('/onboarding');
     }
   }, [isLoading, isAuthenticated, router, user]);
 

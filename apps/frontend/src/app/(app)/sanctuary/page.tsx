@@ -13,17 +13,17 @@ import { PageContainer } from "@/components/layout/PageContainer"
 export default function SanctuaryPage() {
   const { user, isLoading } = useCurrentUser()
   const router = useRouter()
-  const isReady = !isLoading && user && user.anonymousProfile
+  // Page is ready when auth loading finishes. 
+  // We no longer require 'user' to be present to view this page.
+  const isReady = !isLoading
 
   useEffect(() => {
     if (isLoading) return
 
-    if (!user) {
-      router.push('/login')
-      return
-    }
-
-    if (!user.anonymousProfile) {
+    // If verified user accesses /sanctuary but hasn't set up anonymous profile, 
+    // we guide them to setup. 
+    // BUT: We allow unauthenticated users to stay and view the page (fail-open).
+    if (user && !user.anonymousProfile) {
       router.push('/sanctuary/setup')
     }
   }, [user, isLoading, router])
@@ -70,15 +70,15 @@ export default function SanctuaryPage() {
       </div>
 
       <div className="flex flex-col items-center justify-center pt-8 border-t border-dashed border-border text-center">
-          <p className="text-xs text-muted-foreground mb-4">
-              You&apos;re not alone. This will pass.
-          </p>
-          <Button variant="link" className="text-xs text-muted-foreground hover:text-foreground transition-colors" onClick={() => {
-              markSanctuaryInteraction();
-              router.push('/');
-          }}>
-              Return to We belong
-          </Button>
+        <p className="text-xs text-muted-foreground mb-4">
+          You&apos;re not alone. This will pass.
+        </p>
+        <Button variant="link" className="text-xs text-muted-foreground hover:text-foreground transition-colors" onClick={() => {
+          markSanctuaryInteraction();
+          router.push('/');
+        }}>
+          Return to We belong
+        </Button>
       </div>
     </PageContainer>
   )

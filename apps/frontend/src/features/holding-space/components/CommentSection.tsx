@@ -11,12 +11,15 @@ import { Loader2, Send } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { AnonymousAvatar } from '@/components/ui/anonymous-avatar';
 
+import { useRequireAuth } from '@/hooks/useRequireAuth';
+
 interface CommentSectionProps {
     shareId: string;
 }
 
 export const CommentSection: React.FC<CommentSectionProps> = ({ shareId }) => {
     const { user } = useAuth();
+    const { requireAuth } = useRequireAuth();
     const [comments, setComments] = useState<CommentDTO[]>([]);
     const [loading, setLoading] = useState(true);
     const [content, setContent] = useState('');
@@ -24,23 +27,35 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ shareId }) => {
     const [anonymous, setAnonymous] = useState(false);
 
     useEffect(() => {
-        let mounted = true;
-        getComments(shareId)
-            .then(data => {
-                if (mounted) {
+        let isMounted = true;
+
+        const loadComments = async () => {
+            try {
+                const data = await getComments(shareId);
+                if (isMounted) {
                     setComments(data);
+                }
+            } catch (error) {
+                console.error('Failed to load comments:', error);
+            } finally {
+                if (isMounted) {
                     setLoading(false);
                 }
-            })
-            .catch(err => {
-                console.error('Failed to load comments', err);
-                if (mounted) setLoading(false);
-            });
+            }
+        };
 
-        return () => { mounted = false; };
+        if (shareId) {
+            loadComments();
+        } else {
+            setLoading(false);
+        }
+
+        return () => {
+            isMounted = false;
+        };
     }, [shareId]);
-
     const handleSubmit = async () => {
+        if (!requireAuth()) return;
         if (!content.trim() || isSubmitting) return;
 
         setIsSubmitting(true);

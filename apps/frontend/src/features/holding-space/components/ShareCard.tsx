@@ -28,10 +28,14 @@ interface ShareCardProps {
   onDelete?: (id: string) => Promise<void>;
 }
 
+import { useRequireAuth } from '@/hooks/useRequireAuth';
+
 export const ShareCard: React.FC<ShareCardProps> = ({ share, onUpdate, onDelete }) => {
   const { user } = useAuth();
+  const { requireAuth } = useRequireAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+
   const [editedContent, setEditedContent] = useState(share.content);
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -90,6 +94,8 @@ export const ShareCard: React.FC<ShareCardProps> = ({ share, onUpdate, onDelete 
   };
 
   const handleResonate = async () => {
+    if (!requireAuth()) return;
+
     // Optimistic toggle
     setHasResonated(!hasResonated);
     try {
@@ -97,6 +103,11 @@ export const ShareCard: React.FC<ShareCardProps> = ({ share, onUpdate, onDelete 
     } catch (error) {
       setHasResonated(!hasResonated); // Rollback
     }
+  };
+
+  const handleReplyClick = () => {
+    if (!requireAuth()) return;
+    setShowComments(!showComments);
   };
 
   const handleShare = async () => {
@@ -282,7 +293,7 @@ export const ShareCard: React.FC<ShareCardProps> = ({ share, onUpdate, onDelete 
             variant="ghost"
             size="sm"
             className="text-xs gap-2 text-muted-foreground hover:text-foreground"
-            onClick={() => setShowComments(!showComments)}
+            onClick={handleReplyClick}
           >
             <MessageCircle size={16} />
             Reply
