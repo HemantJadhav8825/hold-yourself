@@ -33,7 +33,7 @@ export function WhatYouCanDo() {
                     </CardHeader>
                     <CardFooter className="mt-auto pt-6">
                         <Button asChild variant="outline" className="rounded-full group">
-                            <Link href="/sanctuary">
+                            <Link href="/login">
                                 Holding Space
                                 <ArrowRight className="w-4 h-4 ml-2 opacity-50 group-hover:translate-x-1 transition-transform" />
                             </Link>
@@ -71,7 +71,7 @@ export function WhatYouCanDo() {
                     </CardHeader>
                     <CardFooter className="mt-auto pt-6">
                         <Button asChild variant="default" className="rounded-full bg-foreground text-background hover:bg-foreground/90 group">
-                            <Link href="/sanctuary">
+                            <Link href="/login">
                                 Enter Holding Space
                                 <ArrowRight className="w-4 h-4 ml-2 opacity-50 group-hover:translate-x-1 transition-transform" />
                             </Link>
