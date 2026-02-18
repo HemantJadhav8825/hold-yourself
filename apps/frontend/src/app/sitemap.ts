@@ -1,5 +1,7 @@
 import type { MetadataRoute } from 'next'
 
+export const dynamic = 'force-dynamic'
+
 import { emotions } from '@/lib/emotions'
 
 const BASE_URL =

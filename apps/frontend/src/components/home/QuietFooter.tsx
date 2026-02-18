@@ -16,8 +16,9 @@ export function QuietFooter({ className }: { className?: string }) {
           Explore Feelings
         </Link>
       </div>
-      <blockquote className="font-serif italic text-muted-foreground text-sm">
-        &quot;Belonging doesn&apos;t ask you to change.&quot;
+      <blockquote className="font-serif italic text-muted-foreground text-sm space-y-2">
+        <p>&quot;Belonging doesn&apos;t ask you to change.&quot;</p>
+        <p>&quot;It only asks you to arrive.&quot;</p>
       </blockquote>
     </footer>
   )

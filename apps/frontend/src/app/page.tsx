@@ -5,6 +5,9 @@ import { ArrivalHeader } from "@/components/home/ArrivalHeader"
 import { SanctuaryEntryCard } from "@/components/home/SanctuaryEntryCard"
 import { QuietFooter } from "@/components/home/QuietFooter"
 import { Container } from "@/components/ui/Container"
+import { WhatYouCanDo } from "@/components/home/WhatYouCanDo"
+import { SafetyStatement } from "@/components/home/SafetyStatement"
+import { DiscoveryHub } from "@/components/home/DiscoveryHub"
 
 import { HomeHeaderActions } from "@/components/home/HomeHeaderActions"
 import { brand } from "@/config/brand"
@@ -48,17 +51,26 @@ export default function Home() {
         </Container>
       </header>
 
-      <main className="flex-1 flex flex-col justify-center">
-        <Container className="max-w-2xl">
+      <main className="flex-1 flex flex-col">
+        {/* Phase 1: Existing Hero - Preserved */}
+        <Container className="max-w-2xl pt-12 md:pt-20">
           <ArrivalHeader />
           <SanctuaryEntryCard />
+        </Container>
 
-          {/* SEO Discovery Hub */}
-          <div className="mt-12 text-center opacity-0 hover:opacity-100 transition-opacity">
-            <Link href="/emotions" className="text-xs text-muted-foreground/20 hover:text-muted-foreground underline underline-offset-4">
-              Explore emotional states hub
-            </Link>
-          </div>
+        {/* Phase 2: What You Can Do */}
+        <Container className="max-w-5xl px-6 md:px-8">
+          <WhatYouCanDo />
+        </Container>
+
+        {/* Phase 3: Safety Statement */}
+        <Container className="max-w-2xl px-6">
+          <SafetyStatement />
+        </Container>
+
+        {/* Phase 4: Discovery Hub */}
+        <Container className="max-w-4xl px-6">
+          <DiscoveryHub />
         </Container>
       </main>
 
