@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from 'next/script';
+import { Suspense } from "react";
 import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
@@ -72,13 +73,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${fraunces.variable} font-sans bg-[#F7F5F2] text-webelong-text antialiased`}>
-        <AuthProvider>
-          <UsersProvider>
-            <ConversationsProvider>
-              {children}
-            </ConversationsProvider>
-          </UsersProvider>
-        </AuthProvider>
+        <Suspense fallback={null}>
+          <AuthProvider>
+            <UsersProvider>
+              <ConversationsProvider>
+                {children}
+              </ConversationsProvider>
+            </UsersProvider>
+          </AuthProvider>
+        </Suspense>
         {process.env.NODE_ENV === 'production' && (
           <>
             <Script
