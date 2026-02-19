@@ -17,9 +17,9 @@ export function AnonymousAvatar({ seed, className, size = 'md' }: AnonymousAvata
   };
 
   return (
-    <div 
+    <div
       className={cn(
-        "rounded-full flex items-center justify-center font-bold text-white shadow-sm ring-2 ring-background",
+        "rounded-full flex items-center justify-center font-bold text-primary-foreground shadow-sm ring-2 ring-background",
         sizeClasses[size],
         className
       )}

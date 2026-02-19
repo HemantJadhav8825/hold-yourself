@@ -24,8 +24,8 @@ export const GuestGuard: React.FC<GuestGuardProps> = ({ children }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
-        <div className="animate-pulse text-white/20 text-xs font-bold tracking-widest uppercase">Checking Session...</div>
+      <div className="min-h-screen flex items-center justify-center bg-webelong-background">
+        <div className="animate-pulse text-webelong-text/40 text-xs font-bold tracking-widest uppercase">Checking Session...</div>
       </div>
     );
   }

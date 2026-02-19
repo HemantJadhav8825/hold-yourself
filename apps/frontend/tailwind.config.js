@@ -18,50 +18,59 @@ module.exports = {
       },
       colors: {
         // Enforced Emotional Safety Theme
-        border: "#E7E3DC",
-        input: "#E5E1DA", // Input border
-        ring: "#D6D1C7", // Focus border
-        background: "#F7F5F2",
-        foreground: "#2C2C2E",
+        paper: {
+          bg: 'rgb(var(--paper-bg) / <alpha-value>)',
+          surface: 'rgb(var(--paper-surface) / <alpha-value>)',
+          surfaceSoft: 'rgb(var(--paper-surface-soft) / <alpha-value>)',
+          nav: 'rgb(var(--paper-nav) / <alpha-value>)',
+          text: 'rgb(var(--paper-text) / <alpha-value>)',
+          textSoft: 'rgb(var(--paper-text-soft) / <alpha-value>)',
+          border: 'rgb(var(--paper-border))',
+        },
+        border: "rgb(var(--paper-border))",
+        input: "rgb(var(--paper-border))", // Input border
+        ring: "rgb(var(--paper-accent) / <alpha-value>)", // Focus border
+        background: "rgb(var(--paper-bg) / <alpha-value>)",
+        foreground: "rgb(var(--paper-text) / <alpha-value>)",
         primary: {
-          DEFAULT: "#2C2C2E",
-          foreground: "#F7F5F2",
+          DEFAULT: "rgb(var(--paper-accent) / <alpha-value>)",
+          foreground: "rgb(var(--paper-accent-foreground) / <alpha-value>)",
         },
         secondary: {
-          DEFAULT: "#E7E3DC",
-          foreground: "#2C2C2E",
+          DEFAULT: "rgb(var(--paper-surface) / <alpha-value>)",
+          foreground: "rgb(var(--paper-text) / <alpha-value>)",
         },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          DEFAULT: "hsl(var(--destructive, 0 84.2% 60.2%))", // Fallback if missing
+          foreground: "hsl(var(--destructive-foreground, 210 40% 98%))",
         },
         muted: {
-          DEFAULT: "#F2EFEA", // Hover background
-          foreground: "#6E6E73", // Secondary text
+          DEFAULT: "rgb(var(--paper-surface) / <alpha-value>)", // Hover background
+          foreground: "rgb(var(--paper-text-soft) / <alpha-value>)", // Secondary text
         },
         accent: {
-          DEFAULT: "#F2EFEA",
-          foreground: "#2C2C2E",
+          DEFAULT: "rgb(var(--paper-surface) / <alpha-value>)",
+          foreground: "rgb(var(--paper-text) / <alpha-value>)",
         },
         popover: {
-          DEFAULT: "#FFFFFF",
-          foreground: "#2C2C2E",
+          DEFAULT: "rgb(var(--paper-surface) / <alpha-value>)",
+          foreground: "rgb(var(--paper-text) / <alpha-value>)",
         },
         card: {
-          DEFAULT: "#FFFFFF",
-          foreground: "#2C2C2E",
+          DEFAULT: "rgb(var(--paper-surface) / <alpha-value>)",
+          foreground: "rgb(var(--paper-text) / <alpha-value>)",
         },
-        // Custom Webelong Palette
+        // Custom Webelong Palette mapped to semantics
         webelong: {
-          background: "#F7F5F2",
-          card: "#FFFFFF",
-          border: "#E7E3DC",
-          text: "#2C2C2E",
-          muted: "#6E6E73",
-          focus: "#D6D1C7",
-          hover: "#F2EFEA",
-          input: "#FFFFFF",
-          inputBorder: "#E5E1DA",
+          background: "rgb(var(--paper-bg) / <alpha-value>)",
+          card: "rgb(var(--paper-surface) / <alpha-value>)",
+          border: "rgb(var(--paper-border))",
+          text: "rgb(var(--paper-text) / <alpha-value>)",
+          muted: "rgb(var(--paper-text-soft) / <alpha-value>)",
+          focus: "rgb(var(--paper-accent) / <alpha-value>)",
+          hover: "rgb(var(--paper-surface) / <alpha-value>)",
+          input: "rgb(var(--paper-surface) / <alpha-value>)",
+          inputBorder: "rgb(var(--paper-border))",
         },
       },
       borderRadius: {

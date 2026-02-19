@@ -4,50 +4,96 @@
 
 @layer base {
   :root {
-    /* WARM PAPER THEME (IVORY) - FALLBACKS (Overridden by tailwind.config.js) */
-    --background: 40 20% 97%;
-    --foreground: 222.2 84% 4.9%;
+    /* Day Paper (Sunlit warm paper) */
+    --paper-bg: 247 243 238;
+    /* #F7F3EE */
+    --paper-surface: 255 255 255;
+    /* #FFFFFF */
+    --paper-surface-soft: 250 247 242;
+    /* #FAF7F2 */
+    --paper-nav: 247 243 238;
+    /* #F7F3EE */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --paper-text: 26 26 26;
+    /* #1A1A1A */
+    --paper-text-soft: 94 90 85;
+    /* #5E5A55 */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --paper-border: 0 0 0 / 0.08;
+    --paper-shadow: 0 0 0 / 0.04;
 
-    --primary: 240 2% 18%;
+    /* Brand Protection (Invariant) */
+    --paper-accent: 44 44 46;
     /* #2C2C2E */
-    --primary-foreground: 40 20% 98%;
-
-    --secondary: 40 10% 92%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 40 10% 92%;
-    /* Warm muted grey */
-    --muted-foreground: 25 10% 45%;
-
-    --accent: 40 15% 94%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 40 17% 88%;
-    /* #E7E3DC approx */
-    --input: 40 10% 88%;
-    --ring: 10 70% 55%;
+    --paper-accent-foreground: 247 243 238;
+    /* #F7F3EE */
 
     --radius: 0.5rem;
-    --illustration-secondary: 30 40% 95%;
+  }
+
+  /* Night Paper (Lamplit soft paper) */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-paper-mode="day"]) {
+      --paper-bg: 227 219 207;
+      /* #E3DBCF */
+      --paper-surface: 239 230 216;
+      /* #EFE6D8 */
+      --paper-surface-soft: 244 236 225;
+      /* #F4ECE1 */
+      --paper-nav: 224 215 202;
+      /* #E0D7CA */
+
+      --paper-text: 43 41 38;
+      /* #2B2926 */
+      --paper-text-soft: 107 100 92;
+      /* #6B645C */
+
+      --paper-border: 0 0 0 / 0.04;
+      --paper-shadow: 0 0 0 / 0.03;
+    }
+
+    /* Soften images/logos in Night Paper so there's no glaring white box */
+    :root:not([data-paper-mode="day"]) img,
+    :root:not([data-paper-mode="day"]) svg {
+      opacity: 0.95;
+      mix-blend-mode: multiply;
+    }
+  }
+
+  /* Manual User Override (Night Mode) */
+  :root[data-paper-mode="night"] {
+    --paper-bg: 227 219 207;
+    /* #E3DBCF */
+    --paper-surface: 239 230 216;
+    /* #EFE6D8 */
+    --paper-surface-soft: 244 236 225;
+    /* #F4ECE1 */
+    --paper-nav: 224 215 202;
+    /* #E0D7CA */
+
+    --paper-text: 43 41 38;
+    /* #2B2926 */
+    --paper-text-soft: 107 100 92;
+    /* #6B645C */
+
+    --paper-border: 0 0 0 / 0.04;
+    --paper-shadow: 0 0 0 / 0.03;
+  }
+
+  :root[data-paper-mode="night"] img,
+  :root[data-paper-mode="night"] svg {
+    opacity: 0.95;
+    mix-blend-mode: multiply;
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-webelong-border;
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-webelong-background text-webelong-text font-sans antialiased transition-colors duration-500 ease-in-out;
   }
 
   h1,
@@ -56,6 +102,6 @@
   h4,
   h5,
   h6 {
-    @apply font-serif text-foreground;
+    @apply font-serif text-webelong-text;
   }
 }

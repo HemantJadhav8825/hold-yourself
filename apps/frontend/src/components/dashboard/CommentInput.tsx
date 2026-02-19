@@ -59,7 +59,7 @@ export const CommentInput: React.FC<CommentInputProps> = ({ onSubmit, isSubmitti
 
       <div className={cn(
         "relative flex items-center gap-2 bg-primary/5 border border-primary/10 rounded-2xl p-2 transition-all duration-300",
-        isFocused && "bg-white border-[#E5E1DA] ring-1 ring-[#D6D1C7]"
+        isFocused && "bg-webelong-card border-webelong-inputBorder ring-1 ring-webelong-focus"
       )}>
         <input
           type="text"

@@ -88,11 +88,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         {isSelf && status === 'sent' && (
           <div className="absolute right-2 bottom-1 flex items-center gap-0.5 opacity-40 group-hover:opacity-100 transition-opacity">
             {readAt ? (
-              <CheckCheck className="w-3 h-3 text-white" />
+              <CheckCheck className="w-3 h-3 text-primary-foreground" />
             ) : deliveredAt ? (
-              <CheckCheck className="w-3 h-3 text-white/60" />
+              <CheckCheck className="w-3 h-3 text-primary-foreground/60" />
             ) : (
-              <Check className="w-3 h-3 text-white/60" />
+              <Check className="w-3 h-3 text-primary-foreground/60" />
             )}
           </div>
         )}

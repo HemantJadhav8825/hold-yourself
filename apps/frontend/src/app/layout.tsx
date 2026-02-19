@@ -6,6 +6,7 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { UsersProvider } from "@/context/UsersContext";
 import { ConversationsProvider } from "@/context/ConversationsContext";
+import { PaperModeProvider } from "@/context/PaperModeContext";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", weight: ["400", "500", "600"] });
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-serif", weight: ["300", "400", "500", "600"] });
@@ -71,16 +72,36 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} ${fraunces.variable} font-sans bg-[#F7F5F2] text-webelong-text antialiased`}>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                var override = localStorage.getItem('paper-mode');
+                if (override === 'night') {
+                  document.documentElement.setAttribute('data-paper-mode', 'night');
+                } else if (override === 'day') {
+                  document.documentElement.setAttribute('data-paper-mode', 'day');
+                } else {
+                  document.documentElement.setAttribute('data-paper-mode', 'auto');
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
+      </head>
+      <body className={`${inter.variable} ${fraunces.variable} font-sans bg-paper-bg text-paper-text antialiased transition-colors duration-500 ease-in-out`}>
         <Suspense fallback={null}>
-          <AuthProvider>
-            <UsersProvider>
-              <ConversationsProvider>
-                {children}
-              </ConversationsProvider>
-            </UsersProvider>
-          </AuthProvider>
+          <PaperModeProvider>
+            <AuthProvider>
+              <UsersProvider>
+                <ConversationsProvider>
+                  {children}
+                </ConversationsProvider>
+              </UsersProvider>
+            </AuthProvider>
+          </PaperModeProvider>
         </Suspense>
         {process.env.NODE_ENV === 'production' && (
           <>

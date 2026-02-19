@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import { PaperToggle } from "@/components/ui/PaperToggle"
 
 export function QuietFooter({ className }: { className?: string }) {
   return (
@@ -20,6 +21,10 @@ export function QuietFooter({ className }: { className?: string }) {
         <p>&quot;Belonging doesn&apos;t ask you to change.&quot;</p>
         <p>&quot;It only asks you to arrive.&quot;</p>
       </blockquote>
+
+      <div className="mt-12 flex justify-center">
+        <PaperToggle />
+      </div>
     </footer>
   )
 }
