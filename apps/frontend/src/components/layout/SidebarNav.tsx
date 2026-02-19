@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Search, PlusSquare, MessageCircle, User, LogOut, Settings, Tent } from 'lucide-react';
+import { Home, Search, PlusSquare, MessageCircle, User, LogOut, Settings, Tent, Moon, Sun } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -8,11 +8,13 @@ import { brand } from '@/config/brand';
 import { env } from '@/config/env';
 import { useAuth } from '@/context/AuthContext';
 import { useConversations } from '@/hooks/useConversations';
+import { usePaperMode } from '@/context/PaperModeContext';
 
 export const SidebarNav: React.FC = () => {
   const pathname = usePathname();
   const { logout } = useAuth();
   const { conversations } = useConversations();
+  const { mode, setMode, isNightActive } = usePaperMode();
 
 
   const navItems = [
@@ -25,7 +27,7 @@ export const SidebarNav: React.FC = () => {
   // Milestone 1 requires removal from persistent navigation.
 
   return (
-    <aside className="hidden lg:flex flex-col fixed top-0 left-0 h-screen w-64 border-r border-border bg-[#F3F0EA] px-4 py-8 z-40">
+    <aside className="hidden lg:flex flex-col fixed top-0 left-0 h-screen w-64 border-r border-paper-border bg-paper-nav px-4 py-8 z-40">
       <Link href="/" className="px-4 mb-12">
         <Heading level={4} className="text-primary font-bold tracking-tight font-serif">
           {brand.PRODUCT_NAME}
@@ -40,7 +42,7 @@ export const SidebarNav: React.FC = () => {
               key={item.label}
               href={item.href}
               className={cn(
-                'flex items-center gap-4 px-4 py-3 rounded-xl transition-all hover:bg-muted group relative',
+                'flex items-center gap-4 px-4 py-3 rounded-xl transition-all hover:bg-paper-surfaceSoft group relative',
                 isActive ? 'text-foreground font-semibold' : 'text-foreground/60 opacity-80'
               )}
             >
@@ -54,6 +56,20 @@ export const SidebarNav: React.FC = () => {
       </nav>
 
       <div className="mt-auto space-y-2">
+        <button
+          onClick={() => setMode(isNightActive ? 'day' : 'night')}
+          className="w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all hover:bg-paper-surfaceSoft group relative text-foreground/60 opacity-80 hover:text-foreground"
+        >
+          {isNightActive ? (
+            <Sun className="w-6 h-6 transition-transform group-hover:scale-110" />
+          ) : (
+            <Moon className="w-6 h-6 transition-transform group-hover:scale-110" />
+          )}
+          <span className="text-sm">
+            {isNightActive ? 'Morning Paper' : 'Dim the lights'}
+          </span>
+        </button>
+
         <button
           onClick={logout}
           className="w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all hover:bg-red-500/10 text-red-500/60 hover:text-red-500 group"

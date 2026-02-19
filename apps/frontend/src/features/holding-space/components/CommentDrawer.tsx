@@ -128,7 +128,7 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({
             animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black z-40"
+            className="fixed inset-0 bg-webelong-text z-40"
           />
 
           {/* Drawer */}
