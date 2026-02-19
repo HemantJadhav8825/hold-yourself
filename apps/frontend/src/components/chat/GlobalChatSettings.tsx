@@ -88,7 +88,7 @@ export const GlobalChatSettings: React.FC<GlobalChatSettingsProps> = ({ onClose 
               className={`w-12 h-6 rounded-full transition-colors relative flex items-center px-1 ${settings?.showReadReceipts ? 'bg-primary' : 'bg-muted-foreground/20'
                 }`}
             >
-              <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${settings?.showReadReceipts ? 'translate-x-6' : 'translate-x-0'
+              <div className={`w-4 h-4 bg-webelong-background rounded-full shadow-sm transition-transform ${settings?.showReadReceipts ? 'translate-x-6' : 'translate-x-0'
                 }`} />
             </button>
           </div>
@@ -106,7 +106,7 @@ export const GlobalChatSettings: React.FC<GlobalChatSettingsProps> = ({ onClose 
               className={`w-12 h-6 rounded-full transition-colors relative flex items-center px-1 ${!settings?.muteUnreadBadges ? 'bg-primary' : 'bg-muted-foreground/20'
                 }`}
             >
-              <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${!settings?.muteUnreadBadges ? 'translate-x-6' : 'translate-x-0'
+              <div className={`w-4 h-4 bg-webelong-background rounded-full shadow-sm transition-transform ${!settings?.muteUnreadBadges ? 'translate-x-6' : 'translate-x-0'
                 }`} />
             </button>
           </div>

@@ -111,11 +111,11 @@ const CommentNode: React.FC<{ comment: Comment; onReply: (id: string, c: string)
           {visibleReplies?.map((reply) => (
             <div key={reply.id} className="relative pl-6 py-2">
               {/* Connector Line */}
-              <div className="absolute left-0 top-0 bottom-0 w-px bg-white/5 group-hover:bg-white/10 transition-colors">
-                <div className="absolute top-4 left-0 w-4 h-px bg-white/5 group-hover:bg-white/10" />
+              <div className="absolute left-0 top-0 bottom-0 w-px bg-webelong-text/5 group-hover:bg-webelong-text/10 transition-colors">
+                <div className="absolute top-4 left-0 w-4 h-px bg-webelong-text/5 group-hover:bg-webelong-text/10" />
               </div>
 
-              <div className="bg-white/5 p-3 rounded-xl hover:bg-white/[0.08] transition-colors">
+              <div className="bg-webelong-text/5 p-3 rounded-xl hover:bg-webelong-text/[0.08] transition-colors">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-[8px] text-primary/50">{reply.author[0]}</div>
                   <Text size="xs" weight="medium" className="text-text/60">{reply.author}</Text>

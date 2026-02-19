@@ -24,7 +24,7 @@ export const ProfileView: React.FC = () => {
   const { user, isLoading } = useCurrentUser();
   const { logout } = useAuth();
 
-  const joinDate = user?.createdAt 
+  const joinDate = user?.createdAt
     ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
     : 'Recently';
 
@@ -45,12 +45,12 @@ export const ProfileView: React.FC = () => {
         <div className="relative">
           <Aura size={180} color="var(--primary)" isPulsing={false} className="opacity-20" />
           <div className="absolute inset-0 flex items-center justify-center">
-             <ProfileAvatar 
-               src={user?.avatar} 
-               name={user?.fullName || user?.displayName || user?.username || user?.email || 'User'} 
-               size="xl" 
-               className="border-4 border-white/20 shadow-md"
-             />
+            <ProfileAvatar
+              src={user?.avatar}
+              name={user?.fullName || user?.displayName || user?.username || user?.email || 'User'}
+              size="xl"
+              className="border-4 border-paper-surface/20 shadow-md"
+            />
           </div>
         </div>
 
@@ -76,8 +76,8 @@ export const ProfileView: React.FC = () => {
             onClick={() => setActiveTab(tab.id)}
             className={cn(
               "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold uppercase tracking-widest text-[10px] transition-all duration-300 cursor-pointer",
-              activeTab === tab.id 
-                ? "bg-background text-primary shadow-sm" 
+              activeTab === tab.id
+                ? "bg-background text-primary shadow-sm"
                 : "text-text/40 hover:text-text/60"
             )}
           >

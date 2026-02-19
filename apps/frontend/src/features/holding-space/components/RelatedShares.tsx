@@ -26,7 +26,7 @@ export const RelatedShares: React.FC<RelatedSharesProps> = ({ tag, currentShareI
     return (
         <div className="space-y-6 pt-8 border-t border-border/40">
             <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                More spaces holding "{tag}"
+                More spaces holding &quot;{tag}&quot;
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

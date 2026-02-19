@@ -4,8 +4,8 @@ import React from 'react';
 import { brand } from '@/config/brand';
 import Link from 'next/link';
 
-
 import { Illustration } from '@/illustrations';
+import { PaperToggle } from '@/components/ui/PaperToggle';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -15,9 +15,11 @@ interface AuthLayoutProps {
 
 export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitle }) => {
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-background text-foreground font-body overflow-x-hidden transition-colors duration-300">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-background text-foreground font-body overflow-x-hidden transition-colors duration-300 relative">
 
-
+      <div className="absolute top-4 right-4 z-50">
+        <PaperToggle />
+      </div>
       {/* LEFT PANEL: Brand Visuals (Desktop only) */}
       <div className="hidden lg:flex lg:w-[60%] relative flex-col items-center justify-center p-12 overflow-hidden border-r border-border bg-muted/30 transition-colors duration-300">
         {/* Animated Background Gradients (Theme aware) */}

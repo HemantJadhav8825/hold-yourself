@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useAuth } from "@/context/AuthContext"
 
 import { Button } from "@/components/ui/Button"
+import { PaperToggle } from "@/components/ui/PaperToggle"
 
 export function HomeHeaderActions() {
   const { isAuthenticated, isLoading } = useAuth()
@@ -16,6 +17,7 @@ export function HomeHeaderActions() {
   if (isLoading) {
     return (
       <>
+        <PaperToggle />
         <Button variant="ghost" size="sm" disabled>
           Log in
         </Button>
@@ -26,24 +28,30 @@ export function HomeHeaderActions() {
 
   if (isAuthenticated) {
     return (
-      <Link href="/">
-        <Button size="sm" variant="default">
-          Go to Dashboard
-        </Button>
-      </Link>
+      <div className="flex items-center gap-2">
+        <PaperToggle />
+        <Link href="/">
+          <Button size="sm" variant="default">
+            Go to Dashboard
+          </Button>
+        </Link>
+      </div>
     )
   }
 
   return (
     <>
-      <Link href="/login">
-        <Button variant="ghost" size="sm">
-          Log in
-        </Button>
-      </Link>
-      <Link href="/signup">
-        <Button size="sm">Enter</Button>
-      </Link>
+      <div className="flex items-center gap-2">
+        <PaperToggle />
+        <Link href="/login">
+          <Button variant="ghost" size="sm">
+            Log in
+          </Button>
+        </Link>
+        <Link href="/signup">
+          <Button size="sm">Enter</Button>
+        </Link>
+      </div>
     </>
   )
 }

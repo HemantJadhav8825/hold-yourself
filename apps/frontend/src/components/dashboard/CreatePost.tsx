@@ -127,8 +127,8 @@ export const CreatePost: React.FC<CreatePostProps> = ({ isOpen, onClose, onPost 
 
             <div
               className={cn(
-                "p-4 border bg-neutral-50/50 rounded-2xl transition-all duration-500",
-                isFocused ? "border-neutral-400 bg-background" : "border-neutral-200"
+                "p-4 border bg-paper-surface/50 rounded-2xl transition-all duration-500",
+                isFocused ? "border-paper-accent bg-paper-bg" : "border-paper-border"
               )}
             >
               <textarea
@@ -189,7 +189,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ isOpen, onClose, onPost 
                     onClick={() => setVisibility(opt.id)}
                     className={cn(
                       "flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all duration-300",
-                      visibility === opt.id ? "bg-primary border-primary text-white" : "border-text/5 text-text/40 hover:border-primary/20"
+                      visibility === opt.id ? "bg-primary border-primary text-primary-foreground" : "border-text/5 text-text/40 hover:border-primary/20"
                     )}
                   >
                     <opt.icon className="w-5 h-5" />

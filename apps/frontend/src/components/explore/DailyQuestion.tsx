@@ -11,7 +11,7 @@ export const DailyQuestion: React.FC = () => {
     <div className="glass p-6 rounded-3xl relative overflow-hidden group">
       {/* Background decoration */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-700" />
-      
+
       <div className="relative z-10 space-y-4">
         <div className="flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest">
           <Sparkles className="w-3 h-3" />
@@ -27,7 +27,7 @@ export const DailyQuestion: React.FC = () => {
           </Text>
         </div>
 
-        <Button className="w-full justify-between group-hover:bg-primary group-hover:text-white transition-colors">
+        <Button className="w-full justify-between group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
           <span>Write your answer</span>
           <PenLine className="w-4 h-4" />
         </Button>
