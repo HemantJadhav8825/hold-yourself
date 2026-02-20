@@ -24,10 +24,10 @@ export const DashShell: React.FC<DashShellProps> = ({ children, fullWidth = fals
         <SidebarNav />
 
         {/* Main Content Area */}
-        <main className="flex-1 lg:ml-64 h-full pt-14 lg:pt-0 flex flex-col overflow-hidden">
+        <main className="flex-1 lg:ml-[240px] h-full pt-14 lg:pt-0 flex flex-col overflow-hidden">
           <div className={cn(
-            'flex-1 flex flex-col w-full min-w-0 min-h-0 overflow-y-auto',
-            !shouldBeFullWidth && 'w-full max-w-app-content mx-auto px-4 sm:px-6'
+            'flex-1 flex w-full min-w-0 min-h-0 overflow-y-auto',
+            !shouldBeFullWidth && 'w-full'
           )}>
             {children}
           </div>
