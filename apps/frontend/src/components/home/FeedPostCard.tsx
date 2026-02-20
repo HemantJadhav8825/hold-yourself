@@ -161,12 +161,12 @@ export const FeedPostCard: React.FC<FeedPostCardProps> = ({ share, onUpdate, onD
     }
 
     return (
-        <article className="w-full bg-paper-surface border border-paper-border/80 rounded-[20px] mb-8 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+        <article className="w-full bg-paper-surface border border-paper-border/40 rounded-2xl mb-8 overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-opacity duration-200">
 
             {/* HEADER (Instagram style) */}
-            <header className="flex items-center justify-between p-4">
+            <header className="flex items-center justify-between px-4 pt-4 pb-3">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-paper-border/60 to-paper-border/20 p-[2px]">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-paper-border/40 to-paper-border/10 p-[1px]">
                         <div className="w-full h-full rounded-full border border-paper-surface bg-paper-surface overflow-hidden">
                             {isAnonymous ? (
                                 <AnonymousAvatar seed={avatarSeed || '#333:?'} size="sm" />
@@ -176,10 +176,10 @@ export const FeedPostCard: React.FC<FeedPostCardProps> = ({ share, onUpdate, onD
                         </div>
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[15px] font-semibold text-foreground/90 leading-tight">
+                        <span className="text-[15px] font-medium text-foreground/90 leading-tight">
                             {displayName}
                         </span>
-                        <Link href={`/holding-space/post/${share.id}`} className="text-xs text-foreground/50 hover:text-foreground/80 transition-colors mt-[2px]">
+                        <Link href={`/holding-space/post/${share.id}`} className="text-[11px] text-foreground/40 hover:text-foreground/70 transition-colors duration-200 mt-1">
                             {formatDistanceToNow(new Date(share.createdAt), { addSuffix: true })}
                         </Link>
                     </div>
@@ -188,13 +188,13 @@ export const FeedPostCard: React.FC<FeedPostCardProps> = ({ share, onUpdate, onD
             </header>
 
             {/* BODY CONTENT */}
-            <div className="px-4 pb-4">
+            <div className="px-4 pb-3">
                 {isEditing ? (
                     <div className="space-y-3 animate-in fade-in duration-200">
                         <Textarea
                             value={editedContent}
                             onChange={(e) => setEditedContent(e.target.value)}
-                            className="min-h-[120px] resize-none text-base border-paper-border bg-paper-surfaceSoft focus-visible:ring-primary/20"
+                            className="min-h-[120px] resize-none text-[15px] leading-relaxed border-paper-border bg-paper-surfaceSoft focus-visible:ring-primary/20"
                             placeholder="Share your thoughts..."
                             autoFocus
                         />
@@ -209,7 +209,7 @@ export const FeedPostCard: React.FC<FeedPostCardProps> = ({ share, onUpdate, onD
                     </div>
                 ) : (
                     <SensitivityBlurWrapper tags={share.sensitivityTags}>
-                        <p className="text-[16px] leading-relaxed whitespace-pre-wrap font-serif text-foreground/85">
+                        <p className="text-[15px] leading-relaxed whitespace-pre-wrap font-serif text-foreground/85">
                             {share.content}
                         </p>
                     </SensitivityBlurWrapper>
@@ -217,47 +217,47 @@ export const FeedPostCard: React.FC<FeedPostCardProps> = ({ share, onUpdate, onD
             </div>
 
             {/* FOOTER ACTIONS (Instagram Style, ZERO metrics) */}
-            <div className="px-4 py-3 flex items-center gap-1 border-t border-paper-border/30">
+            <div className="px-4 py-3 flex items-center gap-6 border-t border-paper-border/20">
                 <button
                     onClick={handleResonate}
-                    className="p-2 -ml-2 rounded-full hover:bg-paper-surfaceSoft group transition-colors"
+                    className="group transition-opacity duration-200 hover:opacity-60"
                     title="Resonate"
                 >
                     <Heart
-                        size={24}
+                        size={20}
                         strokeWidth={1.5}
-                        className={`transition-colors duration-300 ${hasResonated ? 'fill-rose-500 text-rose-500' : 'text-foreground/80 group-hover:text-foreground/60'}`}
+                        className={`transition-colors duration-200 ${hasResonated ? 'fill-rose-500 text-rose-500' : 'text-foreground/80'}`}
                     />
                 </button>
 
                 <button
                     onClick={handleReplyClick}
-                    className="p-2 rounded-full hover:bg-paper-surfaceSoft group transition-colors"
+                    className="group transition-opacity duration-200 hover:opacity-60"
                     title="Reply"
                 >
                     <MessageCircle
-                        size={24}
+                        size={20}
                         strokeWidth={1.5}
-                        className="text-foreground/80 group-hover:text-foreground/60 transition-colors"
+                        className="text-foreground/80"
                     />
                 </button>
 
                 <button
                     onClick={handleShare}
-                    className="p-2 rounded-full hover:bg-paper-surfaceSoft group transition-colors"
+                    className="group transition-opacity duration-200 hover:opacity-60"
                     title="Share"
                 >
                     {isCopied ? (
-                        <Check size={24} strokeWidth={1.5} className="text-emerald-500" />
+                        <Check size={20} strokeWidth={1.5} className="text-emerald-500" />
                     ) : (
-                        <Share size={24} strokeWidth={1.5} className="text-foreground/80 group-hover:text-foreground/60 transition-colors" />
+                        <Share size={20} strokeWidth={1.5} className="text-foreground/80" />
                     )}
                 </button>
             </div>
 
             {/* COMMENTS EXPANSION */}
             {showComments && (
-                <div className="border-t border-paper-border/30 bg-paper-surfaceSoft/30">
+                <div className="border-t border-paper-border/20 bg-paper-surfaceSoft/20">
                     <CommentSection shareId={share.id} />
                 </div>
             )}

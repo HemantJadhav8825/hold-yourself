@@ -81,10 +81,10 @@ export const HoldingSpaceScreen = () => {
       <div className="w-full max-w-[1020px] px-4 md:px-8 py-8 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-12">
 
         {/* Main Feed - Center Column */}
-        <div className="w-full max-w-[680px] mx-auto flex flex-col items-center">
+        <div className="w-full max-w-[620px] mx-auto flex flex-col items-start">
 
           {/* Check-In Composer */}
-          <div ref={composerRef} className="w-full mb-8">
+          <div ref={composerRef} className="w-full mb-6">
             <CheckInComposer
               addOptimisticShare={addOptimisticShare}
               replaceShare={replaceShare}

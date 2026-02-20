@@ -34,29 +34,29 @@ export const MomentsStrip = () => {
                         className="flex flex-col items-center gap-2 flex-shrink-0 cursor-pointer group"
                     >
                         {/* Soft Warm Ring - No Red/Urgency */}
-                        <div className="w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-paper-border via-paper-border/20 to-paper-border transition-all duration-300 group-hover:from-primary/20 group-hover:to-primary/10">
+                        <div className="w-14 h-14 rounded-full p-[2px] bg-gradient-to-tr from-paper-border/50 via-paper-border/20 to-paper-border/50 transition-all duration-200 group-hover:from-primary/10 group-hover:to-primary/5">
                             {/* Inner Circle */}
-                            <div className={`w-full h-full rounded-full bg-gradient-to-br ${moment.gradient} border-[3px] border-paper-surface flex items-center justify-center p-1`}>
+                            <div className={`w-full h-full rounded-full bg-gradient-to-br ${moment.gradient} border-[2px] border-paper-surface flex items-center justify-center p-1`}>
                                 <div className="w-full h-full rounded-full bg-white/40 mix-blend-overlay" />
                             </div>
                         </div>
-                        <span className="text-xs font-medium text-foreground/70 group-hover:text-foreground transition-colors">
+                        <span className="text-[11px] font-normal text-foreground/50 group-hover:text-foreground/80 transition-opacity duration-200">
                             {moment.label}
                         </span>
                     </motion.div>
                 ))}
 
                 {/* Find a Circle Action - Safe Discovery */}
-                <Link href="/circles" className="flex flex-col items-center gap-2 flex-shrink-0 group">
+                <Link href="#" className="flex flex-col items-center gap-2 flex-shrink-0 group">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: MOMENTS.length * 0.05 }}
-                        className="w-16 h-16 rounded-full border-2 border-dashed border-paper-border flex items-center justify-center bg-paper-surfaceSoft transition-colors group-hover:border-primary/30 group-hover:bg-primary/5"
+                        className="w-14 h-14 rounded-full border border-dashed border-paper-border/60 flex items-center justify-center bg-paper-surfaceSoft transition-colors duration-200 group-hover:border-primary/20 group-hover:bg-primary/5"
                     >
-                        <Plus className="w-6 h-6 text-foreground/40 group-hover:text-primary/60 transition-colors" strokeWidth={1.5} />
+                        <Plus className="w-5 h-5 text-foreground/40 group-hover:text-primary/60 transition-colors" strokeWidth={1.5} />
                     </motion.div>
-                    <span className="text-xs font-medium text-foreground/50 group-hover:text-primary flex items-center justify-center text-center leading-tight mt-1 max-w-[64px]">
+                    <span className="text-[11px] font-normal text-foreground/50 group-hover:text-primary/80 flex items-center justify-center text-center leading-tight mt-1 max-w-[56px] transition-opacity duration-200">
                         Find a Circle
                     </span>
                 </Link>

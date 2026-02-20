@@ -18,10 +18,10 @@ export const SidebarNav: React.FC = () => {
 
 
   const navItems = [
-    { icon: Home, label: 'Home', href: '/home' },
-    { icon: Tent, label: 'Holding Space', href: '/sanctuary/feed' },
+    { icon: Home, label: 'Home', href: '/' },
+    { icon: Tent, label: 'Holding Space', href: '/' },
     { icon: PlusSquare, label: 'Sanctuary', href: '/sanctuary' },
-    { icon: Search, label: 'Circles', href: '/circles' },
+    { icon: Search, label: 'Circles', href: '#' },
     { icon: MessageCircle, label: 'Messages', href: '/messages' },
     { icon: User, label: 'Profile', href: '/profile' },
   ];
@@ -31,7 +31,7 @@ export const SidebarNav: React.FC = () => {
 
   return (
     <aside className="hidden lg:flex flex-col fixed top-0 left-0 h-screen w-[240px] border-r border-paper-border bg-paper-nav px-4 py-8 z-40">
-      <Link href="/home" className="px-4 mb-12">
+      <Link href="/" className="px-4 mb-12">
         <Heading level={4} className="text-primary font-bold tracking-tight font-serif">
           {brand.PRODUCT_NAME}
         </Heading>

@@ -133,9 +133,9 @@ export const CheckInComposer = ({
     // ----------------------------------------------------
     if (composerState === 'resting') {
         return (
-            <div className="w-full bg-paper-surfaceSoft border border-paper-border/50 rounded-2xl p-4 flex items-center justify-between transition-all duration-500 min-h-[64px]">
+            <div className="w-full bg-paper-surfaceSoft border border-paper-border/50 rounded-2xl py-3 px-4 flex items-center justify-between transition-all duration-500 min-h-[56px]">
                 <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
+                    <div className="w-9 h-9 rounded-full bg-primary/5 flex items-center justify-center">
                         <Shield className="w-5 h-5 text-primary/40" strokeWidth={1.5} />
                     </div>
                     <div>
@@ -157,14 +157,14 @@ export const CheckInComposer = ({
         <div
             className={cn(
                 "w-full bg-paper-surface border border-paper-border rounded-2xl shadow-sm transition-all duration-300 overflow-hidden",
-                composerState === 'idle' ? "cursor-text hover:border-border/60 p-4" : "p-6"
+                composerState === 'idle' ? "cursor-text hover:border-paper-border/80 py-3 px-4" : "p-6"
             )}
             onClick={handleExpand}
         >
             <div className="flex gap-4">
                 {/* Avatar */}
                 <div className="flex-shrink-0">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                    <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
                         {user?.avatar ? (
                             <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
                         ) : (
