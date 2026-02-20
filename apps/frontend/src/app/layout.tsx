@@ -7,6 +7,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { UsersProvider } from "@/context/UsersContext";
 import { ConversationsProvider } from "@/context/ConversationsContext";
 import { PaperModeProvider } from "@/context/PaperModeContext";
+import { MessagingProvider } from "@/context/MessagingContext";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", weight: ["400", "500", "600"] });
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-serif", weight: ["300", "400", "500", "600"] });
@@ -97,20 +98,23 @@ export default function RootLayout({
             <AuthProvider>
               <UsersProvider>
                 <ConversationsProvider>
-                  {children}
-                </ConversationsProvider>
-              </UsersProvider>
-            </AuthProvider>
-          </PaperModeProvider>
-        </Suspense>
-        {process.env.NODE_ENV === 'production' && (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
-              strategy="afterInteractive"
-            />
-            <Script id="google-analytics" strategy="afterInteractive">
-              {`
+                  <MessagingProvider>
+                    {children}
+                  </MessagingProvider>
+                </ConversationsProvider >
+              </UsersProvider >
+            </AuthProvider >
+          </PaperModeProvider >
+        </Suspense >
+        {
+          process.env.NODE_ENV === 'production' && (
+            <>
+              <Script
+                src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+                strategy="afterInteractive"
+              />
+              <Script id="google-analytics" strategy="afterInteractive">
+                {`
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 window.gtag = gtag;
@@ -119,10 +123,11 @@ export default function RootLayout({
                   anonymize_ip: true,
                 });
               `}
-            </Script>
-          </>
-        )}
-        <script
+              </Script>
+            </>
+          )
+        }
+        < script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
@@ -133,9 +138,10 @@ export default function RootLayout({
               "logo": "https://webelong.world/icon",
               "sameAs": []
             })
-          }}
+          }
+          }
         />
-      </body>
-    </html>
+      </body >
+    </html >
   );
 }

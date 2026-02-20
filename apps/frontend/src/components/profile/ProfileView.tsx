@@ -42,21 +42,20 @@ export const ProfileView: React.FC = () => {
     <div className="space-y-8">
       {/* Identity Header */}
       <div className="flex flex-col items-center text-center gap-6">
-        <div className="relative">
-          <Aura size={180} color="var(--primary)" isPulsing={false} className="opacity-20" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <ProfileAvatar
-              src={user?.avatar}
-              name={user?.fullName || user?.displayName || user?.username || user?.email || 'User'}
-              size="xl"
-              className="border-4 border-paper-surface/20 shadow-md"
-            />
-          </div>
+        <div className="relative flex justify-center w-full mt-4">
+          <ProfileAvatar
+            src={user?.avatar}
+            name={user?.fullName || user?.displayName || user?.username || user?.email || 'User'}
+            size="xl"
+            className="w-24 h-24 border-[3px] border-paper-surfaceSoft shadow-sm"
+          />
         </div>
 
-        <div className="space-y-2">
-          <Heading level={2}>{user?.fullName || user?.displayName || user?.username || 'Anonymous Soul'}</Heading>
-          <Text muted size="lg">Reflecting since {joinDate}</Text>
+        <div className="space-y-2 mt-2">
+          <Heading level={2} className="text-3xl font-serif text-foreground font-bold tracking-tight">
+            {user?.fullName || user?.displayName || user?.username || 'Anonymous Soul'}
+          </Heading>
+          <Text muted size="sm" className="font-medium text-foreground/50">Reflecting since {joinDate}</Text>
         </div>
 
         {user?.bio && (
