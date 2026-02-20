@@ -6,15 +6,10 @@ import { useMessagingContext } from '@/context/MessagingContext';
 import { useConversations } from '@/hooks/useConversations';
 import { ConversationList } from './ConversationList';
 import { ConversationView } from './ConversationView';
-import { cn } from '@/lib/utils';
-import { usePathname } from 'next/navigation';
 
 export const MessageDrawer: React.FC = () => {
     const { isOpen, setIsOpen } = useMessagingContext();
     const { activeConversationId } = useConversations();
-    const pathname = usePathname();
-    const isMessagesRoute = pathname.startsWith('/messages');
-
     // Close on escape
     useEffect(() => {
         const handleEsc = (e: KeyboardEvent) => {
@@ -24,31 +19,26 @@ export const MessageDrawer: React.FC = () => {
         return () => window.removeEventListener('keydown', handleEsc);
     }, [setIsOpen]);
 
-    if (!isOpen && !isMessagesRoute) return null;
+    if (!isOpen) return null;
 
     return (
         <AnimatePresence>
-            {(isOpen || isMessagesRoute) && (
+            {isOpen && (
                 <>
-                    {!isMessagesRoute && (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={() => setIsOpen(false)}
-                            className="fixed inset-0 z-40 bg-transparent lg:bg-black/5"
-                        />
-                    )}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setIsOpen(false)}
+                        className="fixed inset-0 z-40 bg-transparent lg:hidden"
+                    />
 
                     <motion.div
                         initial={{ x: '100%', opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         exit={{ x: '100%', opacity: 0 }}
-                        transition={{ type: 'tween', ease: 'easeOut', duration: 0.2 }}
-                        className={cn(
-                            "fixed right-0 top-0 bottom-0 z-50 flex flex-col overflow-hidden bg-paper-bg shadow-xl transition-all lg:border-l lg:border-paper-border",
-                            isMessagesRoute ? "w-full lg:w-[420px]" : "w-full lg:w-[400px]"
-                        )}
+                        transition={{ type: 'tween', ease: 'easeOut', duration: 0.18 }}
+                        className="fixed inset-y-0 right-0 lg:inset-y-auto lg:bottom-4 lg:right-4 z-50 flex flex-col overflow-hidden bg-paper-bg shadow-[0_0_40px_-10px_rgba(0,0,0,0.06)] transition-all lg:border lg:border-paper-border lg:rounded-[20px] w-full lg:w-[380px] lg:h-[70vh]"
                     >
                         {activeConversationId ? (
                             <ConversationView />
