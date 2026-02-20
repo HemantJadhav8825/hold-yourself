@@ -7,6 +7,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { UsersProvider } from "@/context/UsersContext";
 import { ConversationsProvider } from "@/context/ConversationsContext";
 import { PaperModeProvider } from "@/context/PaperModeContext";
+import { MessagingProvider } from "@/context/MessagingContext";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", weight: ["400", "500", "600"] });
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-serif", weight: ["300", "400", "500", "600"] });
@@ -97,7 +98,9 @@ export default function RootLayout({
             <AuthProvider>
               <UsersProvider>
                 <ConversationsProvider>
-                  {children}
+                  <MessagingProvider>
+                    {children}
+                  </MessagingProvider>
                 </ConversationsProvider>
               </UsersProvider>
             </AuthProvider>

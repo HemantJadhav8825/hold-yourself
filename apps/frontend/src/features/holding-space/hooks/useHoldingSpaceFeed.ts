@@ -32,12 +32,10 @@ export const useHoldingSpaceFeed = (tag?: string) => {
           return uniqueShares.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         });
 
-        // Assuming the backend supports cursor pagination via the last item's ID or createdAt.
-        // Since I don't have the full backend response structure (metadata), I'll assume standard cursor logic
-        // where I use the last item's ID as the next cursor.
-        // If the backend returns a specific 'nextCursor' field, I would use that. 
-        // For now, I'll use the ID of the last item.
-        setCursor(newShares[newShares.length - 1].id);
+        // Assuming the backend supports cursor pagination via the last item's createdAt timestamp.
+        // The backend `getShares` controller uses `$lt: new Date(cursor as string)`
+        // so we must pass a valid date string, not an ID.
+        setCursor(newShares[newShares.length - 1].createdAt);
       }
     } catch (err) {
       console.error('Failed to fetch holding space shares:', err);
