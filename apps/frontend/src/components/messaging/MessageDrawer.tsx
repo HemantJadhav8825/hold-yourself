@@ -6,12 +6,10 @@ import { useMessagingContext } from '@/context/MessagingContext';
 import { useConversations } from '@/hooks/useConversations';
 import { ConversationList } from './ConversationList';
 import { ConversationView } from './ConversationView';
-import { usePathname } from 'next/navigation';
 
 export const MessageDrawer: React.FC = () => {
     const { isOpen, setIsOpen } = useMessagingContext();
     const { activeConversationId } = useConversations();
-    const pathname = usePathname();
     // Close on escape
     useEffect(() => {
         const handleEsc = (e: KeyboardEvent) => {
@@ -21,7 +19,7 @@ export const MessageDrawer: React.FC = () => {
         return () => window.removeEventListener('keydown', handleEsc);
     }, [setIsOpen]);
 
-    if (!isOpen || pathname.startsWith('/messages')) return null;
+    if (!isOpen) return null;
 
     return (
         <AnimatePresence>

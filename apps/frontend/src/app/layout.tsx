@@ -101,19 +101,20 @@ export default function RootLayout({
                   <MessagingProvider>
                     {children}
                   </MessagingProvider>
-                </ConversationsProvider>
-              </UsersProvider>
-            </AuthProvider>
-          </PaperModeProvider>
-        </Suspense>
-        {process.env.NODE_ENV === 'production' && (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
-              strategy="afterInteractive"
-            />
-            <Script id="google-analytics" strategy="afterInteractive">
-              {`
+                </ConversationsProvider >
+              </UsersProvider >
+            </AuthProvider >
+          </PaperModeProvider >
+        </Suspense >
+        {
+          process.env.NODE_ENV === 'production' && (
+            <>
+              <Script
+                src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+                strategy="afterInteractive"
+              />
+              <Script id="google-analytics" strategy="afterInteractive">
+                {`
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 window.gtag = gtag;
@@ -122,10 +123,11 @@ export default function RootLayout({
                   anonymize_ip: true,
                 });
               `}
-            </Script>
-          </>
-        )}
-        <script
+              </Script>
+            </>
+          )
+        }
+        < script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
@@ -136,9 +138,10 @@ export default function RootLayout({
               "logo": "https://webelong.world/icon",
               "sameAs": []
             })
-          }}
+          }
+          }
         />
-      </body>
-    </html>
+      </body >
+    </html >
   );
 }
