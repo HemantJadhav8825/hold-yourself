@@ -3,8 +3,7 @@ import { cn } from '@/lib/utils';
 import { SidebarNav } from './SidebarNav';
 import { TopBar } from './TopBar';
 import { usePathname } from 'next/navigation';
-import { MessageDrawer } from '../messaging/MessageDrawer';
-import { FloatingMessageButton } from '../messaging/FloatingMessageButton';
+import { MessagingDock } from '../messaging/MessagingDock';
 
 interface DashShellProps {
   children: React.ReactNode;
@@ -36,8 +35,7 @@ export const DashShell: React.FC<DashShellProps> = ({ children, fullWidth = fals
         </main>
       </div>
 
-      <MessageDrawer />
-      <FloatingMessageButton />
+      <MessagingDock />
     </div>
   );
 };

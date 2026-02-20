@@ -179,7 +179,7 @@ export const ConversationView: React.FC = () => {
                         <Maximize2 className="w-4 h-4 text-foreground/80 mt-0.5" />
                     </Link>
                     <button
-                        onClick={() => setIsOpen(false)}
+                        onClick={() => setActiveConversationId(null)}
                         className="p-2 flex-shrink-0 rounded-full hover:bg-paper-surfaceSoft transition-colors"
                     >
                         <X className="w-5 h-5 text-foreground/80" />
