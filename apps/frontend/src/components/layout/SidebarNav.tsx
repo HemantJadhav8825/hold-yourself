@@ -9,20 +9,21 @@ import { env } from '@/config/env';
 import { useAuth } from '@/context/AuthContext';
 import { useConversations } from '@/hooks/useConversations';
 import { usePaperMode } from '@/context/PaperModeContext';
+import { useMessagingContext } from '@/context/MessagingContext';
 
 export const SidebarNav: React.FC = () => {
   const pathname = usePathname();
   const { logout } = useAuth();
   const { conversations } = useConversations();
   const { mode, setMode, isNightActive } = usePaperMode();
-
+  const { setIsOpen } = useMessagingContext();
 
   const navItems = [
     { icon: Home, label: 'Home', href: '/' },
     { icon: Tent, label: 'Holding Space', href: '/' },
     { icon: PlusSquare, label: 'Sanctuary', href: '/sanctuary' },
     { icon: Search, label: 'Circles', href: '#' },
-    { icon: MessageCircle, label: 'Messages', href: '/messages' },
+    { icon: MessageCircle, label: 'Messages', href: '', isAction: true },
     { icon: User, label: 'Profile', href: '/profile' },
   ];
 
@@ -40,6 +41,34 @@ export const SidebarNav: React.FC = () => {
       <nav className="flex-1 space-y-2">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
+          const content = (
+            <>
+              <item.icon className={cn('w-6 h-6 transition-transform group-hover:scale-110', isActive && 'text-primary stroke-[2.5px]')} />
+              <div className="flex-1 flex items-center justify-between">
+                <span className="text-sm font-medium">{item.label}</span>
+              </div>
+            </>
+          );
+
+          if (item.isAction) {
+            return (
+              <button
+                key={item.label}
+                onClick={() => {
+                  if (item.label === 'Messages') {
+                    setIsOpen(true);
+                  }
+                }}
+                className={cn(
+                  'w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all hover:bg-paper-surfaceSoft group relative',
+                  isActive ? 'text-foreground font-semibold' : 'text-foreground/60 opacity-80'
+                )}
+              >
+                {content}
+              </button>
+            )
+          }
+
           return (
             <Link
               key={item.label}
@@ -49,10 +78,7 @@ export const SidebarNav: React.FC = () => {
                 isActive ? 'text-foreground font-semibold' : 'text-foreground/60 opacity-80'
               )}
             >
-              <item.icon className={cn('w-6 h-6 transition-transform group-hover:scale-110', isActive && 'text-primary stroke-[2.5px]')} />
-              <div className="flex-1 flex items-center justify-between">
-                <span className="text-sm font-medium">{item.label}</span>
-              </div>
+              {content}
             </Link>
           );
         })}

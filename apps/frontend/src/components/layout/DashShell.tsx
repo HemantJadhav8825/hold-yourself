@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import { SidebarNav } from './SidebarNav';
 import { TopBar } from './TopBar';
 import { usePathname } from 'next/navigation';
+import { MessageDrawer } from '../messaging/MessageDrawer';
 
 interface DashShellProps {
   children: React.ReactNode;
@@ -24,7 +25,7 @@ export const DashShell: React.FC<DashShellProps> = ({ children, fullWidth = fals
         <SidebarNav />
 
         {/* Main Content Area */}
-        <main className="flex-1 lg:ml-[240px] h-full pt-14 lg:pt-0 flex flex-col overflow-hidden">
+        <main className="flex-1 lg:ml-[240px] h-full pt-14 lg:pt-0 flex flex-col overflow-hidden w-full relative">
           <div className={cn(
             'flex-1 flex w-full min-w-0 min-h-0 overflow-y-auto',
             !shouldBeFullWidth && 'w-full'
@@ -33,6 +34,8 @@ export const DashShell: React.FC<DashShellProps> = ({ children, fullWidth = fals
           </div>
         </main>
       </div>
+
+      <MessageDrawer />
     </div>
   );
 };
