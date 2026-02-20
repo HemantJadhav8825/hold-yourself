@@ -14,6 +14,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useMessagingContext } from '@/context/MessagingContext';
 import { useUsers } from '@/hooks/useUsers';
 import Link from 'next/link';
+import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 
 export const ConversationView: React.FC = () => {
     const { activeConversationId, setActiveConversationId, conversations } = useConversations();
@@ -26,8 +27,7 @@ export const ConversationView: React.FC = () => {
     const [prevConvId, setPrevConvId] = useState<string | null>(null);
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
-    const scrollRef = useRef<HTMLDivElement>(null);
-    const isAtBottomRef = useRef(true);
+    const virtuosoRef = useRef<VirtuosoHandle>(null);
 
     if (activeConversationId !== prevConvId) {
         setPrevConvId(activeConversationId);
@@ -55,11 +55,6 @@ export const ConversationView: React.FC = () => {
             .then(msgs => {
                 setMessages(msgs.reverse());
                 setIsLoading(false);
-                setTimeout(() => {
-                    if (scrollRef.current) {
-                        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-                    }
-                }, 10);
             })
             .catch((err) => {
                 console.error(err);
@@ -76,14 +71,6 @@ export const ConversationView: React.FC = () => {
                     if (prev.some(m => m.id === msg.id)) return prev;
                     return [...prev, msg];
                 });
-
-                // The exact scrolling invariant requested for safe connection UX
-                setTimeout(() => {
-                    const el = scrollRef.current;
-                    if (el && isAtBottomRef.current) {
-                        el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
-                    }
-                }, 10);
             }
         };
 
@@ -93,13 +80,7 @@ export const ConversationView: React.FC = () => {
         };
     }, [activeConversationId]);
 
-    const handleScroll = () => {
-        const el = scrollRef.current;
-        if (el) {
-            const isBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 10;
-            isAtBottomRef.current = isBottom;
-        }
-    };
+    // Scroll handling is now managed internally by Virtuoso via followOutput
 
     const handleSend = async (e?: React.FormEvent) => {
         e?.preventDefault();
@@ -114,11 +95,6 @@ export const ConversationView: React.FC = () => {
                 if (prev.some(m => m.id === msg.id)) return prev;
                 return [...prev, msg];
             });
-
-            setTimeout(() => {
-                const el = scrollRef.current;
-                if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
-            }, 10);
         } catch (error) {
             console.error('Failed to send message', error);
         }
@@ -132,10 +108,6 @@ export const ConversationView: React.FC = () => {
                 if (prev.some(m => m.id === msg.id)) return prev;
                 return [...prev, msg];
             });
-            setTimeout(() => {
-                const el = scrollRef.current;
-                if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
-            }, 10);
         } catch (error) {
             console.error('Failed to send support', error);
         }
@@ -188,34 +160,38 @@ export const ConversationView: React.FC = () => {
             </div>
 
             {/* Message Area */}
-            <div
-                ref={scrollRef}
-                onScroll={handleScroll}
-                className="flex-1 overflow-y-auto p-4 space-y-2"
-            >
+            <div className="flex-1 overflow-hidden relative">
                 {isLoading ? (
                     <div className="flex justify-center p-4 opacity-50">
                         <Text size="sm">Loading connection...</Text>
                     </div>
                 ) : (
-                    messages.map((msg, idx) => {
-                        const isMe = msg.senderId === user?.id;
-                        const isRemoved = msg.content === 'Message unavailable';
+                    <Virtuoso
+                        ref={virtuosoRef}
+                        data={messages}
+                        initialTopMostItemIndex={messages.length - 1}
+                        followOutput="smooth"
+                        alignToBottom={true}
+                        className="w-full h-full pb-2"
+                        itemContent={(idx: number, msg: Message) => {
+                            const isMe = msg.senderId === user?.id;
+                            const isRemoved = msg.content === 'Message unavailable';
 
-                        return (
-                            <div key={msg.id || idx} className={cn("flex", isMe ? "justify-end" : "justify-start")}>
-                                <div className={cn(
-                                    "max-w-[68%] px-[14px] py-[10px] rounded-[18px]",
-                                    isMe ? "bg-paper-border/40 text-foreground rounded-tr-sm" : "bg-paper-surfaceSoft text-foreground rounded-tl-sm border border-paper-border/30",
-                                    isRemoved && "bg-transparent border border-dashed border-paper-border text-foreground/50 italic opacity-80"
-                                )}>
-                                    <Text size="sm" className="whitespace-pre-wrap leading-relaxed text-[15px]">
-                                        {msg.content}
-                                    </Text>
+                            return (
+                                <div className={cn("flex px-4 py-1", isMe ? "justify-end" : "justify-start")}>
+                                    <div className={cn(
+                                        "max-w-[68%] px-[14px] py-[10px] rounded-[18px]",
+                                        isMe ? "bg-paper-border/40 text-foreground rounded-tr-sm" : "bg-paper-surfaceSoft text-foreground rounded-tl-sm border border-paper-border/30",
+                                        isRemoved && "bg-transparent border border-dashed border-paper-border text-foreground/50 italic opacity-80"
+                                    )}>
+                                        <Text size="sm" className="whitespace-pre-wrap leading-relaxed text-[15px]">
+                                            {msg.content}
+                                        </Text>
+                                    </div>
                                 </div>
-                            </div>
-                        );
-                    })
+                            );
+                        }}
+                    />
                 )}
             </div>
 

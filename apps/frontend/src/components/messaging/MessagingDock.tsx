@@ -58,7 +58,7 @@ export const MessagingDock: React.FC = () => {
         <>
             {/* 
               MAIN DOCK (Inbox)
-              Anchored bottom-0, right-6 (desktop). Full width/height on mobile.
+              Anchored bottom-0, right-6 (desktop). Hidden on mobile (relies on /messages route).
             */}
             <motion.div
                 layout
@@ -67,18 +67,15 @@ export const MessagingDock: React.FC = () => {
                     height: isOpen ? 600 : 48,
                 }}
                 transition={{
-                    type: "spring",
-                    damping: 25,
-                    stiffness: 200,
-                    mass: 0.8
+                    type: "tween",
+                    ease: "easeOut",
+                    duration: 0.18
                 }}
                 className={cn(
-                    "fixed z-40 origin-bottom bg-paper-bg shadow-[0_-8px_30px_-12px_rgba(0,0,0,0.12)] border-paper-border overflow-hidden flex flex-col pointer-events-auto",
-                    // Desktop styles
-                    "md:bottom-0 md:right-6 md:w-[320px] md:border-x md:border-t md:rounded-t-[20px] md:rounded-b-none",
-                    // Mobile styles (full screen if open, hide if minimized because of the floating button alternative OR just show bottom bar)
-                    "bottom-0 right-0 w-full max-h-[80vh] border-t rounded-t-[20px] md:max-h-none",
-                    isOpen ? "h-[80vh] md:h-auto" : "h-[48px]",
+                    "fixed z-40 origin-bottom bg-paper-bg shadow-[0_-8px_30px_-12px_rgba(0,0,0,0.12)] border-paper-border overflow-hidden pointer-events-auto",
+                    // Desktop styles (hidden on mobile)
+                    "hidden md:flex md:bottom-0 md:right-6 md:w-[320px] md:border-x md:border-t md:rounded-t-[20px] md:rounded-b-none",
+                    isOpen ? "md:h-auto" : "h-[48px]",
                     !isOpen && "cursor-pointer hover:bg-paper-surface hover:border-paper-border/80 transition-colors"
                 )}
                 onClick={() => {
@@ -136,8 +133,7 @@ export const MessagingDock: React.FC = () => {
 
             {/* 
               ACTIVE CONVERSATION PANEL
-              Spawns to the left of the Main Dock on desktop.
-              Overlaps on mobile entirely.
+              Spawns to the left of the Main Dock on desktop. Hidden on mobile.
             */}
             <AnimatePresence>
                 {activeConversationId && (
@@ -150,18 +146,15 @@ export const MessagingDock: React.FC = () => {
                         }}
                         exit={{ y: 50, opacity: 0, transition: { duration: 0.2 } }}
                         transition={{
-                            type: "spring",
-                            damping: 25,
-                            stiffness: 200,
-                            mass: 0.8
+                            type: "tween",
+                            ease: "easeOut",
+                            duration: 0.18
                         }}
                         className={cn(
-                            "fixed z-[45] origin-bottom bg-paper-bg shadow-[0_-8px_30px_-12px_rgba(0,0,0,0.12)] border-paper-border overflow-hidden flex flex-col pointer-events-auto",
+                            "fixed z-[50] origin-bottom bg-paper-bg shadow-[0_-8px_30px_-12px_rgba(0,0,0,0.12)] border-paper-border overflow-hidden pointer-events-auto",
                             // Desktop: attached floor, right of dock
-                            "md:bottom-0 md:right-[360px] md:w-[360px] md:border-x md:border-t md:rounded-t-[20px] md:rounded-b-none",
-                            // Mobile: overlaps completely
-                            "bottom-0 right-0 w-full rounded-t-[20px] border-t max-h-[80vh] md:max-h-none",
-                            isChatExpanded ? "h-[80vh] md:h-auto" : "h-[48px]",
+                            "hidden md:flex flex-col md:bottom-0 md:right-[360px] md:w-[360px] md:border-x md:border-t md:rounded-t-[20px] md:rounded-b-none",
+                            isChatExpanded ? "md:h-auto" : "h-[48px]",
                             !isChatExpanded && "cursor-pointer hover:bg-paper-surface hover:border-paper-border/80 transition-colors"
                         )}
                         onClick={() => {
