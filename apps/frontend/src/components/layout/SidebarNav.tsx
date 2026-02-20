@@ -23,7 +23,7 @@ export const SidebarNav: React.FC = () => {
     { icon: Tent, label: 'Holding Space', href: '/' },
     { icon: PlusSquare, label: 'Sanctuary', href: '/sanctuary' },
     { icon: Search, label: 'Circles', href: '#' },
-    { icon: MessageCircle, label: 'Messages', href: '', isAction: true },
+    { icon: MessageCircle, label: 'Messages', href: '/messages' },
     { icon: User, label: 'Profile', href: '/profile' },
   ];
 
@@ -50,14 +50,12 @@ export const SidebarNav: React.FC = () => {
             </>
           );
 
-          if (item.isAction) {
+          if ('isAction' in item && item.isAction) {
             return (
               <button
                 key={item.label}
                 onClick={() => {
-                  if (item.label === 'Messages') {
-                    setIsOpen(true);
-                  }
+                  // Fallback for any other future actions
                 }}
                 className={cn(
                   'w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all hover:bg-paper-surfaceSoft group relative',

@@ -3,7 +3,7 @@
 import React from 'react';
 import { useConversations } from '@/hooks/useConversations';
 import { useMessagingContext } from '@/context/MessagingContext';
-import { X, Edit } from 'lucide-react';
+import { X, Edit, Maximize2 } from 'lucide-react';
 import { Heading } from '@/components/ui/Heading';
 import { Text } from '@/components/ui/Text';
 import { ProfileAvatar } from '@/components/ui/ProfileAvatar';
@@ -12,6 +12,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useUsers } from '@/hooks/useUsers';
 import { cn } from '@/lib/utils';
 import { chatService } from '@/api/chat.service';
+import Link from 'next/link';
 
 export const ConversationList: React.FC = () => {
     const { conversations, setActiveConversationId, includeArchived, onlineUsers, refresh: refreshConversations } = useConversations();
@@ -50,10 +51,18 @@ export const ConversationList: React.FC = () => {
                 <Heading level={3} className="text-xl font-bold font-serif tracking-tight">
                     Messages
                 </Heading>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1">
                     <button className="p-2 rounded-full hover:bg-paper-surfaceSoft transition-colors">
                         <Edit className="w-5 h-5 text-foreground/80" />
                     </button>
+                    <Link
+                        href="/messages"
+                        onClick={() => setIsOpen(false)}
+                        className="p-2 rounded-full hover:bg-paper-surfaceSoft transition-colors inline-flex"
+                        aria-label="Open in full screen"
+                    >
+                        <Maximize2 className="w-4 h-4 text-foreground/80 mt-0.5" />
+                    </Link>
                     <button
                         onClick={() => setIsOpen(false)}
                         className="p-2 rounded-full hover:bg-paper-surfaceSoft transition-colors"

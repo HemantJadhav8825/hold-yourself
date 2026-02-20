@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useConversations } from '@/hooks/useConversations';
 import { chatService, Message } from '@/api/chat.service';
 import { useAuth } from '@/context/AuthContext';
-import { ArrowLeft, Send, X } from 'lucide-react';
+import { ArrowLeft, Send, X, Maximize2 } from 'lucide-react';
 import { Heading } from '@/components/ui/Heading';
 import { Text } from '@/components/ui/Text';
 import { ProfileAvatar } from '@/components/ui/ProfileAvatar';
@@ -13,6 +13,7 @@ import { socketService } from '@/api/socket.service';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMessagingContext } from '@/context/MessagingContext';
 import { useUsers } from '@/hooks/useUsers';
+import Link from 'next/link';
 
 export const ConversationView: React.FC = () => {
     const { activeConversationId, setActiveConversationId, conversations } = useConversations();
@@ -168,12 +169,22 @@ export const ConversationView: React.FC = () => {
                         </Heading>
                     </button>
                 </div>
-                <button
-                    onClick={() => setIsOpen(false)}
-                    className="p-2 flex-shrink-0 rounded-full hover:bg-paper-surfaceSoft transition-colors"
-                >
-                    <X className="w-5 h-5 text-foreground/80" />
-                </button>
+                <div className="flex items-center space-x-1">
+                    <Link
+                        href="/messages"
+                        onClick={() => setIsOpen(false)}
+                        className="p-2 rounded-full hover:bg-paper-surfaceSoft transition-colors inline-flex"
+                        aria-label="Open in full screen"
+                    >
+                        <Maximize2 className="w-4 h-4 text-foreground/80 mt-0.5" />
+                    </Link>
+                    <button
+                        onClick={() => setIsOpen(false)}
+                        className="p-2 flex-shrink-0 rounded-full hover:bg-paper-surfaceSoft transition-colors"
+                    >
+                        <X className="w-5 h-5 text-foreground/80" />
+                    </button>
+                </div>
             </div>
 
             {/* Message Area */}
