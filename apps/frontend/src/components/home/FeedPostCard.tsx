@@ -161,25 +161,25 @@ export const FeedPostCard: React.FC<FeedPostCardProps> = ({ share, onUpdate, onD
     }
 
     return (
-        <article className="w-full bg-paper-surface border border-paper-border/40 rounded-2xl mb-8 overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-opacity duration-200">
+        <article className="w-full bg-paper-surface/40 rounded-3xl mb-12 overflow-hidden transition-opacity duration-200">
 
-            {/* HEADER (Instagram style) */}
-            <header className="flex items-center justify-between px-4 pt-4 pb-3">
+            {/* HEADER (Metadata minimal) */}
+            <header className="flex items-center justify-between px-6 pt-6 pb-2">
                 <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-paper-border/40 to-paper-border/10 p-[1px]">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-paper-border/20 to-transparent p-[1px]">
                         <div className="w-full h-full rounded-full border border-paper-surface bg-paper-surface overflow-hidden">
                             {isAnonymous ? (
-                                <AnonymousAvatar seed={avatarSeed || '#333:?'} size="sm" />
+                                <AnonymousAvatar seed={avatarSeed || '#333:?'} size="xs" />
                             ) : (
-                                <ProfileAvatar size="sm" name={displayName} />
+                                <ProfileAvatar size="xs" name={displayName} />
                             )}
                         </div>
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[15px] font-medium text-foreground/90 leading-tight">
+                        <span className="text-[13px] font-medium text-foreground/50 leading-tight">
                             {displayName}
                         </span>
-                        <Link href={`/holding-space/post/${share.id}`} className="text-[11px] text-foreground/40 hover:text-foreground/70 transition-colors duration-200 mt-1">
+                        <Link href={`/holding-space/post/${share.id}`} className="text-[11px] text-foreground/30 hover:text-foreground/50 transition-colors duration-200 mt-0.5">
                             {formatDistanceToNow(new Date(share.createdAt), { addSuffix: true })}
                         </Link>
                     </div>
@@ -187,8 +187,8 @@ export const FeedPostCard: React.FC<FeedPostCardProps> = ({ share, onUpdate, onD
                 {!isEditing && renderMenu()}
             </header>
 
-            {/* BODY CONTENT */}
-            <div className="px-4 pb-3">
+            {/* BODY CONTENT (Dominant) */}
+            <div className="px-6 pb-4 pt-2">
                 {isEditing ? (
                     <div className="space-y-3 animate-in fade-in duration-200">
                         <Textarea
@@ -209,48 +209,48 @@ export const FeedPostCard: React.FC<FeedPostCardProps> = ({ share, onUpdate, onD
                     </div>
                 ) : (
                     <SensitivityBlurWrapper tags={share.sensitivityTags}>
-                        <p className="text-[15px] leading-relaxed whitespace-pre-wrap font-serif text-foreground/85">
+                        <p className="text-[17px] leading-loose whitespace-pre-wrap font-serif text-foreground/90">
                             {share.content}
                         </p>
                     </SensitivityBlurWrapper>
                 )}
             </div>
 
-            {/* FOOTER ACTIONS (Instagram Style, ZERO metrics) */}
-            <div className="px-4 py-3 flex items-center gap-6 border-t border-paper-border/20">
+            {/* FOOTER ACTIONS (Ghosted until interaction) */}
+            <div className="px-6 py-4 flex items-center gap-5 border-t border-paper-border/10">
                 <button
                     onClick={handleResonate}
-                    className="group transition-opacity duration-200 hover:opacity-60"
+                    className="group transition-opacity duration-200 opacity-40 hover:opacity-100"
                     title="Resonate"
                 >
                     <Heart
-                        size={20}
+                        size={16}
                         strokeWidth={1.5}
-                        className={`transition-colors duration-200 ${hasResonated ? 'fill-rose-500 text-rose-500' : 'text-foreground/80'}`}
+                        className={`transition-colors duration-200 ${hasResonated ? 'fill-rose-500 text-rose-500 opacity-100' : 'text-foreground'}`}
                     />
                 </button>
 
                 <button
                     onClick={handleReplyClick}
-                    className="group transition-opacity duration-200 hover:opacity-60"
+                    className="group transition-opacity duration-200 opacity-40 hover:opacity-100"
                     title="Reply"
                 >
                     <MessageCircle
-                        size={20}
+                        size={16}
                         strokeWidth={1.5}
-                        className="text-foreground/80"
+                        className="text-foreground"
                     />
                 </button>
 
                 <button
                     onClick={handleShare}
-                    className="group transition-opacity duration-200 hover:opacity-60"
+                    className="group transition-opacity duration-200 opacity-40 hover:opacity-100"
                     title="Share"
                 >
                     {isCopied ? (
-                        <Check size={20} strokeWidth={1.5} className="text-emerald-500" />
+                        <Check size={16} strokeWidth={1.5} className="text-emerald-500" />
                     ) : (
-                        <Share size={20} strokeWidth={1.5} className="text-foreground/80" />
+                        <Share size={16} strokeWidth={1.5} className="text-foreground" />
                     )}
                 </button>
             </div>
