@@ -55,7 +55,7 @@ export default async function PostPermalinkPage({ params }: PostPageProps) {
     }
 
     return (
-        <div className="max-w-xl mx-auto py-24 px-6 md:px-0">
+        <div className="max-w-[640px] mx-auto py-24 px-6 md:px-0">
             <Link
                 href="/holding-space"
                 className="inline-flex items-center text-sm text-foreground/40 hover:text-foreground/80 mb-12 transition-colors group tracking-wide"

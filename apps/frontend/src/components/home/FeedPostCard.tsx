@@ -161,25 +161,23 @@ export const FeedPostCard: React.FC<FeedPostCardProps> = ({ share, onUpdate, onD
     }
 
     return (
-        <article className="w-full bg-paper-surface/40 rounded-3xl mb-12 overflow-hidden transition-opacity duration-200">
+        <article className="w-full bg-paper-surface border border-paper-border/20 rounded-[16px] mb-8 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
 
-            {/* HEADER (Metadata minimal) */}
-            <header className="flex items-center justify-between px-6 pt-6 pb-2">
+            {/* HEADER (LinkedIn Structure) */}
+            <header className="flex items-center justify-between px-4 pt-4 pb-0">
                 <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-paper-border/20 to-transparent p-[1px]">
-                        <div className="w-full h-full rounded-full border border-paper-surface bg-paper-surface overflow-hidden">
-                            {isAnonymous ? (
-                                <AnonymousAvatar seed={avatarSeed || '#333:?'} size="xs" />
-                            ) : (
-                                <ProfileAvatar size="xs" name={displayName} />
-                            )}
-                        </div>
+                    <div className="w-10 h-10 rounded-full border border-paper-border/10 overflow-hidden">
+                        {isAnonymous ? (
+                            <AnonymousAvatar seed={avatarSeed || '#333:?'} size="md" />
+                        ) : (
+                            <ProfileAvatar size="md" name={displayName} />
+                        )}
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[13px] font-medium text-foreground/50 leading-tight">
+                        <span className="text-[15px] font-medium text-foreground/90 leading-tight">
                             {displayName}
                         </span>
-                        <Link href={`/holding-space/post/${share.id}`} className="text-[11px] text-foreground/30 hover:text-foreground/50 transition-colors duration-200 mt-0.5">
+                        <Link href={`/holding-space/post/${share.id}`} className="text-[12px] text-foreground/50 hover:text-foreground/70 transition-colors duration-200 mt-0.5">
                             {formatDistanceToNow(new Date(share.createdAt), { addSuffix: true })}
                         </Link>
                     </div>
@@ -187,8 +185,8 @@ export const FeedPostCard: React.FC<FeedPostCardProps> = ({ share, onUpdate, onD
                 {!isEditing && renderMenu()}
             </header>
 
-            {/* BODY CONTENT (Dominant) */}
-            <div className="px-6 pb-4 pt-2">
+            {/* BODY CONTENT (Structured) */}
+            <div className="px-4 pb-0 pt-3">
                 {isEditing ? (
                     <div className="space-y-3 animate-in fade-in duration-200">
                         <Textarea
@@ -209,49 +207,51 @@ export const FeedPostCard: React.FC<FeedPostCardProps> = ({ share, onUpdate, onD
                     </div>
                 ) : (
                     <SensitivityBlurWrapper tags={share.sensitivityTags}>
-                        <p className="text-[17px] leading-loose whitespace-pre-wrap font-serif text-foreground/90">
+                        <p className="text-[16px] leading-[1.6] whitespace-pre-wrap break-words font-sans text-foreground/90">
                             {share.content}
                         </p>
                     </SensitivityBlurWrapper>
                 )}
             </div>
 
-            {/* FOOTER ACTIONS (Ghosted until interaction) */}
-            <div className="px-6 py-4 flex items-center gap-5 border-t border-paper-border/10">
+            {/* FOOTER ACTIONS (LinkedIn Structure) */}
+            <div className="px-4 py-3 mt-4 flex items-center justify-between border-t border-paper-border/10">
                 <button
                     onClick={handleResonate}
-                    className="group transition-opacity duration-200 opacity-40 hover:opacity-100"
-                    title="Resonate"
+                    className="flex-1 flex justify-center items-center gap-2 py-2 rounded-lg transition-colors group text-foreground/60 hover:text-foreground/90 hover:bg-paper-surfaceSoft"
+                    title="Hold"
                 >
                     <Heart
-                        size={16}
-                        strokeWidth={1.5}
-                        className={`transition-colors duration-200 ${hasResonated ? 'fill-rose-500 text-rose-500 opacity-100' : 'text-foreground'}`}
+                        size={18}
+                        strokeWidth={2}
+                        className={`transition-colors duration-200 ${hasResonated ? 'fill-rose-500 text-rose-500' : ''}`}
                     />
+                    <span className="text-[14px] font-medium">Hold</span>
                 </button>
 
                 <button
                     onClick={handleReplyClick}
-                    className="group transition-opacity duration-200 opacity-40 hover:opacity-100"
-                    title="Reply"
+                    className="flex-1 flex justify-center items-center gap-2 py-2 rounded-lg transition-colors group text-foreground/60 hover:text-foreground/90 hover:bg-paper-surfaceSoft"
+                    title="Respond"
                 >
                     <MessageCircle
-                        size={16}
-                        strokeWidth={1.5}
-                        className="text-foreground"
+                        size={18}
+                        strokeWidth={2}
                     />
+                    <span className="text-[14px] font-medium">Respond</span>
                 </button>
 
                 <button
                     onClick={handleShare}
-                    className="group transition-opacity duration-200 opacity-40 hover:opacity-100"
-                    title="Share"
+                    className="flex-1 flex justify-center items-center gap-2 py-2 rounded-lg transition-colors group text-foreground/60 hover:text-foreground/90 hover:bg-paper-surfaceSoft"
+                    title="Pass on"
                 >
                     {isCopied ? (
-                        <Check size={16} strokeWidth={1.5} className="text-emerald-500" />
+                        <Check size={18} strokeWidth={2} className="text-emerald-500" />
                     ) : (
-                        <Share size={16} strokeWidth={1.5} className="text-foreground" />
+                        <Share size={18} strokeWidth={2} />
                     )}
+                    <span className="text-[14px] font-medium">{isCopied ? 'Passed on' : 'Pass on'}</span>
                 </button>
             </div>
 
