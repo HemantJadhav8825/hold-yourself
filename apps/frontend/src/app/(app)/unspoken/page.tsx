@@ -22,13 +22,15 @@ interface UnspokenTimelineProps {
     activeEntryId: string | null;
     onSelectEntry: (id: string) => void;
     onCreateNew: () => void;
+    onDeleteEntry: (id: string) => void;
 }
 
 const UnspokenTimeline = React.memo(function UnspokenTimeline({
     entries,
     activeEntryId,
     onSelectEntry,
-    onCreateNew
+    onCreateNew,
+    onDeleteEntry
 }: UnspokenTimelineProps) {
     return (
         <aside className="w-full md:w-56 flex-shrink-0 flex flex-col h-32 md:h-full">
@@ -50,26 +52,37 @@ const UnspokenTimeline = React.memo(function UnspokenTimeline({
                     const isActive = entry.id === activeEntryId;
 
                     return (
-                        <button
-                            key={entry.id}
-                            onClick={() => onSelectEntry(entry.id)}
-                            className={cn(
-                                "w-full text-left px-4 py-4 rounded-xl transition-all duration-700 ease-in-out",
-                                isActive
-                                    ? "bg-paper-surface text-paper-text shadow-paper-shadow shadow-sm"
-                                    : "text-paper-textSoft/50 hover:bg-paper-surface/40 hover:text-paper-textSoft/80"
-                            )}
-                        >
-                            <div className="text-xs font-mono opacity-50 mb-2 tracking-wide">
-                                {format(entry.createdAt, 'EEEE, MMM d')}
-                            </div>
-                            <div className={cn(
-                                "text-sm font-serif truncate tracking-wide leading-relaxed",
-                                !firstLine && "opacity-60"
-                            )}>
-                                {preview}
-                            </div>
-                        </button>
+                        <div key={entry.id} className="relative group w-full">
+                            <button
+                                onClick={() => onSelectEntry(entry.id)}
+                                className={cn(
+                                    "w-full text-left px-4 py-4 rounded-xl transition-all duration-700 ease-in-out block",
+                                    isActive
+                                        ? "bg-paper-surface text-paper-text shadow-paper-shadow shadow-sm"
+                                        : "text-paper-textSoft/50 hover:bg-paper-surface/40 hover:text-paper-textSoft/80"
+                                )}
+                            >
+                                <div className="text-xs font-mono opacity-50 mb-2 tracking-wide flex justify-between items-center">
+                                    <span>{format(entry.createdAt, 'EEEE, MMM d')}</span>
+                                </div>
+                                <div className={cn(
+                                    "text-sm font-serif truncate tracking-wide leading-relaxed pr-8",
+                                    !firstLine && "opacity-60"
+                                )}>
+                                    {preview}
+                                </div>
+                            </button>
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onDeleteEntry(entry.id);
+                                }}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-serif text-paper-textSoft/30 hover:text-paper-textSoft/70 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500 px-2 py-1"
+                                aria-label="Delete entry"
+                            >
+                                delete
+                            </button>
+                        </div>
                     );
                 })}
             </div>
@@ -88,6 +101,7 @@ export default function UnspokenPage() {
     const [activeEntryContent, setActiveEntryContent] = useState<string>('');
     const [isLoaded, setIsLoaded] = useState(false);
     const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+    const [entryToDelete, setEntryToDelete] = useState<string | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const typingTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -205,6 +219,51 @@ export default function UnspokenPage() {
         return [...entries].sort((a, b) => b.updatedAt - a.updatedAt);
     }, [entries]);
 
+    const handleRequestDelete = React.useCallback((id: string) => {
+        setEntryToDelete(id);
+    }, []);
+
+    const confirmDelete = React.useCallback(() => {
+        if (!entryToDelete) return;
+
+        const updatedEntries = entries.filter(e => e.id !== entryToDelete);
+
+        setEntries(updatedEntries);
+        saveToStorage(updatedEntries);
+
+        if (activeEntryId === entryToDelete) {
+            // Deleted the active entry, find a replacement
+            if (updatedEntries.length > 0) {
+                // Select the most recently updated among remaining (they are already mostly sorted, but let's be safe)
+                const mostRecent = [...updatedEntries].sort((a, b) => b.updatedAt - a.updatedAt)[0];
+                setActiveEntryId(mostRecent.id);
+                setActiveEntryContent(mostRecent.content);
+            } else {
+                // No entries remain, create a new blank one
+                const newId = crypto.randomUUID();
+                const now = Date.now();
+                const newEntry = { id: newId, content: '', createdAt: now, updatedAt: now };
+                const finalEntries = [newEntry];
+                setEntries(finalEntries);
+                saveToStorage(finalEntries);
+                setActiveEntryId(newId);
+                setActiveEntryContent('');
+            }
+        }
+
+        setEntryToDelete(null);
+        setTimeout(() => {
+            if (textareaRef.current) textareaRef.current.focus();
+        }, 50);
+    }, [entryToDelete, entries, activeEntryId]);
+
+    const cancelDelete = React.useCallback(() => {
+        setEntryToDelete(null);
+        setTimeout(() => {
+            if (textareaRef.current) textareaRef.current.focus();
+        }, 50);
+    }, []);
+
     return (
         <PageContainer>
             <div className="flex flex-col md:flex-row h-[calc(100dvh-6rem)] md:h-[calc(100vh-8rem)] w-full max-w-6xl mx-auto py-6 md:py-12 px-4 md:px-12 gap-8 md:gap-20">
@@ -215,6 +274,7 @@ export default function UnspokenPage() {
                     activeEntryId={activeEntryId}
                     onSelectEntry={handleSelectEntry}
                     onCreateNew={handleCreateNew}
+                    onDeleteEntry={handleRequestDelete}
                 />
 
                 {/* Editor Core */}
@@ -239,6 +299,31 @@ export default function UnspokenPage() {
                     </div>
                 </main>
             </div>
+
+            {/* Deletion Confirmation Dialog */}
+            {entryToDelete && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-paper-bg/40 backdrop-blur-[2px] p-4 animate-in fade-in duration-500">
+                    <div className="bg-paper-surface rounded-2xl p-8 max-w-[320px] w-full shadow-paper-shadow border border-paper-border/20 text-center animate-in zoom-in-95 duration-500">
+                        <h3 className="text-paper-text font-serif text-lg mb-2 tracking-wide">Delete this unspoken entry?</h3>
+                        <p className="text-paper-textSoft/70 font-serif text-sm mb-8 tracking-wide">This cannot be undone.</p>
+                        <div className="flex justify-center gap-4 font-serif text-sm">
+                            <button
+                                autoFocus
+                                onClick={cancelDelete}
+                                className="px-6 py-2 text-paper-textSoft hover:text-paper-text transition-colors duration-300"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                className="px-6 py-2 text-paper-textSoft hover:text-paper-text transition-colors duration-300"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </PageContainer>
     );
 }
