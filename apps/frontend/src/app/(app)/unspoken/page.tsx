@@ -13,6 +13,7 @@ const AUTOSAVE_DELAY = 1000;
 interface UnspokenEntry {
     id: string;
     content: string;
+    createdAt: number;
     updatedAt: number;
 }
 
@@ -60,7 +61,7 @@ const UnspokenTimeline = React.memo(function UnspokenTimeline({
                             )}
                         >
                             <div className="text-xs font-mono opacity-50 mb-2 tracking-wide">
-                                {format(entry.updatedAt, 'EEEE, MMM d')}
+                                {format(entry.createdAt, 'EEEE, MMM d')}
                             </div>
                             <div className={cn(
                                 "text-sm font-serif truncate tracking-wide leading-relaxed",
@@ -91,7 +92,12 @@ export default function UnspokenPage() {
         let loadedEntries: UnspokenEntry[] = [];
         if (_stored) {
             try {
-                loadedEntries = JSON.parse(_stored);
+                const parsed = JSON.parse(_stored);
+                // Migrate legacy entries without `createdAt`
+                loadedEntries = parsed.map((e: any) => ({
+                    ...e,
+                    createdAt: e.createdAt || e.updatedAt || Date.now()
+                })).sort((a: any, b: any) => b.updatedAt - a.updatedAt);
             } catch (e) {
                 console.error("Failed to parse unspoken entries", e);
             }
@@ -108,8 +114,9 @@ export default function UnspokenPage() {
         } else {
             // Create a new blank slate if completely empty
             const newId = crypto.randomUUID();
+            const now = Date.now();
             // eslint-disable-next-line react-hooks/set-state-in-effect
-            setEntries([{ id: newId, content: '', updatedAt: Date.now() }]);
+            setEntries([{ id: newId, content: '', createdAt: now, updatedAt: now }]);
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setActiveEntryId(newId);
             // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -130,13 +137,7 @@ export default function UnspokenPage() {
     const activeEntry = entries.find(e => e.id === activeEntryId);
 
     const saveToStorage = (newEntries: UnspokenEntry[]) => {
-        // Filter out completely empty entries on save unless it's the only one
-        const validEntries = newEntries.filter(e => e.content.trim().length > 0);
-        if (validEntries.length > 0) {
-            localStorage.setItem(UNSPOKEN_STORAGE_KEY, JSON.stringify(validEntries));
-        } else {
-            localStorage.removeItem(UNSPOKEN_STORAGE_KEY);
-        }
+        localStorage.setItem(UNSPOKEN_STORAGE_KEY, JSON.stringify(newEntries));
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -159,7 +160,7 @@ export default function UnspokenPage() {
                 entry.id === activeEntryId
                     ? { ...entry, content: val, updatedAt: Date.now() }
                     : entry
-            ).sort((a, b) => b.updatedAt - a.updatedAt);
+            );
 
             setEntries(updatedEntries);
             saveToStorage(updatedEntries);
@@ -173,15 +174,10 @@ export default function UnspokenPage() {
     };
 
     const handleCreateNew = () => {
-        // Don't create new if current is completely empty
-        if (activeEntry && !activeEntry.content.trim()) {
-            if (textareaRef.current) textareaRef.current.focus();
-            return;
-        }
-
         const newId = crypto.randomUUID();
-        const newEntry = { id: newId, content: '', updatedAt: Date.now() };
-        const updatedEntries = [newEntry, ...entries].sort((a, b) => b.updatedAt - a.updatedAt);
+        const now = Date.now();
+        const newEntry = { id: newId, content: '', createdAt: now, updatedAt: now };
+        const updatedEntries = [newEntry, ...entries];
         setEntries(updatedEntries);
         setActiveEntryId(newId);
         setActiveEntryContent('');
@@ -203,10 +199,10 @@ export default function UnspokenPage() {
         }, 50);
     };
 
-    // For the timeline, we only want to show entries with content (or if we are currently looking at it)
+    // Timeline must display entries ordered by updatedAt DESC. Never sort during typing directly in state.
     const displayEntries = React.useMemo(() => {
-        return entries.filter(e => e.content.trim() || e.id === activeEntryId);
-    }, [entries, activeEntryId]);
+        return [...entries].sort((a, b) => b.updatedAt - a.updatedAt);
+    }, [entries]);
 
     return (
         <PageContainer>
