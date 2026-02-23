@@ -16,9 +16,70 @@ interface UnspokenEntry {
     updatedAt: number;
 }
 
+interface UnspokenTimelineProps {
+    entries: UnspokenEntry[];
+    activeEntryId: string | null;
+    onSelectEntry: (id: string) => void;
+    onCreateNew: () => void;
+}
+
+const UnspokenTimeline = React.memo(function UnspokenTimeline({
+    entries,
+    activeEntryId,
+    onSelectEntry,
+    onCreateNew
+}: UnspokenTimelineProps) {
+    return (
+        <aside className="w-full md:w-56 flex-shrink-0 flex flex-col h-32 md:h-full">
+            <div className="flex items-center justify-between mb-4 md:mb-12 px-2">
+                <span className="text-sm font-serif tracking-wide text-paper-textSoft/50">timeline</span>
+                <button
+                    onClick={onCreateNew}
+                    className="p-2 rounded-full text-paper-textSoft/40 hover:text-paper-textSoft/80 hover:bg-paper-surface/50 transition-all duration-700 ease-in-out"
+                    aria-label="New entry"
+                >
+                    <PlusIcon size={16} strokeWidth={1.5} />
+                </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-4 p-2 custom-scrollbar">
+                {entries.map((entry) => {
+                    const firstLine = entry.content.split('\n')[0].trim();
+                    const preview = firstLine || 'Empty slate';
+                    const isActive = entry.id === activeEntryId;
+
+                    return (
+                        <button
+                            key={entry.id}
+                            onClick={() => onSelectEntry(entry.id)}
+                            className={cn(
+                                "w-full text-left px-4 py-4 rounded-xl transition-all duration-700 ease-in-out",
+                                isActive
+                                    ? "bg-paper-surface text-paper-text shadow-paper-shadow shadow-sm"
+                                    : "text-paper-textSoft/50 hover:bg-paper-surface/40 hover:text-paper-textSoft/80"
+                            )}
+                        >
+                            <div className="text-xs font-mono opacity-50 mb-2 tracking-wide">
+                                {format(entry.updatedAt, 'EEEE, MMM d')}
+                            </div>
+                            <div className={cn(
+                                "text-sm font-serif truncate tracking-wide leading-relaxed",
+                                !firstLine && "opacity-60"
+                            )}>
+                                {preview}
+                            </div>
+                        </button>
+                    );
+                })}
+            </div>
+        </aside>
+    );
+});
+
 export default function UnspokenPage() {
     const [entries, setEntries] = useState<UnspokenEntry[]>([]);
     const [activeEntryId, setActiveEntryId] = useState<string | null>(null);
+    const [activeEntryContent, setActiveEntryContent] = useState<string>('');
     const [isLoaded, setIsLoaded] = useState(false);
     const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -42,6 +103,8 @@ export default function UnspokenPage() {
         if (loadedEntries.length > 0) {
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setActiveEntryId(loadedEntries[0].id);
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setActiveEntryContent(loadedEntries[0].content);
         } else {
             // Create a new blank slate if completely empty
             const newId = crypto.randomUUID();
@@ -49,6 +112,8 @@ export default function UnspokenPage() {
             setEntries([{ id: newId, content: '', updatedAt: Date.now() }]);
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setActiveEntryId(newId);
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setActiveEntryContent('');
         }
 
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -79,14 +144,8 @@ export default function UnspokenPage() {
 
         if (!isLoaded || !activeEntryId) return;
 
-        // Optimistically update UI
-        const updatedEntries = entries.map(entry =>
-            entry.id === activeEntryId
-                ? { ...entry, content: val, updatedAt: Date.now() }
-                : entry
-        ).sort((a, b) => b.updatedAt - a.updatedAt); // ensure newest is top
-
-        setEntries(updatedEntries);
+        // Optimistically update ONLY text state (for instant typing)
+        setActiveEntryContent(val);
 
         // Clear existing timer if user types again
         if (typingTimerRef.current) {
@@ -95,6 +154,14 @@ export default function UnspokenPage() {
 
         setSaveStatus('saving');
         typingTimerRef.current = setTimeout(() => {
+            // Commit to entries array only on delayed autosave
+            const updatedEntries = entries.map(entry =>
+                entry.id === activeEntryId
+                    ? { ...entry, content: val, updatedAt: Date.now() }
+                    : entry
+            ).sort((a, b) => b.updatedAt - a.updatedAt);
+
+            setEntries(updatedEntries);
             saveToStorage(updatedEntries);
             setSaveStatus('saved');
 
@@ -117,6 +184,7 @@ export default function UnspokenPage() {
         const updatedEntries = [newEntry, ...entries].sort((a, b) => b.updatedAt - a.updatedAt);
         setEntries(updatedEntries);
         setActiveEntryId(newId);
+        setActiveEntryContent('');
         saveToStorage(updatedEntries);
 
         setTimeout(() => {
@@ -125,74 +193,40 @@ export default function UnspokenPage() {
     };
 
     const handleSelectEntry = (id: string) => {
-        setActiveEntryId(id);
+        const selected = entries.find(e => e.id === id);
+        if (selected) {
+            setActiveEntryId(id);
+            setActiveEntryContent(selected.content);
+        }
         setTimeout(() => {
             if (textareaRef.current) textareaRef.current.focus();
         }, 50);
     };
 
-    // Derived states
-    const activeContent = activeEntry?.content || '';
-
     // For the timeline, we only want to show entries with content (or if we are currently looking at it)
-    const displayEntries = entries.filter(e => e.content.trim() || e.id === activeEntryId);
+    const displayEntries = React.useMemo(() => {
+        return entries.filter(e => e.content.trim() || e.id === activeEntryId);
+    }, [entries, activeEntryId]);
 
     return (
         <PageContainer>
             <div className="flex flex-col md:flex-row h-[calc(100dvh-6rem)] md:h-[calc(100vh-8rem)] w-full max-w-6xl mx-auto py-6 md:py-12 px-4 md:px-12 gap-8 md:gap-20">
 
                 {/* Timeline Panel */}
-                <aside className="w-full md:w-56 flex-shrink-0 flex flex-col h-32 md:h-full">
-                    <div className="flex items-center justify-between mb-4 md:mb-12 px-2">
-                        <span className="text-sm font-serif tracking-wide text-paper-textSoft/50">timeline</span>
-                        <button
-                            onClick={handleCreateNew}
-                            className="p-2 rounded-full text-paper-textSoft/40 hover:text-paper-textSoft/80 hover:bg-paper-surface/50 transition-all duration-700 ease-in-out"
-                            aria-label="New entry"
-                        >
-                            <PlusIcon size={16} strokeWidth={1.5} />
-                        </button>
-                    </div>
-
-                    <div className="flex-1 overflow-y-auto space-y-4 p-2 custom-scrollbar">
-                        {displayEntries.map((entry) => {
-                            const firstLine = entry.content.split('\n')[0].trim();
-                            const preview = firstLine || 'Empty slate';
-                            const isActive = entry.id === activeEntryId;
-
-                            return (
-                                <button
-                                    key={entry.id}
-                                    onClick={() => handleSelectEntry(entry.id)}
-                                    className={cn(
-                                        "w-full text-left px-4 py-4 rounded-xl transition-all duration-700 ease-in-out",
-                                        isActive
-                                            ? "bg-paper-surface text-paper-text shadow-paper-shadow shadow-sm"
-                                            : "text-paper-textSoft/50 hover:bg-paper-surface/40 hover:text-paper-textSoft/80"
-                                    )}
-                                >
-                                    <div className="text-xs font-mono opacity-50 mb-2 tracking-wide">
-                                        {format(entry.updatedAt, 'EEEE, MMM d')}
-                                    </div>
-                                    <div className={cn(
-                                        "text-sm font-serif truncate tracking-wide leading-relaxed",
-                                        !firstLine && "opacity-60"
-                                    )}>
-                                        {preview}
-                                    </div>
-                                </button>
-                            );
-                        })}
-                    </div>
-                </aside>
+                <UnspokenTimeline
+                    entries={displayEntries}
+                    activeEntryId={activeEntryId}
+                    onSelectEntry={handleSelectEntry}
+                    onCreateNew={handleCreateNew}
+                />
 
                 {/* Editor Core */}
                 <main className="flex-1 flex flex-col relative min-h-0 bg-paper-surface rounded-[2rem] p-6 md:p-16 shadow-paper-shadow shadow-sm transition-colors duration-1000">
                     <Textarea
                         ref={textareaRef}
-                        value={activeContent}
+                        value={activeEntryContent}
                         onChange={handleChange}
-                        placeholder={activeContent || !isLoaded ? '' : 'Some things live here before they are ready.'}
+                        placeholder={activeEntryContent || !isLoaded ? '' : 'Some things live here before they are ready.'}
                         className="w-full flex-1 resize-none bg-transparent border-none text-xl md:text-2xl leading-[1.85] tracking-[0.015em] font-serif font-normal placeholder:font-serif placeholder:not-italic placeholder:text-paper-textSoft/70 caret-paper-textSoft focus-visible:ring-0 px-0 shadow-none text-paper-text selection:bg-paper-surfaceSoft [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                     />
 
