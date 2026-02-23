@@ -1,6 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
-import { FeedCard } from '@/components/dashboard/FeedCard';
+import { FeedPostCard } from '@/components/home/FeedPostCard';
 import { constructMetadata } from '@/components/seo/metadata';
 import { env } from '@/config/env';
 import { notFound } from 'next/navigation';
@@ -55,24 +55,18 @@ export default async function PostPermalinkPage({ params }: PostPageProps) {
     }
 
     return (
-        <div className="max-w-2xl mx-auto py-10 px-4">
+        <div className="max-w-[640px] mx-auto py-24 px-6 md:px-0">
             <Link
                 href="/holding-space"
-                className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors group"
+                className="inline-flex items-center text-sm text-foreground/40 hover:text-foreground/80 mb-12 transition-colors group tracking-wide"
             >
-                <ArrowLeft size={16} className="mr-2 group-hover:-translate-x-1 transition-transform" />
-                Back to Holding Space
+                <ArrowLeft size={16} className="mr-3 group-hover:-translate-x-2 transition-transform duration-300" />
+                Return to Holding Space
             </Link>
-            <FeedCard
-                id={post.id}
-                username="Someone in Holding Space"
-                caption={post.content}
-                timeAgo={new Date(post.createdAt).toLocaleDateString()}
-                sensitivityTags={post.sensitivityTags}
-                hideIdentity={true}
-            />
 
-            <div className="mt-12">
+            <FeedPostCard share={post} />
+
+            <div className="mt-20">
                 {post.sensitivityTags && post.sensitivityTags.length > 0 && (
                     <RelatedShares tag={post.sensitivityTags[0]} currentShareId={post.id} />
                 )}
