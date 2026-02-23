@@ -3,13 +3,14 @@ import { cn } from "@/lib/utils"
 interface AnonymousAvatarProps {
   seed: string; // Format: "HEXCOLOR:INITIALS" e.g. "#FF5733:BW"
   className?: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
 export function AnonymousAvatar({ seed, className, size = 'md' }: AnonymousAvatarProps) {
   const [color, initials] = seed.split(':');
 
   const sizeClasses = {
+    xs: "h-6 w-6 text-[10px]",
     sm: "h-8 w-8 text-xs",
     md: "h-10 w-10 text-sm",
     lg: "h-16 w-16 text-xl",

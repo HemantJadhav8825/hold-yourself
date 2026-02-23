@@ -76,12 +76,12 @@ export const HoldingSpaceScreen = () => {
   }, [shares, removeShare, restoreShare]);
 
   return (
-    <div className="w-full h-full flex justify-center">
-      {/* 3-Column Grid Container (Center + Right) */}
-      <div className="w-full max-w-[1020px] px-4 md:px-8 py-8 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-12">
+    <div className="w-full flex justify-center items-start">
+      {/* 2-Column Flex Container (Center + Right) */}
+      <div className="w-full max-w-[1020px] px-4 md:px-8 py-8 flex flex-col lg:flex-row gap-8 lg:gap-12 justify-center lg:justify-between items-start">
 
         {/* Main Feed - Center Column */}
-        <div className="w-full max-w-[620px] mx-auto flex flex-col items-start">
+        <div className="w-full flex-1 min-w-0 max-w-[640px] mx-auto lg:mx-0 flex flex-col items-start min-h-screen">
 
           {/* Check-In Composer */}
           <div ref={composerRef} className="w-full mb-6">
@@ -99,7 +99,7 @@ export const HoldingSpaceScreen = () => {
           </div>
 
           {/* Feed Area */}
-          <div className="w-full space-y-6">
+          <div className="w-full space-y-8 pb-32">
             {loading && shares.length === 0 && (
               <div className="flex justify-center py-10">
                 <Loader2 className="animate-spin text-muted-foreground" />
@@ -145,7 +145,7 @@ export const HoldingSpaceScreen = () => {
         </div>
 
         {/* Right Sidebar - Context Panel */}
-        <aside className="hidden lg:block w-full sticky top-8 h-fit">
+        <aside className="hidden lg:block w-[280px] flex-shrink-0 sticky top-[32px] h-fit self-start">
           <RightSidebar />
         </aside>
 
