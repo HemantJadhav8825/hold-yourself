@@ -77,6 +77,11 @@ const UnspokenTimeline = React.memo(function UnspokenTimeline({
     );
 });
 
+const saveToStorage = (newEntries: UnspokenEntry[]) => {
+    localStorage.setItem(UNSPOKEN_STORAGE_KEY, JSON.stringify(newEntries));
+};
+
+
 export default function UnspokenPage() {
     const [entries, setEntries] = useState<UnspokenEntry[]>([]);
     const [activeEntryId, setActiveEntryId] = useState<string | null>(null);
@@ -136,10 +141,6 @@ export default function UnspokenPage() {
 
     const activeEntry = entries.find(e => e.id === activeEntryId);
 
-    const saveToStorage = (newEntries: UnspokenEntry[]) => {
-        localStorage.setItem(UNSPOKEN_STORAGE_KEY, JSON.stringify(newEntries));
-    };
-
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const val = e.target.value;
 
@@ -173,7 +174,7 @@ export default function UnspokenPage() {
         }, AUTOSAVE_DELAY);
     };
 
-    const handleCreateNew = () => {
+    const handleCreateNew = React.useCallback(() => {
         const newId = crypto.randomUUID();
         const now = Date.now();
         const newEntry = { id: newId, content: '', createdAt: now, updatedAt: now };
@@ -186,9 +187,9 @@ export default function UnspokenPage() {
         setTimeout(() => {
             if (textareaRef.current) textareaRef.current.focus();
         }, 50);
-    };
+    }, [entries]);
 
-    const handleSelectEntry = (id: string) => {
+    const handleSelectEntry = React.useCallback((id: string) => {
         const selected = entries.find(e => e.id === id);
         if (selected) {
             setActiveEntryId(id);
@@ -197,7 +198,7 @@ export default function UnspokenPage() {
         setTimeout(() => {
             if (textareaRef.current) textareaRef.current.focus();
         }, 50);
-    };
+    }, [entries]);
 
     // Timeline must display entries ordered by updatedAt DESC. Never sort during typing directly in state.
     const displayEntries = React.useMemo(() => {
