@@ -76,9 +76,9 @@ export const HoldingSpaceScreen = () => {
   }, [shares, removeShare, restoreShare]);
 
   return (
-    <div className="w-full h-full flex justify-center">
+    <div className="w-full flex justify-center items-start">
       {/* 2-Column Flex Container (Center + Right) */}
-      <div className="w-full max-w-[1020px] px-4 md:px-8 py-8 flex flex-col lg:flex-row gap-8 lg:gap-12 justify-center lg:justify-between">
+      <div className="w-full max-w-[1020px] px-4 md:px-8 py-8 flex flex-col lg:flex-row gap-8 lg:gap-12 justify-center lg:justify-between items-start">
 
         {/* Main Feed - Center Column */}
         <div className="w-full flex-1 min-w-0 max-w-[640px] mx-auto lg:mx-0 flex flex-col items-start min-h-screen">
@@ -145,7 +145,7 @@ export const HoldingSpaceScreen = () => {
         </div>
 
         {/* Right Sidebar - Context Panel */}
-        <aside className="hidden lg:block w-[280px] flex-shrink-0 sticky top-8 h-fit">
+        <aside className="hidden lg:block w-[280px] flex-shrink-0 sticky top-[32px] h-fit self-start">
           <RightSidebar />
         </aside>
 
