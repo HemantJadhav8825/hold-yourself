@@ -3,6 +3,7 @@ import cors from 'cors';
 import { jwtValidationMiddleware } from './auth/auth.middleware';
 import authRoutes from './routes/auth.routes';
 import apiRoutes from './routes/api.routes';
+import unspokenRoutes from './routes/unspoken';
 
 const app = express();
 
@@ -32,5 +33,6 @@ app.use(jwtValidationMiddleware);
 // Routes
 app.use('/auth', authRoutes);
 app.use('/', apiRoutes);
+app.use('/api/unspoken', unspokenRoutes);
 
 export default app;
