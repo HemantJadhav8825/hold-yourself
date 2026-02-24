@@ -240,10 +240,10 @@ export default function UnspokenPage() {
 
     return (
         <PageContainer>
-            <div className="flex flex-col md:flex-row w-full max-w-[1100px] h-[calc(100dvh-4rem)] md:h-[calc(100vh-6rem)] mx-auto relative mt-0 md:mt-6 px-0 md:px-8">
+            <div className="flex flex-col w-full bg-paper min-h-screen py-16 px-6 relative">
 
                 {/* Mobile: Horizontal Tabs */}
-                <div className="md:hidden flex w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] border-b border-paper-border/10 bg-paper-bg z-20 px-4">
+                <div className="md:hidden flex w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] z-20 pb-4">
                     <button
                         onClick={handleCreateNew}
                         className="flex-shrink-0 px-4 py-4 font-serif text-sm text-paper-textSoft/60 hover:text-paper-text transition-colors"
@@ -273,19 +273,19 @@ export default function UnspokenPage() {
                 </div>
 
                 {/* Editor Core: The Physical Page */}
-                <main className="flex-1 flex flex-col relative min-h-0 bg-paper-surface md:rounded-l-[1rem] md:rounded-br-[1rem] shadow-[8px_8px_32px_rgba(0,0,0,0.03)] transition-colors duration-1000 p-6 md:p-16 z-10 w-full h-full border border-paper-border/5">
+                <main className="flex flex-col bg-paper-surface rounded-lg border-none relative w-full max-w-[980px] min-h-[720px] mx-auto px-6 md:px-20 py-24 shadow-[0_1px_0_rgba(0,0,0,0.03),0_8px_30px_rgba(0,0,0,0.04),0_30px_60px_rgba(0,0,0,0.03)] z-10 transition-colors duration-1000">
                     <Textarea
                         ref={textareaRef}
                         value={activeEntryContent}
                         onChange={handleChange}
                         placeholder={activeEntryContent || !isLoaded ? '' : 'Some things live here before they are ready.'}
-                        className="w-full flex-1 resize-none bg-transparent border-none text-xl md:text-2xl leading-[1.85] tracking-[0.015em] font-serif font-normal placeholder:font-serif placeholder:not-italic placeholder:text-paper-textSoft/40 caret-paper-textSoft focus-visible:ring-0 px-0 shadow-none text-paper-text selection:bg-paper-surfaceSoft [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                        className="w-full flex-1 bg-transparent border-none outline-none shadow-none resize-none font-serif text-[22px] leading-[1.85] tracking-[0.01em] text-paper-text placeholder:text-paper-textSoft/40 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] focus-visible:ring-0 px-0"
                     />
 
                     {/* Active Page Footer Controls */}
-                    <div className="w-full flex justify-end items-center pt-8 font-serif text-sm gap-6">
+                    <div className="absolute bottom-8 right-12 flex gap-8 z-20">
                         {shareError && (
-                            <span className="text-paper-textSoft/60 text-xs tracking-wide pointer-events-none transition-opacity duration-1000">
+                            <span className="text-paper-textSoft/60 text-[15px] pointer-events-none transition-opacity duration-1000 my-auto">
                                 {shareError}
                             </span>
                         )}
@@ -293,7 +293,7 @@ export default function UnspokenPage() {
                         {activeEntry && isLoaded && (
                             <button
                                 onClick={() => handleRequestDelete(activeEntry.id)}
-                                className="text-paper-textSoft/40 hover:text-paper-textSoft/80 transition-colors duration-500"
+                                className="text-[15px] text-paper-textSoft/60 hover:text-paper-textSoft transition-colors"
                             >
                                 Tear out page
                             </button>
@@ -304,10 +304,10 @@ export default function UnspokenPage() {
                                 onClick={handleRequestShare}
                                 disabled={!!activeEntry.sharedAt || isSharing}
                                 className={cn(
-                                    "transition-all duration-700 ease-in-out",
+                                    "text-[15px] transition-colors",
                                     (activeEntry.sharedAt || isSharing)
                                         ? "text-paper-textSoft/30 cursor-default"
-                                        : "text-paper-textSoft/50 hover:text-paper-textSoft/80"
+                                        : "text-paper-textSoft/60 hover:text-paper-textSoft"
                                 )}
                             >
                                 {isSharing ? 'Sharing...' : activeEntry.sharedAt ? 'Shared' : 'Share to Holding Space'}
@@ -319,23 +319,20 @@ export default function UnspokenPage() {
                     <div
                         aria-live="polite"
                         className={cn(
-                            "absolute bottom-6 left-6 md:bottom-16 md:left-16 text-[11px] tracking-[0.2em] lowercase font-mono transition-all duration-1000 ease-in-out pointer-events-none text-paper-textSoft/30",
+                            "absolute bottom-8 left-12 text-[11px] tracking-[0.2em] lowercase font-mono transition-all duration-1000 ease-in-out pointer-events-none text-paper-textSoft/30 z-20",
                             saveStatus === 'saved' ? "opacity-100" : "opacity-0 translate-y-2"
                         )}
                     >
                         saved
                     </div>
-                </main>
-
-                {/* Desktop: Vertical Tabs */}
-                <aside className="hidden md:flex flex-col w-32 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pt-12 pb-12 z-0 relative -ml-1">
-                    <button
-                        onClick={handleCreateNew}
-                        className="text-left px-5 py-3 font-serif text-sm text-paper-textSoft/60 hover:text-paper-text transition-colors"
-                    >
-                        + New Page
-                    </button>
-                    <div className="flex flex-col gap-1 mt-4">
+                    {/* Desktop: Vertical Tabs */}
+                    <aside className="hidden md:flex absolute right-[-140px] top-10 flex-col gap-2 z-0">
+                        <button
+                            onClick={handleCreateNew}
+                            className="w-[120px] px-4 py-3 bg-paper text-paper-textSoft/60 hover:text-paper-textSoft rounded-r-lg shadow-[0_2px_6px_rgba(0,0,0,0.04)] transition-colors text-left font-serif text-sm"
+                        >
+                            + New Page
+                        </button>
                         {displayEntries.map(entry => {
                             const isActive = entry.id === activeEntryId;
                             return (
@@ -343,10 +340,10 @@ export default function UnspokenPage() {
                                     key={entry.id}
                                     onClick={() => handleSelectEntry(entry.id)}
                                     className={cn(
-                                        "text-left px-5 py-3 font-serif text-sm transition-all duration-500 rounded-r-xl border-y border-r flex flex-col gap-1",
+                                        "text-left font-serif text-sm flex flex-col gap-1 transition-all",
                                         isActive
-                                            ? "bg-paper-surface text-paper-text shadow-[4px_4px_15px_rgba(0,0,0,0.03)] border-paper-border/10 pl-7 z-10"
-                                            : "bg-transparent text-paper-textSoft/40 hover:bg-paper-surface/30 border-transparent hover:text-paper-textSoft/80"
+                                            ? "w-[120px] px-4 py-3 bg-paper-surface text-paper-text rounded-r-lg relative z-10 shadow-[0_6px_18px_rgba(0,0,0,0.08)]"
+                                            : "w-[120px] px-4 py-3 bg-paper text-paper-textSoft rounded-r-lg shadow-[0_2px_6px_rgba(0,0,0,0.04)] transition-colors hover:bg-paper-surface"
                                     )}
                                 >
                                     <span>{format(entry.createdAt, 'MMM d')}</span>
@@ -356,14 +353,14 @@ export default function UnspokenPage() {
                                 </button>
                             );
                         })}
-                    </div>
-                </aside>
+                    </aside>
+                </main>
             </div>
 
             {/* Deletion Confirmation Dialog */}
             {entryToDelete && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-paper-bg/40 backdrop-blur-[2px] p-4 animate-in fade-in duration-500">
-                    <div className="bg-paper-surface rounded-2xl p-8 max-w-[320px] w-full shadow-paper-shadow border border-paper-border/10 text-center animate-in zoom-in-95 duration-500">
+                    <div className="bg-paper-surface rounded-lg p-8 max-w-[320px] w-full shadow-[0_15px_40px_rgba(0,0,0,0.08)] border-none text-center animate-in zoom-in-95 duration-500">
                         <h3 className="text-paper-text font-serif text-lg mb-2 tracking-wide">Remove this page?</h3>
                         <p className="text-paper-textSoft/70 font-serif text-sm mb-8 tracking-wide">This cannot be undone.</p>
                         <div className="flex justify-center gap-4 font-serif text-sm">
@@ -388,7 +385,7 @@ export default function UnspokenPage() {
             {/* Share Confirmation Dialog */}
             {entryToShare && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-paper-bg/40 backdrop-blur-[2px] p-4 animate-in fade-in duration-500">
-                    <div className="bg-paper-surface rounded-2xl p-8 max-w-[320px] w-full shadow-paper-shadow border border-paper-border/10 text-center animate-in zoom-in-95 duration-500">
+                    <div className="bg-paper-surface rounded-lg p-8 max-w-[320px] w-full shadow-[0_15px_40px_rgba(0,0,0,0.08)] border-none text-center animate-in zoom-in-95 duration-500">
                         <h3 className="text-paper-text font-serif text-lg mb-2 tracking-wide">Share this to Holding Space?</h3>
                         <p className="text-paper-textSoft/70 font-serif text-sm mb-8 tracking-wide leading-relaxed">
                             You can remain anonymous. You can also keep it unshared.
