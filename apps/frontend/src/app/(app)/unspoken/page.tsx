@@ -240,13 +240,14 @@ export default function UnspokenPage() {
 
     return (
         <PageContainer>
-            <div className="flex flex-col w-full bg-paper min-h-screen py-16 px-6 relative">
+            {/* 1. DESK ENVIRONMENT */}
+            <div className="bg-[#eae3d9] min-h-screen flex flex-col items-center justify-center relative overflow-hidden py-12 md:py-24 px-4 md:px-8">
 
-                {/* Mobile: Horizontal Tabs */}
-                <div className="md:hidden flex w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] z-20 pb-4">
+                {/* Mobile: Horizontal Tabs (Positioned on desk above notebook) */}
+                <div className="md:hidden flex w-full max-w-[1100px] overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] z-20 pb-4 mb-4">
                     <button
                         onClick={handleCreateNew}
-                        className="flex-shrink-0 px-4 py-4 font-serif text-sm text-paper-textSoft/60 hover:text-paper-text transition-colors"
+                        className="flex-shrink-0 px-4 py-3 font-serif text-sm text-[#8a8174] hover:text-[#5a5144] transition-colors"
                     >
                         + New Page
                     </button>
@@ -257,123 +258,153 @@ export default function UnspokenPage() {
                                 key={entry.id}
                                 onClick={() => handleSelectEntry(entry.id)}
                                 className={cn(
-                                    "flex-shrink-0 px-4 py-4 font-serif text-sm transition-all duration-300 relative",
+                                    "flex-shrink-0 px-4 py-3 font-serif text-sm transition-all duration-300 relative rounded-t-md mx-1",
                                     isActive
-                                        ? "text-paper-text"
-                                        : "text-paper-textSoft/50 hover:text-paper-textSoft/80"
+                                        ? "bg-[#f8f6f3] text-[#3a352d] shadow-[0_-4px_10px_rgba(0,0,0,0.05)] border-t border-x border-[#d8d1c7]/40"
+                                        : "bg-paper text-[#8a8174] hover:bg-[#efebe4]"
                                 )}
                             >
                                 {format(entry.createdAt, 'MMM d')}
-                                {isActive && (
-                                    <span className="absolute bottom-0 left-0 w-full h-[2px] bg-paper-textSoft/30" />
-                                )}
+                                {entry.sharedAt && <span className="ml-2 mt-[2px] inline-block w-1.5 h-1.5 rounded-full bg-black/20" />}
                             </button>
                         );
                     })}
                 </div>
 
-                {/* Editor Core: The Physical Page */}
-                <main className="flex flex-col bg-paper-surface rounded-lg border-none relative w-full max-w-[980px] min-h-[720px] mx-auto px-6 md:px-20 py-24 shadow-[0_1px_0_rgba(0,0,0,0.03),0_8px_30px_rgba(0,0,0,0.04),0_30px_60px_rgba(0,0,0,0.03)] z-10 transition-colors duration-1000">
-                    <Textarea
-                        ref={textareaRef}
-                        value={activeEntryContent}
-                        onChange={handleChange}
-                        placeholder={activeEntryContent || !isLoaded ? '' : 'Some things live here before they are ready.'}
-                        className="w-full flex-1 bg-transparent border-none outline-none shadow-none resize-none font-serif text-[22px] leading-[1.85] tracking-[0.01em] text-paper-text placeholder:text-paper-textSoft/40 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] focus-visible:ring-0 px-0"
-                    />
+                {/* 2. NOTEBOOK OBJECT CONTAINER */}
+                <div className="relative w-full max-w-[1100px] h-[75vh] md:h-[750px] shadow-[0_40px_80px_rgba(0,0,0,0.15)] rounded-r-xl transition-all duration-1000 z-10">
 
-                    {/* Active Page Footer Controls */}
-                    <div className="absolute bottom-8 right-12 flex gap-8 z-20">
-                        {shareError && (
-                            <span className="text-paper-textSoft/60 text-[15px] pointer-events-none transition-opacity duration-1000 my-auto">
-                                {shareError}
-                            </span>
-                        )}
+                    {/* 7. NOTEBOOK DEPTH EFFECT */}
+                    <div className="absolute inset-y-2 left-0 right-[-6px] bg-white shadow-sm rounded-r-xl z-[-1] opacity-70 border border-black/5 mix-blend-multiply" />
+                    <div className="absolute inset-y-4 left-0 right-[-12px] bg-[#fdfbf7] shadow-sm rounded-r-xl z-[-2] opacity-40 border border-black/5 bg-blend-multiply" />
+                    <div className="absolute inset-y-6 left-0 right-[-16px] bg-[#f8f6f3] shadow-sm rounded-r-xl z-[-3] opacity-20 border border-black/5" />
 
-                        {activeEntry && isLoaded && (
-                            <button
-                                onClick={() => handleRequestDelete(activeEntry.id)}
-                                className="text-[15px] text-paper-textSoft/60 hover:text-paper-textSoft transition-colors"
-                            >
-                                Tear out page
-                            </button>
-                        )}
-
-                        {activeEntry && isLoaded && (
-                            <button
-                                onClick={handleRequestShare}
-                                disabled={!!activeEntry.sharedAt || isSharing}
-                                className={cn(
-                                    "text-[15px] transition-colors",
-                                    (activeEntry.sharedAt || isSharing)
-                                        ? "text-paper-textSoft/30 cursor-default"
-                                        : "text-paper-textSoft/60 hover:text-paper-textSoft"
-                                )}
-                            >
-                                {isSharing ? 'Sharing...' : activeEntry.sharedAt ? 'Shared' : 'Share to Holding Space'}
-                            </button>
-                        )}
+                    {/* 3. NOTEBOOK SPINE */}
+                    <div className="absolute left-0 top-0 bottom-0 w-[40px] md:w-[60px] bg-[#d8d1c7] z-30 shadow-[inset_-8px_0_12px_rgba(0,0,0,0.06),inset_2px_0_4px_rgba(255,255,255,0.4)] rounded-l-md flex flex-col justify-evenly items-center py-6 md:py-10 border-r border-[#c4bcaf]">
+                        {/* Spiral binding illusion */}
+                        {[...Array(14)].map((_, i) => (
+                            <div key={i} className="relative w-[30px] md:w-[45px] h-[10px] md:h-[14px] bg-[#2a2a2a] rounded-full transform -translate-x-1 md:-translate-x-2 shadow-[0_2px_5px_rgba(0,0,0,0.4),inset_0_2px_1px_rgba(255,255,255,0.2)] opacity-90 z-40">
+                                {/* Coil highlight */}
+                                <div className="absolute top-[2px] left-[10%] right-[10%] h-[3px] bg-white/30 rounded-full" />
+                            </div>
+                        ))}
                     </div>
 
-                    {/* Quiet Autosave Indicator */}
-                    <div
-                        aria-live="polite"
-                        className={cn(
-                            "absolute bottom-8 left-12 text-[11px] tracking-[0.2em] lowercase font-mono transition-all duration-1000 ease-in-out pointer-events-none text-paper-textSoft/30 z-20",
-                            saveStatus === 'saved' ? "opacity-100" : "opacity-0 translate-y-2"
-                        )}
-                    >
-                        saved
-                    </div>
-                    {/* Desktop: Vertical Tabs */}
-                    <aside className="hidden md:flex absolute right-[-140px] top-10 flex-col gap-2 z-0">
+                    {/* 4. PAGE SURFACE */}
+                    <main className="absolute left-[40px] md:left-[60px] right-0 top-0 bottom-0 bg-paper-surface shadow-[inset_12px_0_20px_rgba(0,0,0,0.04)] rounded-r-xl z-20 flex flex-col px-8 md:px-20 py-16 md:py-24 transition-colors duration-1000 overflow-hidden">
+
+                        {/* Subtle paper grain/lines (optional, keeping minimal for now to match user preference) */}
+
+                        {/* 5. EDITOR */}
+                        <Textarea
+                            ref={textareaRef}
+                            value={activeEntryContent}
+                            onChange={handleChange}
+                            placeholder={activeEntryContent || !isLoaded ? '' : 'Some things live here before they are ready.'}
+                            className="w-full flex-1 bg-transparent border-none outline-none shadow-none resize-none font-serif text-[20px] md:text-[22px] leading-[1.85] tracking-[0.01em] text-[#3a352d] placeholder:text-[#3a352d]/30 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] focus-visible:ring-0 px-0"
+                        />
+
+                        {/* Active Page Footer Controls */}
+                        <div className="absolute bottom-8 md:bottom-12 right-8 md:right-16 flex flex-col md:flex-row gap-4 md:gap-8 z-30 items-end md:items-center">
+                            {shareError && (
+                                <span className="text-[#8a8174]/70 text-[14px] md:text-[15px] pointer-events-none transition-opacity duration-1000">
+                                    {shareError}
+                                </span>
+                            )}
+
+                            {activeEntry && isLoaded && (
+                                <button
+                                    onClick={() => handleRequestDelete(activeEntry.id)}
+                                    className="text-[14px] md:text-[15px] text-[#8a8174] hover:text-[#c44a4a] transition-colors font-serif italic"
+                                >
+                                    Tear out page
+                                </button>
+                            )}
+
+                            {activeEntry && isLoaded && (
+                                <button
+                                    onClick={handleRequestShare}
+                                    disabled={!!activeEntry.sharedAt || isSharing}
+                                    className={cn(
+                                        "text-[14px] md:text-[15px] font-serif italic transition-colors",
+                                        (activeEntry.sharedAt || isSharing)
+                                            ? "text-[#8a8174]/40 cursor-default"
+                                            : "text-[#8a8174] hover:text-[#3a352d]"
+                                    )}
+                                >
+                                    {isSharing ? 'Sharing...' : activeEntry.sharedAt ? 'Shared' : 'Share to Holding Space'}
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Quiet Autosave Indicator */}
+                        <div
+                            aria-live="polite"
+                            className={cn(
+                                "absolute bottom-8 md:bottom-12 left-8 md:left-16 text-[11px] tracking-[0.2em] lowercase font-mono transition-all duration-1000 ease-in-out pointer-events-none text-[#8a8174]/40 z-30",
+                                saveStatus === 'saved' ? "opacity-100" : "opacity-0 translate-y-2"
+                            )}
+                        >
+                            saved
+                        </div>
+                    </main>
+
+                    {/* 6. ATTACHED TABS (DESKTOP) */}
+                    <aside className="hidden md:flex absolute right-[-140px] top-12 flex-col gap-[6px] z-[-5]">
                         <button
                             onClick={handleCreateNew}
-                            className="w-[120px] px-4 py-3 bg-paper text-paper-textSoft/60 hover:text-paper-textSoft rounded-r-lg shadow-[0_2px_6px_rgba(0,0,0,0.04)] transition-colors text-left font-serif text-sm"
+                            className="w-[140px] pl-[20px] pr-4 py-3 bg-[#e8e2d7] text-[#8a8174] hover:text-[#5a5144] rounded-r-lg shadow-[4px_2px_8px_rgba(0,0,0,0.06),inset_2px_0_0_#d8d1c7] border-y border-r border-[#d8d1c7]/40 transition-colors text-left font-serif text-sm -ml-[10px]"
                         >
                             + New Page
                         </button>
-                        {displayEntries.map(entry => {
+                        {displayEntries.map((entry, idx) => {
                             const isActive = entry.id === activeEntryId;
+                            // Slight variation in tab width to look organic
+                            const widthOffset = idx % 3 === 0 ? 'w-[145px]' : idx % 3 === 1 ? 'w-[140px]' : 'w-[135px]';
+
                             return (
                                 <button
                                     key={entry.id}
                                     onClick={() => handleSelectEntry(entry.id)}
                                     className={cn(
-                                        "text-left font-serif text-sm flex flex-col gap-1 transition-all",
+                                        `pl-[20px] pr-4 py-[14px] rounded-r-lg border-y border-r border-[#d8d1c7]/50 text-left font-serif text-[15px] flex flex-col gap-1 transition-all duration-300 -ml-[10px]`,
+                                        widthOffset,
                                         isActive
-                                            ? "w-[120px] px-4 py-3 bg-paper-surface text-paper-text rounded-r-lg relative z-10 shadow-[0_6px_18px_rgba(0,0,0,0.08)]"
-                                            : "w-[120px] px-4 py-3 bg-paper text-paper-textSoft rounded-r-lg shadow-[0_2px_6px_rgba(0,0,0,0.04)] transition-colors hover:bg-paper-surface"
+                                            ? "bg-[#fdfbf7] text-[#3a352d] shadow-[8px_4px_16px_rgba(0,0,0,0.1)] z-10 translate-x-2 font-medium"
+                                            : "bg-[#f4efe6] text-[#8a8174] shadow-[4px_2px_8px_rgba(0,0,0,0.04)] hover:bg-[#faf7f2] hover:translate-x-1"
                                     )}
                                 >
                                     <span>{format(entry.createdAt, 'MMM d')}</span>
                                     {entry.sharedAt && (
-                                        <span className="text-[9px] tracking-[0.1em] lowercase opacity-50">shared</span>
+                                        <span className="text-[9.5px] tracking-[0.1em] lowercase text-[#8a8174]/60 font-mono">shared</span>
                                     )}
                                 </button>
                             );
                         })}
                     </aside>
-                </main>
+                </div>
             </div>
 
             {/* Deletion Confirmation Dialog */}
             {entryToDelete && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-paper-bg/40 backdrop-blur-[2px] p-4 animate-in fade-in duration-500">
-                    <div className="bg-paper-surface rounded-lg p-8 max-w-[320px] w-full shadow-[0_15px_40px_rgba(0,0,0,0.08)] border-none text-center animate-in zoom-in-95 duration-500">
-                        <h3 className="text-paper-text font-serif text-lg mb-2 tracking-wide">Remove this page?</h3>
-                        <p className="text-paper-textSoft/70 font-serif text-sm mb-8 tracking-wide">This cannot be undone.</p>
-                        <div className="flex justify-center gap-4 font-serif text-sm">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#eae3d9]/60 backdrop-blur-[4px] p-4 animate-in fade-in duration-500">
+                    <div className="bg-[#fdfbf7] rounded-xl p-10 max-w-[340px] w-full shadow-[0_20px_60px_rgba(0,0,0,0.12)] border border-[#d8d1c7] text-center animate-in zoom-in-95 duration-500 relative">
+                        {/* Torn paper texture effect at top */}
+                        <div className="absolute top-0 left-0 right-0 h-2 bg-[#fdfbf7] [mask-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxwYXRoIGQ9Ik0wLDVMMTAsMkwyMCw3TDMwLDRMNDAsNkw1MCwzTDYwLDhMNzAsNEw4MCw3TDkwLDNMMTAwLzUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIvPjwvc3ZnPg==')] opacity-20" />
+
+                        <h3 className="text-[#3a352d] font-serif text-xl mb-3 tracking-wide">Tear out this page?</h3>
+                        <p className="text-[#8a8174] font-serif text-[15px] mb-8 tracking-wide">This cannot be undone.</p>
+                        <div className="flex justify-center gap-6 font-serif text-[15px]">
                             <button
                                 autoFocus
                                 onClick={cancelDelete}
-                                className="px-6 py-2 text-paper-textSoft hover:text-paper-text transition-colors duration-300"
+                                className="px-4 py-2 text-[#8a8174] hover:text-[#3a352d] transition-colors duration-300"
                             >
-                                Cancel
+                                Keep it
                             </button>
                             <button
                                 onClick={confirmDelete}
-                                className="px-6 py-2 text-paper-textSoft hover:text-paper-text transition-colors duration-300"
+                                className="px-4 py-2 text-[#c44a4a]/80 hover:text-[#c44a4a] transition-colors duration-300 italic"
                             >
                                 Tear out
                             </button>
@@ -384,17 +415,17 @@ export default function UnspokenPage() {
 
             {/* Share Confirmation Dialog */}
             {entryToShare && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-paper-bg/40 backdrop-blur-[2px] p-4 animate-in fade-in duration-500">
-                    <div className="bg-paper-surface rounded-lg p-8 max-w-[320px] w-full shadow-[0_15px_40px_rgba(0,0,0,0.08)] border-none text-center animate-in zoom-in-95 duration-500">
-                        <h3 className="text-paper-text font-serif text-lg mb-2 tracking-wide">Share this to Holding Space?</h3>
-                        <p className="text-paper-textSoft/70 font-serif text-sm mb-8 tracking-wide leading-relaxed">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#eae3d9]/60 backdrop-blur-[4px] p-4 animate-in fade-in duration-500">
+                    <div className="bg-[#fdfbf7] rounded-xl p-10 max-w-[340px] w-full shadow-[0_20px_60px_rgba(0,0,0,0.12)] border border-[#d8d1c7] text-center animate-in zoom-in-95 duration-500">
+                        <h3 className="text-[#3a352d] font-serif text-xl mb-3 tracking-wide">Share to Holding Space?</h3>
+                        <p className="text-[#8a8174] font-serif text-[15px] mb-8 tracking-wide leading-relaxed">
                             You can remain anonymous. You can also keep it unshared.
                         </p>
-                        <div className="flex justify-center gap-4 font-serif text-sm">
+                        <div className="flex justify-center gap-6 font-serif text-[15px]">
                             <button
                                 autoFocus
                                 onClick={cancelShare}
-                                className="px-6 py-2 text-paper-textSoft hover:text-paper-text transition-colors duration-300"
+                                className="px-4 py-2 text-[#8a8174] hover:text-[#3a352d] transition-colors duration-300"
                             >
                                 Cancel
                             </button>
@@ -402,10 +433,10 @@ export default function UnspokenPage() {
                                 onClick={confirmShare}
                                 disabled={isSharing}
                                 className={cn(
-                                    "px-6 py-2 transition-colors duration-300",
+                                    "px-4 py-2 transition-colors duration-300 italic",
                                     isSharing
-                                        ? "text-paper-textSoft/30 cursor-default"
-                                        : "text-paper-textSoft hover:text-paper-text"
+                                        ? "text-[#8a8174]/40 cursor-default"
+                                        : "text-[#5a5144] hover:text-[#3a352d]"
                                 )}
                             >
                                 {isSharing ? 'Sharing...' : 'Share'}
