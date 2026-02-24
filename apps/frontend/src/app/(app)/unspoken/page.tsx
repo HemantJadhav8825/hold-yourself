@@ -15,6 +15,7 @@ interface UnspokenEntry {
     content: string;
     createdAt: number;
     updatedAt: number;
+    sharedAt?: number;
 }
 
 interface UnspokenTimelineProps {
@@ -64,6 +65,9 @@ const UnspokenTimeline = React.memo(function UnspokenTimeline({
                             >
                                 <div className="text-xs font-mono opacity-50 mb-2 tracking-wide flex justify-between items-center">
                                     <span>{format(entry.createdAt, 'EEEE, MMM d')}</span>
+                                    {entry.sharedAt && (
+                                        <span className="text-[10px] tracking-[0.1em] lowercase opacity-60">shared</span>
+                                    )}
                                 </div>
                                 <div className={cn(
                                     "text-sm font-serif truncate tracking-wide leading-relaxed pr-8",
@@ -102,6 +106,7 @@ export default function UnspokenPage() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
     const [entryToDelete, setEntryToDelete] = useState<string | null>(null);
+    const [entryToShare, setEntryToShare] = useState<string | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const typingTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -257,6 +262,41 @@ export default function UnspokenPage() {
         }, 50);
     }, [entryToDelete, entries, activeEntryId]);
 
+    const handleRequestShare = React.useCallback(() => {
+        if (!activeEntryId) return;
+        setEntryToShare(activeEntryId);
+    }, [activeEntryId]);
+
+    const confirmShare = React.useCallback(() => {
+        if (!entryToShare) return;
+
+        const entry = entries.find(e => e.id === entryToShare);
+        if (!entry) return;
+
+        console.log("Unspoken entry ready for Holding Space:", entry);
+
+        const updatedEntries = entries.map(e =>
+            e.id === entryToShare
+                ? { ...e, sharedAt: Date.now() }
+                : e
+        );
+
+        setEntries(updatedEntries);
+        saveToStorage(updatedEntries);
+        setEntryToShare(null);
+
+        setTimeout(() => {
+            if (textareaRef.current) textareaRef.current.focus();
+        }, 50);
+    }, [entryToShare, entries]);
+
+    const cancelShare = React.useCallback(() => {
+        setEntryToShare(null);
+        setTimeout(() => {
+            if (textareaRef.current) textareaRef.current.focus();
+        }, 50);
+    }, []);
+
     const cancelDelete = React.useCallback(() => {
         setEntryToDelete(null);
         setTimeout(() => {
@@ -286,6 +326,24 @@ export default function UnspokenPage() {
                         placeholder={activeEntryContent || !isLoaded ? '' : 'Some things live here before they are ready.'}
                         className="w-full flex-1 resize-none bg-transparent border-none text-xl md:text-2xl leading-[1.85] tracking-[0.015em] font-serif font-normal placeholder:font-serif placeholder:not-italic placeholder:text-paper-textSoft/70 caret-paper-textSoft focus-visible:ring-0 px-0 shadow-none text-paper-text selection:bg-paper-surfaceSoft [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                     />
+
+                    {/* Share Control */}
+                    <div className="w-full flex justify-end pt-4 font-serif text-sm">
+                        {activeEntry && isLoaded && (
+                            <button
+                                onClick={handleRequestShare}
+                                disabled={!!activeEntry.sharedAt}
+                                className={cn(
+                                    "transition-all duration-700 ease-in-out px-2",
+                                    activeEntry.sharedAt
+                                        ? "text-paper-textSoft/30 cursor-default"
+                                        : "text-paper-textSoft/50 hover:text-paper-textSoft/80"
+                                )}
+                            >
+                                {activeEntry.sharedAt ? 'Shared' : 'Share to Holding Space'}
+                            </button>
+                        )}
+                    </div>
 
                     {/* Quiet Autosave Indicator */}
                     <div
@@ -319,6 +377,33 @@ export default function UnspokenPage() {
                                 className="px-6 py-2 text-paper-textSoft hover:text-paper-text transition-colors duration-300"
                             >
                                 Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Share Confirmation Dialog */}
+            {entryToShare && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-paper-bg/40 backdrop-blur-[2px] p-4 animate-in fade-in duration-500">
+                    <div className="bg-paper-surface rounded-2xl p-8 max-w-[320px] w-full shadow-paper-shadow border border-paper-border/20 text-center animate-in zoom-in-95 duration-500">
+                        <h3 className="text-paper-text font-serif text-lg mb-2 tracking-wide">Share this to Holding Space?</h3>
+                        <p className="text-paper-textSoft/70 font-serif text-sm mb-8 tracking-wide leading-relaxed">
+                            You can remain anonymous. You can also keep it unshared.
+                        </p>
+                        <div className="flex justify-center gap-4 font-serif text-sm">
+                            <button
+                                autoFocus
+                                onClick={cancelShare}
+                                className="px-6 py-2 text-paper-textSoft hover:text-paper-text transition-colors duration-300"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmShare}
+                                className="px-6 py-2 text-paper-textSoft hover:text-paper-text transition-colors duration-300"
+                            >
+                                Share
                             </button>
                         </div>
                     </div>
