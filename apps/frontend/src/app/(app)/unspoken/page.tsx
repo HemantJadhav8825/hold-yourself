@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/Textarea';
 import { cn } from '@/lib/utils';
 import { PlusIcon } from 'lucide-react';
 import { format } from 'date-fns';
+import client from '@/api/client';
 
 const UNSPOKEN_STORAGE_KEY = 'webelong_unspoken_entries';
 const AUTOSAVE_DELAY = 1000;
@@ -107,6 +108,8 @@ export default function UnspokenPage() {
     const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
     const [entryToDelete, setEntryToDelete] = useState<string | null>(null);
     const [entryToShare, setEntryToShare] = useState<string | null>(null);
+    const [isSharing, setIsSharing] = useState(false);
+    const [shareError, setShareError] = useState<string | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const typingTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -264,30 +267,46 @@ export default function UnspokenPage() {
 
     const handleRequestShare = React.useCallback(() => {
         if (!activeEntryId) return;
+        const entry = entries.find(e => e.id === activeEntryId);
+        if (entry?.sharedAt) return; // duplicate protection
         setEntryToShare(activeEntryId);
-    }, [activeEntryId]);
+    }, [activeEntryId, entries]);
 
-    const confirmShare = React.useCallback(() => {
+    const confirmShare = React.useCallback(async () => {
         if (!entryToShare) return;
 
         const entry = entries.find(e => e.id === entryToShare);
-        if (!entry) return;
+        if (!entry || entry.sharedAt) return;
 
-        console.log("Unspoken entry ready for Holding Space:", entry);
+        setIsSharing(true);
+        setShareError(null);
 
-        const updatedEntries = entries.map(e =>
-            e.id === entryToShare
-                ? { ...e, sharedAt: Date.now() }
-                : e
-        );
+        try {
+            const response = await client.post('/api/unspoken/share', {
+                entryId: entry.id,
+                content: entry.content
+            });
 
-        setEntries(updatedEntries);
-        saveToStorage(updatedEntries);
-        setEntryToShare(null);
+            if (response.data.success) {
+                const updatedEntries = entries.map(e =>
+                    e.id === entryToShare
+                        ? { ...e, sharedAt: Date.now() }
+                        : e
+                );
 
-        setTimeout(() => {
-            if (textareaRef.current) textareaRef.current.focus();
-        }, 50);
+                setEntries(updatedEntries);
+                saveToStorage(updatedEntries);
+            }
+        } catch (error) {
+            setShareError("Could not share right now.");
+        } finally {
+            setIsSharing(false);
+            setEntryToShare(null);
+
+            setTimeout(() => {
+                if (textareaRef.current) textareaRef.current.focus();
+            }, 50);
+        }
     }, [entryToShare, entries]);
 
     const cancelShare = React.useCallback(() => {
@@ -328,19 +347,24 @@ export default function UnspokenPage() {
                     />
 
                     {/* Share Control */}
-                    <div className="w-full flex justify-end pt-4 font-serif text-sm">
+                    <div className="w-full flex justify-end items-center pt-4 font-serif text-sm gap-4">
+                        {shareError && (
+                            <span className="text-paper-textSoft/60 text-xs tracking-wide pointer-events-none transition-opacity duration-1000">
+                                {shareError}
+                            </span>
+                        )}
                         {activeEntry && isLoaded && (
                             <button
                                 onClick={handleRequestShare}
-                                disabled={!!activeEntry.sharedAt}
+                                disabled={!!activeEntry.sharedAt || isSharing}
                                 className={cn(
                                     "transition-all duration-700 ease-in-out px-2",
-                                    activeEntry.sharedAt
+                                    (activeEntry.sharedAt || isSharing)
                                         ? "text-paper-textSoft/30 cursor-default"
                                         : "text-paper-textSoft/50 hover:text-paper-textSoft/80"
                                 )}
                             >
-                                {activeEntry.sharedAt ? 'Shared' : 'Share to Holding Space'}
+                                {isSharing ? 'Sharing...' : activeEntry.sharedAt ? 'Shared' : 'Share to Holding Space'}
                             </button>
                         )}
                     </div>
@@ -401,9 +425,15 @@ export default function UnspokenPage() {
                             </button>
                             <button
                                 onClick={confirmShare}
-                                className="px-6 py-2 text-paper-textSoft hover:text-paper-text transition-colors duration-300"
+                                disabled={isSharing}
+                                className={cn(
+                                    "px-6 py-2 transition-colors duration-300",
+                                    isSharing
+                                        ? "text-paper-textSoft/30 cursor-default"
+                                        : "text-paper-textSoft hover:text-paper-text"
+                                )}
                             >
-                                Share
+                                {isSharing ? 'Sharing...' : 'Share'}
                             </button>
                         </div>
                     </div>
