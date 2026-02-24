@@ -4,7 +4,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { Textarea } from '@/components/ui/Textarea';
 import { cn } from '@/lib/utils';
-import { PlusIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import client from '@/api/client';
 
@@ -19,86 +18,9 @@ interface UnspokenEntry {
     sharedAt?: number;
 }
 
-interface UnspokenTimelineProps {
-    entries: UnspokenEntry[];
-    activeEntryId: string | null;
-    onSelectEntry: (id: string) => void;
-    onCreateNew: () => void;
-    onDeleteEntry: (id: string) => void;
-}
-
-const UnspokenTimeline = React.memo(function UnspokenTimeline({
-    entries,
-    activeEntryId,
-    onSelectEntry,
-    onCreateNew,
-    onDeleteEntry
-}: UnspokenTimelineProps) {
-    return (
-        <aside className="w-full md:w-56 flex-shrink-0 flex flex-col h-32 md:h-full">
-            <div className="flex items-center justify-between mb-4 md:mb-12 px-2">
-                <span className="text-sm font-serif tracking-wide text-paper-textSoft/50">timeline</span>
-                <button
-                    onClick={onCreateNew}
-                    className="p-2 rounded-full text-paper-textSoft/40 hover:text-paper-textSoft/80 hover:bg-paper-surface/50 transition-all duration-700 ease-in-out"
-                    aria-label="New entry"
-                >
-                    <PlusIcon size={16} strokeWidth={1.5} />
-                </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto space-y-4 p-2 custom-scrollbar">
-                {entries.map((entry) => {
-                    const firstLine = entry.content.split('\n')[0].trim();
-                    const preview = firstLine || 'Empty slate';
-                    const isActive = entry.id === activeEntryId;
-
-                    return (
-                        <div key={entry.id} className="relative group w-full">
-                            <button
-                                onClick={() => onSelectEntry(entry.id)}
-                                className={cn(
-                                    "w-full text-left px-4 py-4 rounded-xl transition-all duration-700 ease-in-out block",
-                                    isActive
-                                        ? "bg-paper-surface text-paper-text shadow-paper-shadow shadow-sm"
-                                        : "text-paper-textSoft/50 hover:bg-paper-surface/40 hover:text-paper-textSoft/80"
-                                )}
-                            >
-                                <div className="text-xs font-mono opacity-50 mb-2 tracking-wide flex justify-between items-center">
-                                    <span>{format(entry.createdAt, 'EEEE, MMM d')}</span>
-                                    {entry.sharedAt && (
-                                        <span className="text-[10px] tracking-[0.1em] lowercase opacity-60">shared</span>
-                                    )}
-                                </div>
-                                <div className={cn(
-                                    "text-sm font-serif truncate tracking-wide leading-relaxed pr-8",
-                                    !firstLine && "opacity-60"
-                                )}>
-                                    {preview}
-                                </div>
-                            </button>
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    onDeleteEntry(entry.id);
-                                }}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-serif text-paper-textSoft/30 hover:text-paper-textSoft/70 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500 px-2 py-1"
-                                aria-label="Delete entry"
-                            >
-                                delete
-                            </button>
-                        </div>
-                    );
-                })}
-            </div>
-        </aside>
-    );
-});
-
 const saveToStorage = (newEntries: UnspokenEntry[]) => {
     localStorage.setItem(UNSPOKEN_STORAGE_KEY, JSON.stringify(newEntries));
 };
-
 
 export default function UnspokenPage() {
     const [entries, setEntries] = useState<UnspokenEntry[]>([]);
@@ -130,27 +52,20 @@ export default function UnspokenPage() {
             }
         }
 
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setEntries(loadedEntries);
 
         if (loadedEntries.length > 0) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setActiveEntryId(loadedEntries[0].id);
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setActiveEntryContent(loadedEntries[0].content);
         } else {
             // Create a new blank slate if completely empty
             const newId = crypto.randomUUID();
             const now = Date.now();
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setEntries([{ id: newId, content: '', createdAt: now, updatedAt: now }]);
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setActiveEntryId(newId);
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setActiveEntryContent('');
         }
 
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsLoaded(true);
 
         const focusTimer = setTimeout(() => {
@@ -325,40 +240,71 @@ export default function UnspokenPage() {
 
     return (
         <PageContainer>
-            <div className="flex flex-col md:flex-row h-[calc(100dvh-6rem)] md:h-[calc(100vh-8rem)] w-full max-w-6xl mx-auto py-6 md:py-12 px-4 md:px-12 gap-8 md:gap-20">
+            <div className="flex flex-col md:flex-row w-full max-w-[1100px] h-[calc(100dvh-4rem)] md:h-[calc(100vh-6rem)] mx-auto relative mt-0 md:mt-6 px-0 md:px-8">
 
-                {/* Timeline Panel */}
-                <UnspokenTimeline
-                    entries={displayEntries}
-                    activeEntryId={activeEntryId}
-                    onSelectEntry={handleSelectEntry}
-                    onCreateNew={handleCreateNew}
-                    onDeleteEntry={handleRequestDelete}
-                />
+                {/* Mobile: Horizontal Tabs */}
+                <div className="md:hidden flex w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] border-b border-paper-border/10 bg-paper-bg z-20 px-4">
+                    <button
+                        onClick={handleCreateNew}
+                        className="flex-shrink-0 px-4 py-4 font-serif text-sm text-paper-textSoft/60 hover:text-paper-text transition-colors"
+                    >
+                        + New Page
+                    </button>
+                    {displayEntries.map(entry => {
+                        const isActive = entry.id === activeEntryId;
+                        return (
+                            <button
+                                key={entry.id}
+                                onClick={() => handleSelectEntry(entry.id)}
+                                className={cn(
+                                    "flex-shrink-0 px-4 py-4 font-serif text-sm transition-all duration-300 relative",
+                                    isActive
+                                        ? "text-paper-text"
+                                        : "text-paper-textSoft/50 hover:text-paper-textSoft/80"
+                                )}
+                            >
+                                {format(entry.createdAt, 'MMM d')}
+                                {isActive && (
+                                    <span className="absolute bottom-0 left-0 w-full h-[2px] bg-paper-textSoft/30" />
+                                )}
+                            </button>
+                        );
+                    })}
+                </div>
 
-                {/* Editor Core */}
-                <main className="flex-1 flex flex-col relative min-h-0 bg-paper-surface rounded-[2rem] p-6 md:p-16 shadow-paper-shadow shadow-sm transition-colors duration-1000">
+                {/* Editor Core: The Physical Page */}
+                <main className="flex-1 flex flex-col relative min-h-0 bg-paper-surface md:rounded-l-[1rem] md:rounded-br-[1rem] shadow-[8px_8px_32px_rgba(0,0,0,0.03)] transition-colors duration-1000 p-6 md:p-16 z-10 w-full h-full border border-paper-border/5">
                     <Textarea
                         ref={textareaRef}
                         value={activeEntryContent}
                         onChange={handleChange}
                         placeholder={activeEntryContent || !isLoaded ? '' : 'Some things live here before they are ready.'}
-                        className="w-full flex-1 resize-none bg-transparent border-none text-xl md:text-2xl leading-[1.85] tracking-[0.015em] font-serif font-normal placeholder:font-serif placeholder:not-italic placeholder:text-paper-textSoft/70 caret-paper-textSoft focus-visible:ring-0 px-0 shadow-none text-paper-text selection:bg-paper-surfaceSoft [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                        className="w-full flex-1 resize-none bg-transparent border-none text-xl md:text-2xl leading-[1.85] tracking-[0.015em] font-serif font-normal placeholder:font-serif placeholder:not-italic placeholder:text-paper-textSoft/40 caret-paper-textSoft focus-visible:ring-0 px-0 shadow-none text-paper-text selection:bg-paper-surfaceSoft [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                     />
 
-                    {/* Share Control */}
-                    <div className="w-full flex justify-end items-center pt-4 font-serif text-sm gap-4">
+                    {/* Active Page Footer Controls */}
+                    <div className="w-full flex justify-end items-center pt-8 font-serif text-sm gap-6">
                         {shareError && (
                             <span className="text-paper-textSoft/60 text-xs tracking-wide pointer-events-none transition-opacity duration-1000">
                                 {shareError}
                             </span>
                         )}
+
+                        {activeEntry && isLoaded && (
+                            <button
+                                onClick={() => handleRequestDelete(activeEntry.id)}
+                                className="text-paper-textSoft/40 hover:text-paper-textSoft/80 transition-colors duration-500"
+                            >
+                                Tear out page
+                            </button>
+                        )}
+
                         {activeEntry && isLoaded && (
                             <button
                                 onClick={handleRequestShare}
                                 disabled={!!activeEntry.sharedAt || isSharing}
                                 className={cn(
-                                    "transition-all duration-700 ease-in-out px-2",
+                                    "transition-all duration-700 ease-in-out",
                                     (activeEntry.sharedAt || isSharing)
                                         ? "text-paper-textSoft/30 cursor-default"
                                         : "text-paper-textSoft/50 hover:text-paper-textSoft/80"
@@ -373,20 +319,52 @@ export default function UnspokenPage() {
                     <div
                         aria-live="polite"
                         className={cn(
-                            "absolute bottom-6 right-6 md:bottom-12 md:right-12 text-[11px] tracking-[0.2em] lowercase font-mono transition-all duration-1000 ease-in-out pointer-events-none text-paper-textSoft/50",
+                            "absolute bottom-6 left-6 md:bottom-16 md:left-16 text-[11px] tracking-[0.2em] lowercase font-mono transition-all duration-1000 ease-in-out pointer-events-none text-paper-textSoft/30",
                             saveStatus === 'saved' ? "opacity-100" : "opacity-0 translate-y-2"
                         )}
                     >
                         saved
                     </div>
                 </main>
+
+                {/* Desktop: Vertical Tabs */}
+                <aside className="hidden md:flex flex-col w-32 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pt-12 pb-12 z-0 relative -ml-1">
+                    <button
+                        onClick={handleCreateNew}
+                        className="text-left px-5 py-3 font-serif text-sm text-paper-textSoft/60 hover:text-paper-text transition-colors"
+                    >
+                        + New Page
+                    </button>
+                    <div className="flex flex-col gap-1 mt-4">
+                        {displayEntries.map(entry => {
+                            const isActive = entry.id === activeEntryId;
+                            return (
+                                <button
+                                    key={entry.id}
+                                    onClick={() => handleSelectEntry(entry.id)}
+                                    className={cn(
+                                        "text-left px-5 py-3 font-serif text-sm transition-all duration-500 rounded-r-xl border-y border-r flex flex-col gap-1",
+                                        isActive
+                                            ? "bg-paper-surface text-paper-text shadow-[4px_4px_15px_rgba(0,0,0,0.03)] border-paper-border/10 pl-7 z-10"
+                                            : "bg-transparent text-paper-textSoft/40 hover:bg-paper-surface/30 border-transparent hover:text-paper-textSoft/80"
+                                    )}
+                                >
+                                    <span>{format(entry.createdAt, 'MMM d')}</span>
+                                    {entry.sharedAt && (
+                                        <span className="text-[9px] tracking-[0.1em] lowercase opacity-50">shared</span>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </aside>
             </div>
 
             {/* Deletion Confirmation Dialog */}
             {entryToDelete && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-paper-bg/40 backdrop-blur-[2px] p-4 animate-in fade-in duration-500">
-                    <div className="bg-paper-surface rounded-2xl p-8 max-w-[320px] w-full shadow-paper-shadow border border-paper-border/20 text-center animate-in zoom-in-95 duration-500">
-                        <h3 className="text-paper-text font-serif text-lg mb-2 tracking-wide">Delete this unspoken entry?</h3>
+                    <div className="bg-paper-surface rounded-2xl p-8 max-w-[320px] w-full shadow-paper-shadow border border-paper-border/10 text-center animate-in zoom-in-95 duration-500">
+                        <h3 className="text-paper-text font-serif text-lg mb-2 tracking-wide">Remove this page?</h3>
                         <p className="text-paper-textSoft/70 font-serif text-sm mb-8 tracking-wide">This cannot be undone.</p>
                         <div className="flex justify-center gap-4 font-serif text-sm">
                             <button
@@ -400,7 +378,7 @@ export default function UnspokenPage() {
                                 onClick={confirmDelete}
                                 className="px-6 py-2 text-paper-textSoft hover:text-paper-text transition-colors duration-300"
                             >
-                                Delete
+                                Tear out
                             </button>
                         </div>
                     </div>
@@ -410,7 +388,7 @@ export default function UnspokenPage() {
             {/* Share Confirmation Dialog */}
             {entryToShare && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-paper-bg/40 backdrop-blur-[2px] p-4 animate-in fade-in duration-500">
-                    <div className="bg-paper-surface rounded-2xl p-8 max-w-[320px] w-full shadow-paper-shadow border border-paper-border/20 text-center animate-in zoom-in-95 duration-500">
+                    <div className="bg-paper-surface rounded-2xl p-8 max-w-[320px] w-full shadow-paper-shadow border border-paper-border/10 text-center animate-in zoom-in-95 duration-500">
                         <h3 className="text-paper-text font-serif text-lg mb-2 tracking-wide">Share this to Holding Space?</h3>
                         <p className="text-paper-textSoft/70 font-serif text-sm mb-8 tracking-wide leading-relaxed">
                             You can remain anonymous. You can also keep it unshared.
