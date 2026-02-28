@@ -1,5 +1,7 @@
+"use client";
+
 import React from 'react';
-import { Home, Search, PlusSquare, MessageCircle, User, LogOut, Settings, Tent, Moon, Sun } from 'lucide-react';
+import { Home, Search, PlusSquare, MessageCircle, User, LogOut, Settings, Tent, Moon, Sun, Wind } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -22,6 +24,7 @@ export const SidebarNav: React.FC = () => {
     { icon: Home, label: 'Home', href: '/' },
     { icon: Tent, label: 'Holding Space', href: '/' },
     { icon: PlusSquare, label: 'Sanctuary', href: '/sanctuary' },
+    { icon: Wind, label: 'Unspoken', href: '/unspoken' },
     { icon: Search, label: 'Circles', href: '#' },
     { icon: MessageCircle, label: 'Messages', href: '/messages' },
     { icon: User, label: 'Profile', href: '/profile' },
