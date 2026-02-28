@@ -255,7 +255,7 @@ export default function UnspokenPage() {
     return (
         <>
             {/* 1. DESK ENVIRONMENT */}
-            <div className="bg-[#eae3d9] h-full flex-1 w-full flex flex-col items-center justify-center relative py-4 md:py-8 px-4 md:px-8">
+            <div className="bg-[#eae3d9] h-full flex-1 w-full flex flex-col items-center justify-center relative py-4 md:py-8 px-4 md:pl-12 md:pr-[220px] overflow-x-hidden">
 
                 {/* Mobile: Horizontal Tabs (Positioned on desk above notebook) */}
                 <div role="tablist" className="md:hidden flex w-full max-w-[1100px] overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] z-20 pb-4 mb-4">
@@ -288,7 +288,7 @@ export default function UnspokenPage() {
                 </div>
 
                 {/* 2. NOTEBOOK OBJECT CONTAINER */}
-                <div className="relative w-full h-full flex-1 max-w-[850px] shadow-[0_40px_80px_rgba(0,0,0,0.15)] rounded-r-xl transition-all duration-1000 z-10 md:-ml-20">
+                <div className="relative w-full h-full flex-1 max-w-[1200px] shadow-[0_40px_80px_rgba(0,0,0,0.15)] rounded-r-xl transition-all duration-1000 z-10">
 
                     {/* 7. NOTEBOOK DEPTH EFFECT */}
                     <div className="absolute inset-y-2 left-0 right-[-6px] bg-paper-surface shadow-[2px_0_4px_rgba(0,0,0,0.05)] rounded-r-xl z-[-1] border-y border-r border-[#d8d1c7]/40" />
