@@ -255,7 +255,7 @@ export default function UnspokenPage() {
     return (
         <>
             {/* 1. DESK ENVIRONMENT */}
-            <div className="bg-[#eae3d9] h-full flex-1 w-full flex flex-col items-center justify-center relative overflow-hidden py-4 md:py-8 px-4 md:pl-8 md:pr-[160px]">
+            <div className="bg-[#eae3d9] h-full flex-1 w-full flex flex-col items-center justify-center relative py-4 md:py-8 px-4 md:px-8">
 
                 {/* Mobile: Horizontal Tabs (Positioned on desk above notebook) */}
                 <div role="tablist" className="md:hidden flex w-full max-w-[1100px] overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] z-20 pb-4 mb-4">
@@ -288,15 +288,15 @@ export default function UnspokenPage() {
                 </div>
 
                 {/* 2. NOTEBOOK OBJECT CONTAINER */}
-                <div className="relative w-full h-full flex-1 max-w-none shadow-[0_40px_80px_rgba(0,0,0,0.15)] rounded-r-xl transition-all duration-1000 z-10">
+                <div className="relative w-full h-full flex-1 max-w-[850px] shadow-[0_40px_80px_rgba(0,0,0,0.15)] rounded-r-xl transition-all duration-1000 z-10 md:-ml-20">
 
                     {/* 7. NOTEBOOK DEPTH EFFECT */}
-                    <div className="absolute inset-y-2 left-0 right-[-6px] bg-white shadow-sm rounded-r-xl z-[-1] opacity-70 border border-black/5 mix-blend-multiply" />
-                    <div className="absolute inset-y-4 left-0 right-[-12px] bg-[#fdfbf7] shadow-sm rounded-r-xl z-[-2] opacity-40 border border-black/5 bg-blend-multiply" />
-                    <div className="absolute inset-y-6 left-0 right-[-16px] bg-[#f8f6f3] shadow-sm rounded-r-xl z-[-3] opacity-20 border border-black/5" />
+                    <div className="absolute inset-y-2 left-0 right-[-6px] bg-paper-surface shadow-[2px_0_4px_rgba(0,0,0,0.05)] rounded-r-xl z-[-1] border-y border-r border-[#d8d1c7]/40" />
+                    <div className="absolute inset-y-4 left-0 right-[-12px] bg-paper shadow-[2px_0_4px_rgba(0,0,0,0.04)] rounded-r-xl z-[-2] border-y border-r border-[#d8d1c7]/40" />
+                    <div className="absolute inset-y-6 left-0 right-[-16px] bg-[#e8e2d7] shadow-[2px_0_4px_rgba(0,0,0,0.03)] rounded-r-xl z-[-3] border-y border-r border-[#d8d1c7]/40" />
 
                     {/* 3. NOTEBOOK SPINE */}
-                    <div className="absolute left-0 top-0 bottom-0 w-[40px] md:w-[60px] bg-[#d8d1c7] z-30 shadow-[inset_-8px_0_12px_rgba(0,0,0,0.06),inset_2px_0_4px_rgba(255,255,255,0.4)] rounded-l-md flex flex-col justify-evenly items-center py-6 md:py-10 border-r border-[#c4bcaf]">
+                    <div className="absolute left-0 top-0 bottom-0 w-[40px] md:w-[60px] bg-[#d8d1c7] z-30 shadow-[inset_-8px_0_12px_rgba(0,0,0,0.06),inset_2px_0_4px_rgba(255,255,255,0.4)] rounded-l-xl flex flex-col justify-evenly items-center py-6 md:py-10 border-r border-[#c4bcaf]">
                         {/* Spiral binding illusion */}
                         {[...Array(14)].map((_, i) => (
                             <div key={i} className="relative w-[30px] md:w-[45px] h-[10px] md:h-[14px] bg-[#2a2a2a] rounded-full transform -translate-x-1 md:-translate-x-2 shadow-[0_2px_5px_rgba(0,0,0,0.4),inset_0_2px_1px_rgba(255,255,255,0.2)] opacity-90 z-40">
@@ -307,7 +307,7 @@ export default function UnspokenPage() {
                     </div>
 
                     {/* 4. PAGE SURFACE */}
-                    <main className="absolute left-[40px] md:left-[60px] right-0 top-0 bottom-0 bg-paper-surface shadow-[inset_12px_0_20px_rgba(0,0,0,0.04)] rounded-r-xl z-20 flex flex-col px-8 md:px-8 py-8 md:py-12 transition-colors duration-1000 overflow-hidden">
+                    <main className="absolute left-[40px] md:left-[60px] right-0 top-0 bottom-0 bg-paper-surface shadow-[inset_12px_0_20px_rgba(0,0,0,0.04)] rounded-r-xl z-20 flex flex-col px-8 md:px-8 py-8 md:py-12 transition-colors duration-1000">
 
                         {/* Subtle paper grain/lines (optional, keeping minimal for now to match user preference) */}
 
@@ -376,10 +376,10 @@ export default function UnspokenPage() {
                     </main>
 
                     {/* 6. ATTACHED TABS (DESKTOP) */}
-                    <aside role="tablist" aria-orientation="vertical" className="hidden md:flex absolute right-[-140px] top-12 flex-col gap-[6px] z-[-5] max-h-[calc(100vh-120px)] overflow-y-auto pb-8 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-[#d8d1c7]/50 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#d8d1c7] pr-2 -mr-2">
+                    <aside role="tablist" aria-orientation="vertical" className="hidden md:flex absolute right-[-165px] top-12 flex-col gap-[6px] z-20 max-h-[calc(100vh-120px)] overflow-y-auto pb-8 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-[#d8d1c7]/50 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#d8d1c7] pr-6 -mr-6 pl-2 -ml-2">
                         <button
                             onClick={handleCreateNew}
-                            className="w-[140px] pl-[20px] pr-4 py-3 bg-[#e8e2d7] text-[#8a8174] hover:text-[#5a5144] rounded-r-lg shadow-[4px_2px_8px_rgba(0,0,0,0.06),inset_2px_0_0_#d8d1c7] border-y border-r border-[#d8d1c7]/40 transition-colors text-left font-serif text-sm -ml-[10px]"
+                            className="w-[140px] px-4 py-3 bg-[#e8e2d7] text-[#8a8174] hover:text-[#5a5144] rounded-lg shadow-[4px_2px_8px_rgba(0,0,0,0.06)] border border-[#d8d1c7]/40 transition-colors text-left font-serif text-sm"
                         >
                             + New Page
                         </button>
@@ -393,10 +393,10 @@ export default function UnspokenPage() {
                                     key={entry.id}
                                     onClick={() => handleSelectEntry(entry.id)}
                                     className={cn(
-                                        `pl-[20px] pr-4 py-[14px] rounded-r-lg border-y border-r border-[#d8d1c7]/50 text-left font-serif text-[15px] flex flex-col gap-1 transition-all duration-300 -ml-[10px]`,
+                                        `px-4 py-[14px] rounded-lg border border-[#d8d1c7]/50 text-left font-serif text-[15px] flex flex-col gap-1 transition-all duration-300`,
                                         widthOffset,
                                         isActive
-                                            ? "bg-[#fdfbf7] text-[#3a352d] shadow-[8px_4px_16px_rgba(0,0,0,0.1)] z-10 translate-x-2 font-medium"
+                                            ? "bg-[#fdfbf7] text-[#3a352d] shadow-[8px_4px_16px_rgba(0,0,0,0.1)] z-30 translate-x-2 font-medium"
                                             : "bg-[#f4efe6] text-[#8a8174] shadow-[4px_2px_8px_rgba(0,0,0,0.04)] hover:bg-[#faf7f2] hover:translate-x-1"
                                     )}
                                 >
