@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { PageContainer } from '@/components/layout/PageContainer';
 import { Textarea } from '@/components/ui/Textarea';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
@@ -239,9 +238,9 @@ export default function UnspokenPage() {
     }, []);
 
     return (
-        <PageContainer>
+        <>
             {/* 1. DESK ENVIRONMENT */}
-            <div className="bg-[#eae3d9] min-h-screen flex flex-col items-center justify-center relative overflow-hidden py-12 md:py-24 px-4 md:px-8">
+            <div className="bg-[#eae3d9] h-full flex-1 w-full flex flex-col items-center justify-center relative overflow-hidden py-4 md:py-8 px-4 md:pl-8 md:pr-[160px]">
 
                 {/* Mobile: Horizontal Tabs (Positioned on desk above notebook) */}
                 <div className="md:hidden flex w-full max-w-[1100px] overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] z-20 pb-4 mb-4">
@@ -272,7 +271,7 @@ export default function UnspokenPage() {
                 </div>
 
                 {/* 2. NOTEBOOK OBJECT CONTAINER */}
-                <div className="relative w-full max-w-[1100px] h-[75vh] md:h-[750px] shadow-[0_40px_80px_rgba(0,0,0,0.15)] rounded-r-xl transition-all duration-1000 z-10">
+                <div className="relative w-full h-full flex-1 max-w-none shadow-[0_40px_80px_rgba(0,0,0,0.15)] rounded-r-xl transition-all duration-1000 z-10">
 
                     {/* 7. NOTEBOOK DEPTH EFFECT */}
                     <div className="absolute inset-y-2 left-0 right-[-6px] bg-white shadow-sm rounded-r-xl z-[-1] opacity-70 border border-black/5 mix-blend-multiply" />
@@ -445,6 +444,6 @@ export default function UnspokenPage() {
                     </div>
                 </div>
             )}
-        </PageContainer>
+        </>
     );
 }
