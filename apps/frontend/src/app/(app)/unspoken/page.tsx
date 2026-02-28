@@ -400,7 +400,7 @@ export default function UnspokenPage() {
                                             : "bg-[#f4efe6] text-[#8a8174] shadow-[4px_2px_8px_rgba(0,0,0,0.04)] hover:bg-[#faf7f2] hover:translate-x-1"
                                     )}
                                 >
-                                    <span className="w-[100px] truncate block text-ellipsis whitespace-nowrap">{entry.title?.trim() ? entry.title : format(entry.createdAt, 'MMM d')}</span>
+                                    <span className="w-full truncate block text-ellipsis whitespace-nowrap overflow-hidden">{entry.title?.trim() ? entry.title : format(entry.createdAt, 'MMM d')}</span>
                                     {entry.sharedAt && (
                                         <span className="text-[9.5px] tracking-[0.1em] lowercase text-[#8a8174]/60 font-mono shrink-0">shared</span>
                                     )}
