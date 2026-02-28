@@ -353,7 +353,7 @@ export default function UnspokenPage() {
                     </main>
 
                     {/* 6. ATTACHED TABS (DESKTOP) */}
-                    <aside role="tablist" aria-orientation="vertical" className="hidden md:flex absolute right-[-140px] top-12 flex-col gap-[6px] z-[-5]">
+                    <aside role="tablist" aria-orientation="vertical" className="hidden md:flex absolute right-[-140px] top-12 flex-col gap-[6px] z-[-5] max-h-[calc(100vh-120px)] overflow-y-auto pb-8 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-[#d8d1c7]/50 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#d8d1c7] pr-2 -mr-2">
                         <button
                             onClick={handleCreateNew}
                             className="w-[140px] pl-[20px] pr-4 py-3 bg-[#e8e2d7] text-[#8a8174] hover:text-[#5a5144] rounded-r-lg shadow-[4px_2px_8px_rgba(0,0,0,0.06),inset_2px_0_0_#d8d1c7] border-y border-r border-[#d8d1c7]/40 transition-colors text-left font-serif text-sm -ml-[10px]"
