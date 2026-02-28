@@ -243,7 +243,7 @@ export default function UnspokenPage() {
             <div className="bg-[#eae3d9] h-full flex-1 w-full flex flex-col items-center justify-center relative overflow-hidden py-4 md:py-8 px-4 md:pl-8 md:pr-[160px]">
 
                 {/* Mobile: Horizontal Tabs (Positioned on desk above notebook) */}
-                <div className="md:hidden flex w-full max-w-[1100px] overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] z-20 pb-4 mb-4">
+                <div role="tablist" className="md:hidden flex w-full max-w-[1100px] overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] z-20 pb-4 mb-4">
                     <button
                         onClick={handleCreateNew}
                         className="flex-shrink-0 px-4 py-3 font-serif text-sm text-[#8a8174] hover:text-[#5a5144] transition-colors"
@@ -255,6 +255,8 @@ export default function UnspokenPage() {
                         return (
                             <button
                                 key={entry.id}
+                                role="tab"
+                                aria-selected={isActive}
                                 onClick={() => handleSelectEntry(entry.id)}
                                 className={cn(
                                     "flex-shrink-0 px-4 py-3 font-serif text-sm transition-all duration-300 relative rounded-t-md mx-1",
@@ -314,6 +316,7 @@ export default function UnspokenPage() {
                             {activeEntry && isLoaded && (
                                 <button
                                     onClick={() => handleRequestDelete(activeEntry.id)}
+                                    aria-label="Delete entry"
                                     className="text-[14px] md:text-[15px] text-[#8a8174] hover:text-[#c44a4a] transition-colors font-serif italic"
                                 >
                                     Tear out page
@@ -324,6 +327,7 @@ export default function UnspokenPage() {
                                 <button
                                     onClick={handleRequestShare}
                                     disabled={!!activeEntry.sharedAt || isSharing}
+                                    aria-label="Share this to holding space"
                                     className={cn(
                                         "text-[14px] md:text-[15px] font-serif italic transition-colors",
                                         (activeEntry.sharedAt || isSharing)
@@ -349,7 +353,7 @@ export default function UnspokenPage() {
                     </main>
 
                     {/* 6. ATTACHED TABS (DESKTOP) */}
-                    <aside className="hidden md:flex absolute right-[-140px] top-12 flex-col gap-[6px] z-[-5]">
+                    <aside role="tablist" aria-orientation="vertical" className="hidden md:flex absolute right-[-140px] top-12 flex-col gap-[6px] z-[-5]">
                         <button
                             onClick={handleCreateNew}
                             className="w-[140px] pl-[20px] pr-4 py-3 bg-[#e8e2d7] text-[#8a8174] hover:text-[#5a5144] rounded-r-lg shadow-[4px_2px_8px_rgba(0,0,0,0.06),inset_2px_0_0_#d8d1c7] border-y border-r border-[#d8d1c7]/40 transition-colors text-left font-serif text-sm -ml-[10px]"

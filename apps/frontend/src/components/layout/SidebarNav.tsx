@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { Home, Search, PlusSquare, MessageCircle, User, LogOut, Settings, Tent, Moon, Sun, Wind } from 'lucide-react';
 import Link from 'next/link';
