@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/Textarea';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import client from '@/api/client';
+import { toast } from 'sonner';
 
 const UNSPOKEN_STORAGE_KEY = 'webelong_unspoken_entries';
 const AUTOSAVE_DELAY = 1000;
@@ -121,11 +122,11 @@ export default function UnspokenPage() {
         triggerAutosave(activeEntryId, val, activeEntryContent);
     };
 
-    const handleCreateNew = React.useCallback(() => {
+    const handleCreateNew = React.useCallback((currentList: UnspokenEntry[] = entries) => {
         const newId = crypto.randomUUID();
         const now = Date.now();
         const newEntry = { id: newId, title: '', content: '', createdAt: now, updatedAt: now };
-        const updatedEntries = [newEntry, ...entries];
+        const updatedEntries = [newEntry, ...currentList];
         setEntries(updatedEntries);
         setActiveEntryId(newId);
         setActiveEntryTitle('');
@@ -176,15 +177,7 @@ export default function UnspokenPage() {
                 setActiveEntryContent(mostRecent.content);
             } else {
                 // No entries remain, create a new blank one
-                const newId = crypto.randomUUID();
-                const now = Date.now();
-                const newEntry = { id: newId, title: '', content: '', createdAt: now, updatedAt: now };
-                const finalEntries = [newEntry];
-                setEntries(finalEntries);
-                saveToStorage(finalEntries);
-                setActiveEntryId(newId);
-                setActiveEntryTitle('');
-                setActiveEntryContent('');
+                handleCreateNew(updatedEntries);
             }
         }
 
@@ -192,7 +185,7 @@ export default function UnspokenPage() {
         setTimeout(() => {
             if (textareaRef.current) textareaRef.current.focus();
         }, 50);
-    }, [entryToDelete, entries, activeEntryId]);
+    }, [entryToDelete, entries, activeEntryId, handleCreateNew]);
 
     const handleRequestShare = React.useCallback(() => {
         if (!activeEntryId) return;
@@ -225,9 +218,15 @@ export default function UnspokenPage() {
 
                 setEntries(updatedEntries);
                 saveToStorage(updatedEntries);
+                toast.success("Entry shared to Holding Space.", {
+                    className: "font-serif bg-[#fdfbf7] text-[#3a352d] border-[#d8d1c7]"
+                });
             }
         } catch (error) {
             setShareError("Could not share right now.");
+            toast.error("Failed to share to Holding Space.", {
+                className: "font-serif bg-[#fdfbf7] text-[#c44a4a] border-[#d8d1c7]"
+            });
         } finally {
             setIsSharing(false);
             setEntryToShare(null);
@@ -252,6 +251,32 @@ export default function UnspokenPage() {
         }, 50);
     }, []);
 
+    useEffect(() => {
+        const handleStorage = (e: StorageEvent) => {
+            if (e.key === UNSPOKEN_STORAGE_KEY && e.newValue) {
+                try {
+                    const parsed = JSON.parse(e.newValue);
+                    setEntries(parsed);
+                } catch (err) {
+                    console.error("Failed to parse cross-tab storage", err);
+                }
+            }
+        };
+        window.addEventListener('storage', handleStorage);
+        return () => window.removeEventListener('storage', handleStorage);
+    }, []);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                if (entryToDelete) cancelDelete();
+                if (entryToShare) cancelShare();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [entryToDelete, entryToShare, cancelDelete, cancelShare]);
+
     return (
         <>
             {/* 1. DESK ENVIRONMENT */}
@@ -260,7 +285,7 @@ export default function UnspokenPage() {
                 {/* Mobile: Horizontal Tabs (Positioned on desk above notebook) */}
                 <div role="tablist" className="md:hidden flex w-full max-w-[1100px] overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] z-20 pb-4 mb-4">
                     <button
-                        onClick={handleCreateNew}
+                        onClick={() => handleCreateNew()}
                         className="flex-shrink-0 px-4 py-3 font-serif text-sm text-[#8a8174] hover:text-[#5a5144] transition-colors"
                     >
                         + New Page
@@ -378,7 +403,7 @@ export default function UnspokenPage() {
                     {/* 6. ATTACHED TABS (DESKTOP) */}
                     <aside role="tablist" aria-orientation="vertical" className="hidden md:flex absolute right-[-165px] top-12 flex-col gap-[6px] z-20 max-h-[calc(100vh-120px)] overflow-y-auto pb-8 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-[#d8d1c7]/50 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#d8d1c7] pr-6 -mr-6 pl-2 -ml-2">
                         <button
-                            onClick={handleCreateNew}
+                            onClick={() => handleCreateNew()}
                             className="w-[140px] px-4 py-3 bg-[#e8e2d7] text-[#8a8174] hover:text-[#5a5144] rounded-lg shadow-[4px_2px_8px_rgba(0,0,0,0.06)] border border-[#d8d1c7]/40 transition-colors text-left font-serif text-sm"
                         >
                             + New Page
