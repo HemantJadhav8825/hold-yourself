@@ -290,7 +290,7 @@ export default function UnspokenPage() {
                     </div>
 
                     {/* 4. PAGE SURFACE */}
-                    <main className="absolute left-[40px] md:left-[60px] right-0 top-0 bottom-0 bg-paper-surface shadow-[inset_12px_0_20px_rgba(0,0,0,0.04)] rounded-r-xl z-20 flex flex-col px-8 md:px-20 py-16 md:py-24 transition-colors duration-1000 overflow-hidden">
+                    <main className="absolute left-[40px] md:left-[60px] right-0 top-0 bottom-0 bg-paper-surface shadow-[inset_12px_0_20px_rgba(0,0,0,0.04)] rounded-r-xl z-20 flex flex-col px-8 md:px-8 py-16 md:py-24 transition-colors duration-1000 overflow-hidden">
 
                         {/* Subtle paper grain/lines (optional, keeping minimal for now to match user preference) */}
 
@@ -300,7 +300,7 @@ export default function UnspokenPage() {
                             value={activeEntryContent}
                             onChange={handleChange}
                             placeholder={activeEntryContent || !isLoaded ? '' : 'Some things live here before they are ready.'}
-                            className="w-full flex-1 bg-transparent border-none outline-none shadow-none resize-none font-serif text-[20px] md:text-[22px] leading-[1.85] tracking-[0.01em] text-[#3a352d] placeholder:text-[#3a352d]/30 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] focus-visible:ring-0 px-0"
+                            className="w-full flex-1 bg-transparent border-none outline-none shadow-none resize-none font-serif text-[20px] md:text-[22px] leading-[1.85] tracking-[0.01em] text-[#3a352d] placeholder:text-[#3a352d]/30 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] focus-visible:ring-0 px-2"
                         />
 
                         {/* Active Page Footer Controls */}
