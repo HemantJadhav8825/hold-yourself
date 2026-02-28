@@ -11,6 +11,7 @@ const AUTOSAVE_DELAY = 1000;
 
 interface UnspokenEntry {
     id: string;
+    title?: string;
     content: string;
     createdAt: number;
     updatedAt: number;
@@ -24,6 +25,7 @@ const saveToStorage = (newEntries: UnspokenEntry[]) => {
 export default function UnspokenPage() {
     const [entries, setEntries] = useState<UnspokenEntry[]>([]);
     const [activeEntryId, setActiveEntryId] = useState<string | null>(null);
+    const [activeEntryTitle, setActiveEntryTitle] = useState<string>('');
     const [activeEntryContent, setActiveEntryContent] = useState<string>('');
     const [isLoaded, setIsLoaded] = useState(false);
     const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
@@ -44,7 +46,8 @@ export default function UnspokenPage() {
                 // Migrate legacy entries without `createdAt`
                 loadedEntries = parsed.map((e: any) => ({
                     ...e,
-                    createdAt: e.createdAt || e.updatedAt || Date.now()
+                    createdAt: e.createdAt || e.updatedAt || Date.now(),
+                    title: e.title || ''
                 })).sort((a: any, b: any) => b.updatedAt - a.updatedAt);
             } catch (e) {
                 console.error("Failed to parse unspoken entries", e);
@@ -55,13 +58,15 @@ export default function UnspokenPage() {
 
         if (loadedEntries.length > 0) {
             setActiveEntryId(loadedEntries[0].id);
+            setActiveEntryTitle(loadedEntries[0].title || '');
             setActiveEntryContent(loadedEntries[0].content);
         } else {
             // Create a new blank slate if completely empty
             const newId = crypto.randomUUID();
             const now = Date.now();
-            setEntries([{ id: newId, content: '', createdAt: now, updatedAt: now }]);
+            setEntries([{ id: newId, title: '', content: '', createdAt: now, updatedAt: now }]);
             setActiveEntryId(newId);
+            setActiveEntryTitle('');
             setActiveEntryContent('');
         }
 
@@ -77,46 +82,53 @@ export default function UnspokenPage() {
 
     const activeEntry = entries.find(e => e.id === activeEntryId);
 
-    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const val = e.target.value;
-
-        if (!isLoaded || !activeEntryId) return;
-
-        // Optimistically update ONLY text state (for instant typing)
-        setActiveEntryContent(val);
-
-        // Clear existing timer if user types again
+    const triggerAutosave = React.useCallback((id: string, title: string, content: string) => {
         if (typingTimerRef.current) {
             clearTimeout(typingTimerRef.current);
         }
 
         setSaveStatus('saving');
         typingTimerRef.current = setTimeout(() => {
-            // Commit to entries array only on delayed autosave
-            const updatedEntries = entries.map(entry =>
-                entry.id === activeEntryId
-                    ? { ...entry, content: val, updatedAt: Date.now() }
-                    : entry
-            );
-
-            setEntries(updatedEntries);
-            saveToStorage(updatedEntries);
+            setEntries(prev => {
+                const updated = prev.map(entry =>
+                    entry.id === id
+                        ? { ...entry, title, content, updatedAt: Date.now() }
+                        : entry
+                );
+                saveToStorage(updated);
+                return updated;
+            });
             setSaveStatus('saved');
-
-            // Keep the "saved" status slightly visible then drop to idle to make it feel quiet
             setTimeout(() => {
                 setSaveStatus('idle');
             }, 2000);
         }, AUTOSAVE_DELAY);
+    }, []);
+
+    const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const val = e.target.value;
+        if (!isLoaded || !activeEntryId) return;
+
+        setActiveEntryContent(val);
+        triggerAutosave(activeEntryId, activeEntryTitle, val);
+    };
+
+    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        if (!isLoaded || !activeEntryId) return;
+
+        setActiveEntryTitle(val);
+        triggerAutosave(activeEntryId, val, activeEntryContent);
     };
 
     const handleCreateNew = React.useCallback(() => {
         const newId = crypto.randomUUID();
         const now = Date.now();
-        const newEntry = { id: newId, content: '', createdAt: now, updatedAt: now };
+        const newEntry = { id: newId, title: '', content: '', createdAt: now, updatedAt: now };
         const updatedEntries = [newEntry, ...entries];
         setEntries(updatedEntries);
         setActiveEntryId(newId);
+        setActiveEntryTitle('');
         setActiveEntryContent('');
         saveToStorage(updatedEntries);
 
@@ -129,6 +141,7 @@ export default function UnspokenPage() {
         const selected = entries.find(e => e.id === id);
         if (selected) {
             setActiveEntryId(id);
+            setActiveEntryTitle(selected.title || '');
             setActiveEntryContent(selected.content);
         }
         setTimeout(() => {
@@ -159,16 +172,18 @@ export default function UnspokenPage() {
                 // Select the most recently updated among remaining (they are already mostly sorted, but let's be safe)
                 const mostRecent = [...updatedEntries].sort((a, b) => b.updatedAt - a.updatedAt)[0];
                 setActiveEntryId(mostRecent.id);
+                setActiveEntryTitle(mostRecent.title || '');
                 setActiveEntryContent(mostRecent.content);
             } else {
                 // No entries remain, create a new blank one
                 const newId = crypto.randomUUID();
                 const now = Date.now();
-                const newEntry = { id: newId, content: '', createdAt: now, updatedAt: now };
+                const newEntry = { id: newId, title: '', content: '', createdAt: now, updatedAt: now };
                 const finalEntries = [newEntry];
                 setEntries(finalEntries);
                 saveToStorage(finalEntries);
                 setActiveEntryId(newId);
+                setActiveEntryTitle('');
                 setActiveEntryContent('');
             }
         }
@@ -259,14 +274,14 @@ export default function UnspokenPage() {
                                 aria-selected={isActive}
                                 onClick={() => handleSelectEntry(entry.id)}
                                 className={cn(
-                                    "flex-shrink-0 px-4 py-3 font-serif text-sm transition-all duration-300 relative rounded-t-md mx-1",
+                                    "flex-shrink-0 px-4 py-3 font-serif text-sm transition-all duration-300 relative rounded-t-md mx-1 max-w-[160px] flex items-center justify-center gap-2",
                                     isActive
                                         ? "bg-[#f8f6f3] text-[#3a352d] shadow-[0_-4px_10px_rgba(0,0,0,0.05)] border-t border-x border-[#d8d1c7]/40"
                                         : "bg-paper text-[#8a8174] hover:bg-[#efebe4]"
                                 )}
                             >
-                                {format(entry.createdAt, 'MMM d')}
-                                {entry.sharedAt && <span className="ml-2 mt-[2px] inline-block w-1.5 h-1.5 rounded-full bg-black/20" />}
+                                <span className="truncate">{entry.title?.trim() ? entry.title : format(entry.createdAt, 'MMM d')}</span>
+                                {entry.sharedAt && <span className="inline-block w-1.5 h-1.5 rounded-full bg-black/20 shrink-0" />}
                             </button>
                         );
                     })}
@@ -292,18 +307,26 @@ export default function UnspokenPage() {
                     </div>
 
                     {/* 4. PAGE SURFACE */}
-                    <main className="absolute left-[40px] md:left-[60px] right-0 top-0 bottom-0 bg-paper-surface shadow-[inset_12px_0_20px_rgba(0,0,0,0.04)] rounded-r-xl z-20 flex flex-col px-8 md:px-8 py-16 md:py-24 transition-colors duration-1000 overflow-hidden">
+                    <main className="absolute left-[40px] md:left-[60px] right-0 top-0 bottom-0 bg-paper-surface shadow-[inset_12px_0_20px_rgba(0,0,0,0.04)] rounded-r-xl z-20 flex flex-col px-8 md:px-8 py-8 md:py-12 transition-colors duration-1000 overflow-hidden">
 
                         {/* Subtle paper grain/lines (optional, keeping minimal for now to match user preference) */}
 
-                        {/* 5. EDITOR */}
-                        <Textarea
-                            ref={textareaRef}
-                            value={activeEntryContent}
-                            onChange={handleChange}
-                            placeholder={activeEntryContent || !isLoaded ? '' : 'Some things live here before they are ready.'}
-                            className="w-full flex-1 bg-transparent border-none outline-none shadow-none resize-none font-serif text-[20px] md:text-[22px] leading-[1.85] tracking-[0.01em] text-[#3a352d] placeholder:text-[#3a352d]/30 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] focus-visible:ring-0 px-2"
-                        />
+                        {/* 5. TITLE & EDITOR */}
+                        <div className="flex flex-col flex-1 h-full mb-[80px]">
+                            <input
+                                value={activeEntryTitle}
+                                onChange={handleTitleChange}
+                                placeholder={activeEntryContent || !isLoaded ? '' : 'Untitled'}
+                                className="w-full bg-transparent border-none outline-none shadow-none font-serif text-[28px] md:text-[32px] font-medium tracking-[0.02em] text-[#3a352d] placeholder:text-[#3a352d]/30 focus-visible:ring-0 px-2 pb-4"
+                            />
+                            <Textarea
+                                ref={textareaRef}
+                                value={activeEntryContent}
+                                onChange={handleContentChange}
+                                placeholder={activeEntryContent || !isLoaded ? '' : 'Some things live here before they are ready.'}
+                                className="w-full flex-1 bg-transparent border-none outline-none shadow-none resize-none font-serif text-[20px] md:text-[22px] leading-[1.85] tracking-[0.01em] text-[#3a352d] placeholder:text-[#3a352d]/30 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] focus-visible:ring-0 px-2"
+                            />
+                        </div>
 
                         {/* Active Page Footer Controls */}
                         <div className="absolute bottom-8 md:bottom-12 right-8 md:right-16 flex flex-col md:flex-row gap-4 md:gap-8 z-30 items-end md:items-center">
@@ -377,9 +400,9 @@ export default function UnspokenPage() {
                                             : "bg-[#f4efe6] text-[#8a8174] shadow-[4px_2px_8px_rgba(0,0,0,0.04)] hover:bg-[#faf7f2] hover:translate-x-1"
                                     )}
                                 >
-                                    <span>{format(entry.createdAt, 'MMM d')}</span>
+                                    <span className="w-[100px] truncate block text-ellipsis whitespace-nowrap">{entry.title?.trim() ? entry.title : format(entry.createdAt, 'MMM d')}</span>
                                     {entry.sharedAt && (
-                                        <span className="text-[9.5px] tracking-[0.1em] lowercase text-[#8a8174]/60 font-mono">shared</span>
+                                        <span className="text-[9.5px] tracking-[0.1em] lowercase text-[#8a8174]/60 font-mono shrink-0">shared</span>
                                     )}
                                 </button>
                             );
